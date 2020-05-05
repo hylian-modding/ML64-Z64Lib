@@ -81,9 +81,15 @@ export class Z64RomTools {
       size = rom.readUInt32BE(dma + offset + 0x4) - rom.readUInt32BE(dma + offset);
       end = start + size;
     }
+    if (start === 0){
+      return Buffer.alloc(1);
+    }
     let buf: Buffer = Buffer.alloc(size);
     rom.copy(buf, 0, start, end);
     if (isFileCompressed) {
+      if (buf.readUInt32BE(0) !== 0x59617A30){
+        return buf;
+      }
       buf = this.ModLoader.utils.yaz0Decode(buf);
     }
     return buf;
