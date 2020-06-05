@@ -35,7 +35,7 @@ export class ModelThread {
         path.parse(filename).name + '.zzcache'
       );
       let pak: Pak = new Pak(dest);
-      let cache: zzstatic_cache = JSON.parse(pak.load(0));
+      let cache: zzstatic_cache = JSON.parse(pak.load(0).toString());
       let zz: zzstatic = new zzstatic();
       zz.addToCache(cache);
       console.log('Worker thread ended.');
