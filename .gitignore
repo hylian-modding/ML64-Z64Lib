@@ -3,3 +3,4 @@ dist/
 libs/
 node_modules/
 modloader64-config.json
+src/Z64LibTests/
