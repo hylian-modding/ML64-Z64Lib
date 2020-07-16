@@ -92,10 +92,10 @@ OBJECT POOL=0x5000,0x800
 	HexString(4D 4F 44 4C 4F 41 44 45 52 36 34 00 FF FF FF FF);
 
     MATRIX_SWORD_BACK:
-        Matrix( 0.0, 0.0, 0, 0, 0, 0, 2, 2, 2 );
+        Matrix( 0, 0, 0, -715, -310, 78, 1, 1, 1 );
 
     MATRIX_SHIELD_BACK:
-        Matrix( 0, 0, 180, 950, 418, 238, 1, 1, 1 );
+        Matrix( 0, 0, 180, 935, 94, 29, 1, 1, 1 );
 
     LUT_DL_WAIST:
         CallList( DL_WAIST );

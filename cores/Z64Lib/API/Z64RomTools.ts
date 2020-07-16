@@ -58,7 +58,6 @@ export class Z64RomTools {
       }
       buf = this.ModLoader.utils.yaz0Decode(buf);
     }
-    console.log(start.toString(16) + " " + end.toString(16));
     return buf;
   }
 
@@ -130,13 +129,12 @@ export class Z64RomTools {
     let dma: Buffer = this.decompressDMAFileFromRom(rom, this.DMA_DMA);
     let offset: number = this.Actor_Offset + (index * size);
     let search: Buffer = code.slice(offset, offset + 0x8);
-    let dma_index: number = dma.indexOf(search) / size;
+    let dma_index: number = dma.indexOf(search) / 0x10;
     return dma_index;
   }
 
   decompressActorFileFromRom(rom: Buffer, index: number): Buffer {
     let dma_index: number = this.findDMAIndexOfActor(rom, index);
-    console.log(dma_index);
     return this.decompressDMAFileFromRom(rom, dma_index);
   }
 
@@ -151,7 +149,7 @@ export class Z64RomTools {
     let dma: Buffer = this.decompressDMAFileFromRom(rom, this.DMA_DMA);
     let offset: number = this.Object_Offset + (index * size);
     let search: Buffer = code.slice(offset, offset + 0x8);
-    let dma_index: number = dma.indexOf(search) / size;
+    let dma_index: number = dma.indexOf(search) / 0x10;
     return dma_index;
   }
 

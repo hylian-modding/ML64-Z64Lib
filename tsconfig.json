@@ -14,7 +14,7 @@
     "baseUrl": "./",
     "paths": {
       "Z64Lib/*": [
-        "./src/Z64Lib/*"
+        "./libs/Z64Lib/*"
       ]
     }
   },
