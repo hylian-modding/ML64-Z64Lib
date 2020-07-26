@@ -44,7 +44,6 @@ export class OOTChildManifest implements IManifest {
             let rp: RomPatch[] = JSON.parse(fs.readFileSync(path.resolve(__dirname, "child.json")).toString());
             for (let i = 0; i < rp.length; i++) {
                 let _r: RomPatch = rp[i];
-                console.log(indexer.findIndexFromSearch(_r.finder, rom));
                 let file: Buffer = indexer.tools.decompressDMAFileFromRom(rom, indexer.findIndexFromSearch(_r.finder, rom));
                 for (let j = 0; j < _r.data.length; j++) {
                     let _f: FilePatch = _r.data[j];
