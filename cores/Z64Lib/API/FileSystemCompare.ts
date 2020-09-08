@@ -7,10 +7,11 @@ import { Z64LibSupportedGames } from "./Z64LibSupportedGames";
 export class FilePatch {
     offset: number;
     value: number;
-  
+
     constructor(offset: number, value: number) {
       this.offset = offset;
       this.value = value;
+      
     }
   }
   
@@ -27,14 +28,39 @@ export class FilePatch {
 export class FileSystemCompare{
     
     ModLoader: IModLoaderAPI;
+    game: Z64LibSupportedGames;
+    totalDMAEntries: number;
+    ignoreEntries: Array<number> = [];
 
-    constructor(ModLoader: IModLoaderAPI){
+    constructor(ModLoader: IModLoaderAPI, game: Z64LibSupportedGames){
         this.ModLoader = ModLoader;
+        this.game = game;
+        switch(game){
+            case Z64LibSupportedGames.OCARINA_OF_TIME: {
+                this.totalDMAEntries = 1509;
+                this.ignoreEntries.push(502);
+                this.ignoreEntries.push(503);
+                break;
+            }
+            case Z64LibSupportedGames.DEBUG_OF_TIME: {
+                this.totalDMAEntries = 0;
+                break;
+            }
+            case Z64LibSupportedGames.MAJORAS_MASK: {
+                this.totalDMAEntries = 1551
+                this.ignoreEntries.push(653);
+                this.ignoreEntries.push(654);
+                this.ignoreEntries.push(655);
+                this.ignoreEntries.push(656);
+                this.ignoreEntries.push(657);
+                break;
+            }
+        }
     }
 
     dumpVanilla(rom: Buffer){
-        let tools: Z64RomTools = new Z64RomTools(this.ModLoader, Z64LibSupportedGames.OCARINA_OF_TIME);
-        let total: number = 1509;
+        let tools: Z64RomTools = new Z64RomTools(this.ModLoader, this.game);
+        let total: number = this.totalDMAEntries;
         let target: string = global.ModLoader["startdir"] + "/vanilla";
         if (fse.existsSync(target)){
             fse.removeSync(target);
@@ -50,8 +76,8 @@ export class FileSystemCompare{
     }
 
     dumpDirty(rom: Buffer){
-        let tools: Z64RomTools = new Z64RomTools(this.ModLoader, Z64LibSupportedGames.OCARINA_OF_TIME);
-        let total: number = 1509;
+        let tools: Z64RomTools = new Z64RomTools(this.ModLoader, this.game);
+        let total: number = this.totalDMAEntries;
         let target: string = global.ModLoader["startdir"] + "/dirty";
         if (fse.existsSync(target)){
             fse.removeSync(target);
@@ -73,10 +99,10 @@ export class FileSystemCompare{
         if (!fse.existsSync(dest)){
             fse.mkdirSync(dest);
         }
-        let total: number = 1509;
+        let total: number = this.totalDMAEntries;
         let patches: any = {};
         for (let i = 3; i < total; i++){
-            if (i === 502 || i === 503){
+            if (this.ignoreEntries.indexOf(i) > -1){
                 continue;
             }
             let buf1: Buffer = fse.readFileSync(path.join(v, i + ".bin"));

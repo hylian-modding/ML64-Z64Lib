@@ -17,12 +17,15 @@ export class DMAIndexer {
             case Z64LibSupportedGames.MAJORAS_MASK:
                 entries = 0xDEADBEEF;
                 break;
+            case Z64LibSupportedGames.DEBUG_OF_TIME:
+                entries = 1531;
+                break;
         }
-        for (let i = 0; i < entries; i++){
+/*         for (let i = 0; i < entries; i++){
             let file: Buffer = this.tools.decompressDMAFileFromRom(rom, i);
             let hash: string = ModLoader.utils.hashBuffer(file);
             this.map.set(hash, i);
-        }
+        } */
         ModLoader.logger.info(this.map.size + " DMA entries hashed.");
     }
 

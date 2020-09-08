@@ -31,7 +31,7 @@ export class OOTAdultManifest implements IManifest {
             // This can happen because the compression ratio ends up different due to texture differences.
 
             // Move the file to extended ROM space.
-            tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj, 0x37800);
+            tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj);
         }
     }
 

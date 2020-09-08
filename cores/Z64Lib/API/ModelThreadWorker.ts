@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { BufferEnc } from './BufferEnc';
 import { zzstatic, zzstatic_cache } from './zzstatic';
+import { Z64LibSupportedGames } from 'Z64Lib/API/Z64LibSupportedGames';
 
 let myArgs = process.argv.slice(2);
 
@@ -9,7 +10,7 @@ export class ModelThreadWorker {
   constructor() {}
 
   work() {
-    let zz: zzstatic = new zzstatic();
+    let zz: zzstatic = new zzstatic(parseInt(myArgs[1]) as Z64LibSupportedGames);
     let decrypter: BufferEnc = new BufferEnc();
     decrypter.key = Buffer.from(myArgs[1], 'base64');
     let buf: Buffer = decrypter.decrypt(fs.readFileSync(myArgs[0]));

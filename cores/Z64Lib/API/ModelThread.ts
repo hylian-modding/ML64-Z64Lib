@@ -1,13 +1,14 @@
-import { fork, ForkOptions } from 'child_process';
+import { fork, ForkOptions, ChildProcess } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import { Pak } from 'modloader64_api/PakFormat';
 import { zzstatic_cache, zzstatic } from './zzstatic';
+import { Z64LibSupportedGames } from 'Z64Lib/API/Z64LibSupportedGames';
 
 export class ModelThread {
   model: Buffer;
-  child: any;
+  child!: ChildProcess;
   ModLoader: IModLoaderAPI;
 
   constructor(model: Buffer, ModLoader: IModLoaderAPI) {
@@ -15,7 +16,7 @@ export class ModelThread {
     this.ModLoader = ModLoader;
   }
 
-  startThread() {
+  startThread(game: Z64LibSupportedGames) {
     console.log('Starting worker thread for custom model.');
     const options = {
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
@@ -26,9 +27,12 @@ export class ModelThread {
     fs.writeFileSync(filename, this.model);
     this.child = fork(
       path.resolve(path.join(__dirname, 'ModelThreadWorker.js')),
-      [filename],
+      [filename, game.toString()],
       options as ForkOptions
     );
+    this.child.stdout!.on('data', (buf: Buffer)=>{
+      console.log(buf.toString());
+    });
     this.child.on('exit', (code: any, signal: any) => {
       let dest: string = path.join(
         __dirname,
@@ -36,7 +40,7 @@ export class ModelThread {
       );
       let pak: Pak = new Pak(dest);
       let cache: zzstatic_cache = JSON.parse(pak.load(0).toString());
-      let zz: zzstatic = new zzstatic();
+      let zz: zzstatic = new zzstatic(game);
       zz.addToCache(cache);
       console.log('Worker thread ended.');
     });

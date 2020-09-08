@@ -1,6 +1,6 @@
 {
   "name": "Z64Lib",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Shared library for Z64 games.",
   "main": "index.js",
   "scripts": {
