@@ -948,7 +948,7 @@
     "hash": "58b2c8810636b93f805d55182144236a"
   },
   {
-    "finder": "A:0xB3",
+    "finder": "DMA:0xB8",
     "data": [
       {
         "offset": 7843,
@@ -966,7 +966,7 @@
     "hash": "617b3bfa225d112ed44849efaff6f652"
   },
   {
-    "finder": "A:0xEE",
+    "finder": "DMA:0xEE",
     "data": [
       {
         "offset": 2031,
@@ -984,7 +984,7 @@
     "hash": "d068f8c067edc03b95eed3090633140f"
   },
   {
-    "finder": "A:0x162",
+    "finder": "DMA:0x15A",
     "data": [
       {
         "offset": 4419,
@@ -1002,7 +1002,7 @@
     "hash": "ebcc47c7868dd337f0c44c9c98640246"
   },
   {
-    "finder": "A:0x16C",
+    "finder": "DMA:0x164",
     "data": [
       {
         "offset": 3683,
@@ -1020,7 +1020,7 @@
     "hash": "a96999f12542cde0edecfdc00430b163"
   },
   {
-    "finder": "E:0x10",
+    "finder": "DMA:0x191",
     "data": [
       {
         "offset": 822,

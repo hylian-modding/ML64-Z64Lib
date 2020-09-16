@@ -1014,7 +1014,7 @@
     "hash": "f72a4ddeb0f5b7afe463ecfa87f5a531"
   },
   {
-    "finder": "A:0x66",
+    "finder": "DMA:0x78",
     "data": [
       {
         "offset": 2675,
@@ -1044,7 +1044,7 @@
     "hash": "65770997f277c594c069b8efee6f1e1d"
   },
   {
-    "finder": "E:0x16",
+    "finder": "DMA:0x191",
     "data": [
       {
         "offset": 813,

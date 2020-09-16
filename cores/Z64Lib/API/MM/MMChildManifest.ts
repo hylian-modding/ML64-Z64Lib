@@ -45,7 +45,6 @@ export class MMChildManifest implements IManifest {
         // Clear its contents.
         ModLoader.utils.clearBuffer(zobj);
         // Resize
-        zobj = Buffer.alloc(220 * 1024);
         // Load the model.
         model.copy(zobj);
         // Trim excess space.
