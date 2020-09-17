@@ -1,6 +1,6 @@
 {
   "name": "Z64Lib",
-  "version": "1.0.2",
+  "version": "2.0.1",
   "description": "",
   "main": "Z64Lib.js",
   "scripts": {
@@ -9,5 +9,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "updateUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/update/update.json"
+  "updateUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/update/update.json",
+  "devUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/dev/update.json"
 }

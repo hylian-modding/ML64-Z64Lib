@@ -3,6 +3,8 @@ import { Display_List_Command } from './data/display_list';
 import { Skeleton } from './data/skeleton';
 import { Skeleton_Entry } from './data/skeleton_entry';
 import crypto from 'crypto';
+import fs from 'fs';
+import { Z64LibSupportedGames } from 'Z64Lib/API/Z64LibSupportedGames';
 
 const ZZSTATIC_CACHE_DATA: Map<string, zzstatic_cache> = new Map<
   string,
@@ -55,7 +57,12 @@ export class zzstatic_cache {
 }
 
 export class zzstatic {
-  constructor() { }
+
+  game: Z64LibSupportedGames;
+
+  constructor(game: Z64LibSupportedGames) {
+    this.game = game;
+  }
 
   addToCache(c: zzstatic_cache) {
     let cache = new zzstatic_cache();
@@ -99,16 +106,45 @@ export class zzstatic {
 
     let modeByte: number = zobj.buf.readUInt8(header_start + 0xB);
 
-    if (modeByte === 0x0) {
-      //console.log('This is an adult ZOBJ.');
-    } else if (modeByte === 0x1) {
-      ALIAS_TABLE_START = 0x50d0;
-      ALIAS_TABLE_END = 0x53A8;
-      //console.log('This is a child ZOBJ.');
-    } else if (modeByte === 0x69) {
-      //console.log("This is an equipment ZOBJ.");
-      ALIAS_TABLE_START = 0x10;
-      ALIAS_TABLE_END = 0x300;
+    if (this.game === Z64LibSupportedGames.OCARINA_OF_TIME) {
+      if (modeByte === 0x0) {
+        //console.log('This is an adult ZOBJ.');
+        if (modeByte === 0x0) {
+          //console.log('This is an adult ZOBJ.');
+        } else if (modeByte === 0x1) {
+          ALIAS_TABLE_START = 0x50d0;
+          ALIAS_TABLE_END = 0x53A8;
+          //console.log('This is a child ZOBJ.');
+        } else if (modeByte === 0x69) {
+          //console.log("This is an equipment ZOBJ.");
+          ALIAS_TABLE_START = 0x10;
+          ALIAS_TABLE_END = 0x300;
+        }
+      }
+    } else if (this.game === Z64LibSupportedGames.MAJORAS_MASK) {
+      // FD
+      switch (modeByte) {
+        case 0:
+          ALIAS_TABLE_START = 0x5010;
+          ALIAS_TABLE_END = 0X5018
+          break;
+        case 1:
+          ALIAS_TABLE_START = 0x5010;
+          ALIAS_TABLE_END = 0x5090;
+          break;
+        case 2:
+          ALIAS_TABLE_START = 0x5010;
+          ALIAS_TABLE_END = 0x50A0;
+          break;
+        case 3:
+          ALIAS_TABLE_START = 0x5010;
+          ALIAS_TABLE_END = 0x50C8;
+          break;
+        case 4:
+          ALIAS_TABLE_START = 0x5110;
+          ALIAS_TABLE_END = 0x5418;
+          break;
+      }
     }
 
     //console.log('Extracting alias table...');
