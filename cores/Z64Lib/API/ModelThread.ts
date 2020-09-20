@@ -4,7 +4,7 @@ import fs from 'fs';
 import { IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import { Pak } from 'modloader64_api/PakFormat';
 import { zzstatic_cache, zzstatic } from './zzstatic';
-import { Z64LibSupportedGames } from 'Z64Lib/API/Z64LibSupportedGames';
+import { Z64LibSupportedGames } from './Z64LibSupportedGames';
 
 export class ModelThread {
   model: Buffer;

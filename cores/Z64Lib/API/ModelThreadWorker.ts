@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { BufferEnc } from './BufferEnc';
 import { zzstatic, zzstatic_cache } from './zzstatic';
-import { Z64LibSupportedGames } from 'Z64Lib/API/Z64LibSupportedGames';
+import { Z64LibSupportedGames } from './Z64LibSupportedGames';
 
 let myArgs = process.argv.slice(2);
 

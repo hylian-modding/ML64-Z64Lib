@@ -1,14 +1,14 @@
-import { IManifest } from "Z64Lib/API/Z64ManifestBuffer";
+import { IManifest } from "../Z64ManifestBuffer";
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
-import { DMAIndexer } from "Z64Lib/API/DMAIndexer";
-import { RomPatch, FilePatch } from "Z64Lib/API/FileSystemCompare";
-import { Z64LibSupportedGames } from "Z64Lib/API/Z64LibSupportedGames";
+import { DMAIndexer } from "../DMAIndexer";
+import { RomPatch, FilePatch } from "../FileSystemCompare";
+import { Z64LibSupportedGames } from "../Z64LibSupportedGames";
 import fs from 'fs';
 import path from 'path';
 import { PatchTypes } from "modloader64_api/Patchers/PatchManager";
-import { Z64RomTools, trimBuffer } from "Z64Lib/API/Z64RomTools";
+import { Z64RomTools, trimBuffer } from "../Z64RomTools";
 import { zzstatic } from "../zzstatic";
-import { Zobj } from "Z64Lib/API/data/zobj";
+import { Zobj } from "../data/zobj";
 
 const OBJ_CHILD: number = 11;
 const DMA_CHILD: number = 654;
