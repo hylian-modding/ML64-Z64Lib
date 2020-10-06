@@ -108,18 +108,13 @@ export class zzstatic {
 
     if (this.game === Z64LibSupportedGames.OCARINA_OF_TIME) {
       if (modeByte === 0x0) {
-        //console.log('This is an adult ZOBJ.');
-        if (modeByte === 0x0) {
-          //console.log('This is an adult ZOBJ.');
-        } else if (modeByte === 0x1) {
-          ALIAS_TABLE_START = 0x50d0;
-          ALIAS_TABLE_END = 0x53A8;
-          //console.log('This is a child ZOBJ.');
-        } else if (modeByte === 0x69) {
-          //console.log("This is an equipment ZOBJ.");
-          ALIAS_TABLE_START = 0x10;
-          ALIAS_TABLE_END = 0x300;
-        }
+      } else if (modeByte === 0x1) {
+        ALIAS_TABLE_START = 0x50d0;
+        ALIAS_TABLE_END = 0x53A8;
+      } else if (modeByte === 0x69) {
+        ALIAS_TABLE_START = 0x10;
+        ALIAS_TABLE_END = ALIAS_TABLE_START + (zobj.buf.readUInt32BE(0xC) * 0x8);
+        console.log(ALIAS_TABLE_END.toString(16));
       }
     } else if (this.game === Z64LibSupportedGames.MAJORAS_MASK) {
       // FD

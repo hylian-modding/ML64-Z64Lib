@@ -177,7 +177,7 @@ export class Z64RomTools {
 
   relocateFileToExtendedRom(rom: Buffer, index: number, file: Buffer, sizeOverride = 0, nocompress = false): number {
     let r = 0;
-    //let buf: Buffer = this.ModLoader.utils.yaz0Encode(file);
+    let buf: Buffer = this.ModLoader.utils.yaz0Encode(file);
     let dma = this.DMA_Offset;
     let offset: number = index * 0x10;
     if (sizeOverride > 0) {
@@ -190,8 +190,8 @@ export class Z64RomTools {
       rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
       rom.writeUInt32BE(0x0, dma + offset + 0xC);
     } else {
-/*       rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC); */
+      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
+      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
     }
     let start: number = rom.readUInt32BE(dma + offset + 0x8);
     let end: number = rom.readUInt32BE(dma + offset + 0xc);
@@ -203,8 +203,8 @@ export class Z64RomTools {
       end = start + size;
     }
     if (isFileCompressed && !nocompress) {
-/*       buf.copy(rom, start);
-      r = buf.byteLength; */
+      buf.copy(rom, start);
+      r = buf.byteLength;
     } else {
       file.copy(rom, start);
       r = file.byteLength;
@@ -213,15 +213,14 @@ export class Z64RomTools {
     return r;
   }
 
-  fixLinkObjectTableEntry(rom: Buffer, game: Z64LibSupportedGames) {
+  fixLinkObjectTableEntry(rom: Buffer, code: Buffer, game: Z64LibSupportedGames): Buffer {
     let offset: number = 0x11CD08;
-    let code: Buffer = this.decompressDMAFileFromRom(rom, this.Code_DMA);
-    let vram_start: number = rom.readUInt32BE(this.DMA_Offset + (654 * 0x10));
-    let vram_end: number = rom.readUInt32BE(this.DMA_Offset + (654 * 0x10) + 0x4);
-    console.log(vram_start.toString(16));
+    let dma = this.decompressDMAFileFromRom(rom, this.DMA_DMA);
+    let vram_start: number = dma.readUInt32BE((654 * 0x10));
+    let vram_end: number = dma.readUInt32BE((654 * 0x10) + 0x4);
     code.writeUInt32BE(vram_start, offset);
     code.writeUInt32BE(vram_end, offset + 0x4);
-    this.recompressDMAFileIntoRom(rom, this.Code_DMA, code);
+    return code;
   }
 
 }
