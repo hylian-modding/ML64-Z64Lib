@@ -4,7 +4,7 @@ import { Skeleton } from './data/skeleton';
 import { Skeleton_Entry } from './data/skeleton_entry';
 import crypto from 'crypto';
 import fs from 'fs';
-import { Z64LibSupportedGames } from 'Z64Lib/API/Z64LibSupportedGames';
+import { Z64LibSupportedGames } from './Z64LibSupportedGames';
 
 const ZZSTATIC_CACHE_DATA: Map<string, zzstatic_cache> = new Map<
   string,

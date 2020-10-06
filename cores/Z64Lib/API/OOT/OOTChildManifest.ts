@@ -34,6 +34,7 @@ export class OOTChildManifest implements IManifest {
 
             // Move the file to extended ROM space.
             tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_CHILD), zobj, 0x37800);
+            rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
         }
     }
 
@@ -51,7 +52,6 @@ export class OOTChildManifest implements IManifest {
                 }
                 temp.set(_r, file);
             }
-            rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
         } catch (err) {
             ModLoader.logger.error(err);
             return false;
