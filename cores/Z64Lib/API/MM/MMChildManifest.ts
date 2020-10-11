@@ -1,7 +1,7 @@
-import { IManifest } from "Z64Lib/API/Z64ManifestBuffer";
+import { IManifest } from "../Z64ManifestBuffer";
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
 import { DMAIndexer } from "..//DMAIndexer";
-import { RomPatch, FilePatch } from "Z64Lib/API/FileSystemCompare";
+import { RomPatch, FilePatch } from "../FileSystemCompare";
 import { Z64LibSupportedGames } from "../Z64LibSupportedGames";
 import fs from 'fs';
 import path from 'path';
