@@ -1,5 +1,8 @@
 import { IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
+import { PatchTypes } from 'modloader64_api/Patchers/PatchManager';
 import { Z64LibSupportedGames } from './Z64LibSupportedGames';
+import fs from 'fs';
+import path from 'path';
 
 let CURRENT_EXTENDED_ROM_OFFSET: number = 0x2000000;
 
@@ -221,6 +224,10 @@ export class Z64RomTools {
     code.writeUInt32BE(vram_start, offset);
     code.writeUInt32BE(vram_end, offset + 0x4);
     return code;
+  }
+
+  noCRC(rom: Buffer){
+    rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "no_crc.txt")));
   }
 
 }
