@@ -108,39 +108,40 @@ export class zzstatic {
 
     if (this.game === Z64LibSupportedGames.OCARINA_OF_TIME) {
       if (modeByte === 0x0) {
+        ALIAS_TABLE_START = header_start + 0x090;
+        ALIAS_TABLE_END = header_start + 0x380;
       } else if (modeByte === 0x1) {
-        ALIAS_TABLE_START = 0x50d0;
-        ALIAS_TABLE_END = 0x53A8;
+        ALIAS_TABLE_START = header_start + 0x00d0;
+        ALIAS_TABLE_END = header_start + 0x03A8;
       } else if (modeByte === 0x69) {
-        ALIAS_TABLE_START = 0x10;
-        ALIAS_TABLE_END = ALIAS_TABLE_START + (zobj.buf.readUInt32BE(0xC) * 0x8);
-        console.log(ALIAS_TABLE_END.toString(16));
-      }else if (modeByte === 0x67){
-        ALIAS_TABLE_START = zobj.buf.readUInt32BE(0x5010);
-        ALIAS_TABLE_END = zobj.buf.readUInt32BE(0x5014);
+        ALIAS_TABLE_START = header_start + 0x10;
+        ALIAS_TABLE_END = ALIAS_TABLE_START + (zobj.buf.readUInt32BE(header_start + 0xC) * 0x8);
+      } else if (modeByte === 0x67) {
+        ALIAS_TABLE_START = zobj.buf.readUInt32BE(header_start + 0x0010);
+        ALIAS_TABLE_END = zobj.buf.readUInt32BE(header_start + 0x0014);
       }
     } else if (this.game === Z64LibSupportedGames.MAJORAS_MASK) {
       // FD
       switch (modeByte) {
         case 0:
-          ALIAS_TABLE_START = 0x5010;
-          ALIAS_TABLE_END = 0X5018
+          ALIAS_TABLE_START = header_start + 0x0010;
+          ALIAS_TABLE_END = header_start + 0x0018
           break;
         case 1:
-          ALIAS_TABLE_START = 0x5010;
-          ALIAS_TABLE_END = 0x5090;
+          ALIAS_TABLE_START = header_start + 0x0010;
+          ALIAS_TABLE_END = header_start + 0x0090;
           break;
         case 2:
-          ALIAS_TABLE_START = 0x5010;
-          ALIAS_TABLE_END = 0x50A0;
+          ALIAS_TABLE_START = header_start + 0x0010;
+          ALIAS_TABLE_END = header_start + 0x00A0;
           break;
         case 3:
-          ALIAS_TABLE_START = 0x5010;
-          ALIAS_TABLE_END = 0x50C8;
+          ALIAS_TABLE_START = header_start + 0x0010;
+          ALIAS_TABLE_END = header_start + 0x00C8;
           break;
         case 4:
-          ALIAS_TABLE_START = 0x5110;
-          ALIAS_TABLE_END = 0x5418;
+          ALIAS_TABLE_START = header_start + 0x0110;
+          ALIAS_TABLE_END = header_start + 0x0418;
           break;
       }
     }
@@ -234,7 +235,7 @@ export class zzstatic {
 
     if (modeByte !== 0x69) {
       let pointer_to_skeleton_pointer: number =
-        zobj.buf.readUInt32BE(0x500c) - 0x06000000;
+        zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000;
       let pointer_to_skeleton: number =
         zobj.buf.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
 
@@ -281,27 +282,31 @@ export class zzstatic {
           .toUpperCase();
         cur += 0x10;
         while (lookingForFF !== 'FF') {
-          let dl: Display_List_Command = new Display_List_Command(
-            0xdeadbeef,
-            zobj.buf.readUInt32BE(cur + 0xc),
-            cur + 0xc - 0x4
-          );
-          if (dl.is06()) {
-            repoints.push(dl);
+          try {
+            let dl: Display_List_Command = new Display_List_Command(
+              0xdeadbeef,
+              zobj.buf.readUInt32BE(cur + 0xc),
+              cur + 0xc - 0x4
+            );
+            if (dl.is06()) {
+              repoints.push(dl);
+            }
+            let dl2: Display_List_Command = new Display_List_Command(
+              0xdeadbeef,
+              zobj.buf.readUInt32BE(cur + 0x8),
+              cur + 0x8 - 0x4
+            );
+            if (dl2.is06()) {
+              repoints.push(dl2);
+            }
+            lookingForFF = zobj.buf
+              .readUInt8(cur + 0x6)
+              .toString(16)
+              .toUpperCase();
+            cur += 0x10;
+          } catch (err) {
+            break;
           }
-          let dl2: Display_List_Command = new Display_List_Command(
-            0xdeadbeef,
-            zobj.buf.readUInt32BE(cur + 0x8),
-            cur + 0x8 - 0x4
-          );
-          if (dl2.is06()) {
-            repoints.push(dl2);
-          }
-          lookingForFF = zobj.buf
-            .readUInt8(cur + 0x6)
-            .toString(16)
-            .toUpperCase();
-          cur += 0x10;
         }
         zobj.buf.writeUInt32BE(
           spooky_scary.bones[i].pointer + r,
@@ -323,7 +328,7 @@ export class zzstatic {
         pointer_to_skeleton + r,
         pointer_to_skeleton_pointer
       );
-      zobj.buf.writeUInt32BE(pointer_to_skeleton_pointer + r, 0x500c);
+      zobj.buf.writeUInt32BE(pointer_to_skeleton_pointer + r, header_start + 0x000C);
       zzCache.skeleton = spooky_scary;
     }
 
