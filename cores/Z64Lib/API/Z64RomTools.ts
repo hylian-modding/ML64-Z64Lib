@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 let CURRENT_EXTENDED_ROM_OFFSET: number = 0x2000000;
+let VROM_END = 0x04000000;
 
 export class Z64RomTools {
 
@@ -44,6 +45,16 @@ export class Z64RomTools {
         this.Object_Offset = 0x10A6C0;
         break;
     }
+  }
+
+  getStartEndOfDMAEntry(rom: Buffer, index: number) {
+    let dma = this.DMA_Offset;
+    let offset: number = index * 0x10;
+    let vrom_start: number = rom.readUInt32BE(dma + offset + 0x0);
+    let vrom_end: number = rom.readUInt32BE(dma + offset + 0x4);
+    let start: number = rom.readUInt32BE(dma + offset + 0x8);
+    let end: number = rom.readUInt32BE(dma + offset + 0xc);
+    return { vrom_start, vrom_end, start, end };
   }
 
   decompressDMAFileFromRom(rom: Buffer, index: number): Buffer {
@@ -216,6 +227,36 @@ export class Z64RomTools {
     return r;
   }
 
+  injectNewFile(rom: Buffer, index: number, file: Buffer) {
+    let r = 0;
+    let buf: Buffer = this.ModLoader.utils.yaz0Encode(file);
+    let dma = this.DMA_Offset;
+    let offset: number = index * 0x10;
+    rom.writeUInt32BE(VROM_END, dma + offset + 0x0);
+    rom.writeUInt32BE(VROM_END + file.byteLength, dma + offset + 0x4);
+    VROM_END+=file.byteLength;
+    rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
+    rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
+    let start: number = rom.readUInt32BE(dma + offset + 0x8);
+    let end: number = rom.readUInt32BE(dma + offset + 0xc);
+    let size: number = end - start;
+    let isFileCompressed = true;
+    if (end === 0) {
+      isFileCompressed = false;
+      size = rom.readUInt32BE(dma + offset + 0x4) - rom.readUInt32BE(dma + offset);
+      end = start + size;
+    }
+    if (isFileCompressed) {
+      buf.copy(rom, start);
+      r = buf.byteLength;
+    } else {
+      file.copy(rom, start);
+      r = file.byteLength;
+    }
+    CURRENT_EXTENDED_ROM_OFFSET += r;
+    return r;
+  }
+
   fixLinkObjectTableEntry(rom: Buffer, code: Buffer, game: Z64LibSupportedGames): Buffer {
     let offset: number = 0x11CD08;
     let dma = this.decompressDMAFileFromRom(rom, this.DMA_DMA);
@@ -226,7 +267,7 @@ export class Z64RomTools {
     return code;
   }
 
-  noCRC(rom: Buffer){
+  noCRC(rom: Buffer) {
     rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "no_crc.txt")));
   }
 
