@@ -10,14 +10,15 @@ import { PatchTypes } from "modloader64_api/Patchers/PatchManager";
 
 export class OOTAdultManifest implements IManifest {
 
-    inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer): void {
-
+    inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer, nocompress?: boolean): number {
+        let r = 0;
         // Get original zobj from ROM.
         let tools = new Z64RomTools(ModLoader, Z64LibSupportedGames.OCARINA_OF_TIME);
         let zobj: Buffer = tools.decompressObjectFileFromRom(rom, OBJ_BOY);
+        let originalSize: number = zobj.byteLength;
         if (model.byteLength > zobj.byteLength) {
             // This shouldn't be possible because zzplayas would throw a tantrum before you got this far.
-            return;
+            return r;
         }
         // Clear its contents.
         ModLoader.utils.clearBuffer(zobj);
@@ -26,14 +27,21 @@ export class OOTAdultManifest implements IManifest {
         // Trim excess space.
         zobj = trimBuffer(zobj);
         // Attempt to put the file back.
-        if (!tools.recompressObjectFileIntoRom(rom, OBJ_BOY, zobj)) {
-            // If we get here it means the compressed object is bigger than the original.
-            // This can happen because the compression ratio ends up different due to texture differences.
+        if (nocompress === undefined || nocompress === false) {
+            if (!tools.recompressObjectFileIntoRom(rom, OBJ_BOY, zobj)) {
+                // If we get here it means the compressed object is bigger than the original.
+                // This can happen because the compression ratio ends up different due to texture differences.
 
+                // Move the file to extended ROM space.
+                r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj, originalSize);
+                rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
+            }
+        } else {
             // Move the file to extended ROM space.
-            tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj);
+            r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj, originalSize, nocompress);
             rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
         }
+        return r;
     }
 
     repoint(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer): boolean {

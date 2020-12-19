@@ -125,23 +125,23 @@ export class zzstatic {
       switch (modeByte) {
         case 0:
           ALIAS_TABLE_START = header_start + 0x0010;
-          ALIAS_TABLE_END = header_start + 0x0018
+          ALIAS_TABLE_END = header_start + 0x00C0
           break;
         case 1:
           ALIAS_TABLE_START = header_start + 0x0010;
-          ALIAS_TABLE_END = header_start + 0x0090;
+          ALIAS_TABLE_END = header_start + 0x00F0;
           break;
         case 2:
           ALIAS_TABLE_START = header_start + 0x0010;
-          ALIAS_TABLE_END = header_start + 0x00A0;
+          ALIAS_TABLE_END = header_start + 0x00D0;
           break;
         case 3:
           ALIAS_TABLE_START = header_start + 0x0010;
-          ALIAS_TABLE_END = header_start + 0x00C8;
+          ALIAS_TABLE_END = header_start + 0x0150;
           break;
         case 4:
           ALIAS_TABLE_START = header_start + 0x0110;
-          ALIAS_TABLE_END = header_start + 0x0418;
+          ALIAS_TABLE_END = header_start + 0x0420;
           break;
       }
     }

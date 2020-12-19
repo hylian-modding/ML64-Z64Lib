@@ -191,21 +191,29 @@ export class Z64RomTools {
 
   relocateFileToExtendedRom(rom: Buffer, index: number, file: Buffer, sizeOverride = 0, nocompress = false): number {
     let r = 0;
-    let buf: Buffer = this.ModLoader.utils.yaz0Encode(file);
+    let buf: Buffer | undefined;
+    if (!nocompress) {
+      buf = this.ModLoader.utils.yaz0Encode(file);
+    }
     let dma = this.DMA_Offset;
     let offset: number = index * 0x10;
     if (sizeOverride > 0) {
-      let vram_start: number = CURRENT_EXTENDED_ROM_OFFSET;
-      let vram_end: number = vram_start + sizeOverride;
-      rom.writeUInt32BE(vram_start, dma + offset);
-      rom.writeUInt32BE(vram_end, dma + offset + 0x4);
+      if (!nocompress) {
+        let vram_start: number = CURRENT_EXTENDED_ROM_OFFSET;
+        let vram_end: number = vram_start + sizeOverride;
+        rom.writeUInt32BE(vram_start, dma + offset);
+        rom.writeUInt32BE(vram_end, dma + offset + 0x4);
+      }
+      let temp = Buffer.alloc(sizeOverride);
+      file.copy(temp)
+      file = temp;
     }
     if (nocompress) {
       rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
       rom.writeUInt32BE(0x0, dma + offset + 0xC);
     } else {
       rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
+      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf!.byteLength, dma + offset + 0xC);
     }
     let start: number = rom.readUInt32BE(dma + offset + 0x8);
     let end: number = rom.readUInt32BE(dma + offset + 0xc);
@@ -217,14 +225,15 @@ export class Z64RomTools {
       end = start + size;
     }
     if (isFileCompressed && !nocompress) {
-      buf.copy(rom, start);
-      r = buf.byteLength;
+      buf!.copy(rom, start);
+      r = buf!.byteLength;
     } else {
       file.copy(rom, start);
       r = file.byteLength;
     }
+    let loc = CURRENT_EXTENDED_ROM_OFFSET;
     CURRENT_EXTENDED_ROM_OFFSET += r;
-    return r;
+    return loc;
   }
 
   injectNewFile(rom: Buffer, index: number, file: Buffer) {
@@ -234,7 +243,7 @@ export class Z64RomTools {
     let offset: number = index * 0x10;
     rom.writeUInt32BE(VROM_END, dma + offset + 0x0);
     rom.writeUInt32BE(VROM_END + file.byteLength, dma + offset + 0x4);
-    VROM_END+=file.byteLength;
+    VROM_END += file.byteLength;
     rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
     rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
     let start: number = rom.readUInt32BE(dma + offset + 0x8);

@@ -63,5 +63,5 @@ export class ManifestBuffer {
 
 export interface IManifest {
     repoint(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer): boolean;
-    inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer): void;
+    inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer, nocompress?: boolean): number;
 }
