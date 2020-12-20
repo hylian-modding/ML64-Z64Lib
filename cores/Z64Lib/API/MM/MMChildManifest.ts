@@ -23,14 +23,14 @@ export class MMChildManifest implements IManifest {
             let _r: RomPatch = rp[i];
             let file: Buffer = indexer.tools.decompressDMAFileFromRom(rom, indexer.findIndexFromSearch(_r.finder, rom));
             // This is code.
-            if (_r.finder === "DMA:0x1f") {
+            /* if (_r.finder === "DMA:0x1f") {
                 ModLoader.logger.debug("Patching Link's object table entry...");
                 file = indexer.tools.fixLinkObjectTableEntry(rom, file, Z64LibSupportedGames.MAJORAS_MASK);
                 if (model.readUInt8(0x500B) === 0x68) {
                     console.log("ADULT LINK HEIGHT FIX part 1");
                     file = PatchTypes.get(".txt")!.patch(file, fs.readFileSync(path.resolve(__dirname, "adult_link_physics_code.txt")));
                 }
-            }
+            } */
             for (let j = 0; j < _r.data.length; j++) {
                 let _f: FilePatch = _r.data[j];
                 file.writeUInt8(_f.value, _f.offset);
@@ -38,7 +38,7 @@ export class MMChildManifest implements IManifest {
             temp.set(_r, file);
         }
 
-        if (model.readUInt8(0x500B) === 0x68) {
+/*         if (model.readUInt8(0x500B) === 0x68) {
             try {
                 console.log("ADULT LINK HEIGHT FIX part 2");
                 let r = new RomPatch(ModLoader.utils.hashBuffer(Buffer.from("DMA:0x26")));
@@ -51,7 +51,7 @@ export class MMChildManifest implements IManifest {
                 throw err;
             }
             model.writeUInt8(0x4, 0x500B);
-        }
+        } */
 
         temp.forEach((file: Buffer, _r: RomPatch) => {
             indexer.tools.relocateFileToExtendedRom(rom, indexer.findIndexFromSearch(_r.finder, rom), file);
