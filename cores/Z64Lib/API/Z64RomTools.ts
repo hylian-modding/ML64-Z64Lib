@@ -125,6 +125,9 @@ export class Z64RomTools {
       }
       buf.copy(rom, start);
     } else {
+      if (file.byteLength > original.byteLength) {
+        return false;
+      }
       file.copy(rom, start);
     }
     return true;
