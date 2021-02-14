@@ -119,6 +119,9 @@ export class zzstatic {
       } else if (modeByte === 0x67) {
         ALIAS_TABLE_START = zobj.buf.readUInt32BE(header_start + 0x0010);
         ALIAS_TABLE_END = zobj.buf.readUInt32BE(header_start + 0x0014);
+      } else if (modeByte === 0x68){
+        ALIAS_TABLE_START = header_start + 0x10;
+        ALIAS_TABLE_END = header_start + 0x20;
       }
     } else if (this.game === Z64LibSupportedGames.MAJORAS_MASK) {
       // FD
