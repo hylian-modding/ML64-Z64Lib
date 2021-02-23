@@ -47,6 +47,36 @@ export class Z64RomTools {
     }
   }
 
+  injectActorIntoSlot(rom: Buffer, actorID: number, file: Buffer, initvars: string): boolean {
+    let dma_id: number = this.findDMAIndexOfActor(rom, actorID);
+    // Replace file and DMA entry first.
+    if (this.recompressDMAFileIntoRom(rom, dma_id, file)) {
+      this.relocateFileToExtendedRom(rom, dma_id, file);
+    }
+    // Check for init variables.
+    let init: Buffer = Buffer.from(initvars, 'hex');
+    let init_start: number = file.indexOf(init);
+    if (init_start === -1) {
+      return false;
+    }
+    // Wipe entry in overlay table.
+    let code: Buffer = this.decompressDMAFileFromRom(rom, this.Code_DMA);
+    for (let i = 0; i < (8 * 4); i++) {
+      code.writeUInt8(0x0D7490 + (actorID * 0x20) + i, 0);
+    }
+    // Create new overlay table entry.
+    let dma_data = this.getStartEndOfDMAEntry(rom, dma_id);
+    code.writeUInt32BE(dma_data.vrom_start, 0x0D7490 + (actorID * 0x20) + 0x0);
+    code.writeUInt32BE(dma_data.vrom_end, 0x0D7490 + (actorID * 0x20) + 0x4);
+    code.writeUInt32BE(0x80800000, 0x0D7490 + (actorID * 0x20) + 0x8);
+    code.writeUInt32BE(0x80800000 + file.byteLength, 0x0D7490 + (actorID * 0x20) + 0xC);
+    code.writeUInt32BE(0, 0x0D7490 + (actorID * 0x20) + 0x10);
+    code.writeUInt32BE(0x80800000 + init_start, 0x0D7490 + (actorID * 0x20) + 0x14);
+    code.writeUInt32BE(0, 0x0D7490 + (actorID * 0x20) + 0x18);
+    code.writeUInt32BE(0, 0x0D7490 + (actorID * 0x20) + 0x1C);
+    return true;
+  }
+
   getStartEndOfDMAEntry(rom: Buffer, index: number) {
     let dma = this.DMA_Offset;
     let offset: number = index * 0x10;
