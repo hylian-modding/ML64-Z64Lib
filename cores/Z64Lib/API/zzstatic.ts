@@ -116,6 +116,9 @@ export class zzstatic {
       } else if (modeByte === 0x69) {
         ALIAS_TABLE_START = header_start + 0x10;
         ALIAS_TABLE_END = ALIAS_TABLE_START + (zobj.buf.readUInt32BE(header_start + 0xC) * 0x8);
+      } else if (modeByte === 0x70) { // 0x70 works the same as 0x69, it follows the hierarchy at the end of the LUT commands
+        ALIAS_TABLE_START = header_start + 0x10;
+        ALIAS_TABLE_END = ALIAS_TABLE_START + (zobj.buf.readUInt32BE(header_start + 0xC) * 0x8);
       } else if (modeByte === 0x67) {
         ALIAS_TABLE_START = zobj.buf.readUInt32BE(header_start + 0x0010);
         ALIAS_TABLE_END = zobj.buf.readUInt32BE(header_start + 0x0014);
@@ -238,7 +241,10 @@ export class zzstatic {
 
     if (modeByte !== 0x69) {
       let pointer_to_skeleton_pointer: number =
-        zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000;
+        modeByte !== 0x70 ?
+          zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000
+        :
+          ALIAS_TABLE_END;
       let pointer_to_skeleton: number =
         zobj.buf.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
 
