@@ -36,7 +36,7 @@ export class zzstatic_cache {
     }
     if (modeByte !== 0x69) {
       let pointer_to_skeleton_pointer: number =
-        copy.readUInt32BE(0x500c) - 0x06000000;
+        copy.readUInt32BE(header_start + 0xC) - 0x06000000;
       let pointer_to_skeleton: number =
         copy.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
       copy.writeUInt32BE(
