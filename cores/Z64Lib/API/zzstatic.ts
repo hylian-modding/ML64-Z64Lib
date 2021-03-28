@@ -43,7 +43,7 @@ export class zzstatic_cache {
         pointer_to_skeleton + rebase,
         pointer_to_skeleton_pointer
       );
-      copy.writeUInt32BE(pointer_to_skeleton_pointer + rebase, 0x500c);
+      copy.writeUInt32BE(pointer_to_skeleton_pointer + rebase, header_start + 0xC);
       for (let i = 0; i < this.skeleton.bones.length; i++) {
         copy.writeUInt32BE(
           this.skeleton.bones[i].pointer + rebase,
