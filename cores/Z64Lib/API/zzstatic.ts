@@ -239,14 +239,14 @@ export class zzstatic {
       let pointer_to_skeleton_pointer: number = (modeByte !== 0x70) ? zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000 : ALIAS_TABLE_END;
       let pointer_to_skeleton: number = zobj.buf.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
 
-      //console.log('Looking in the closet...');
+      console.log('Looking in the closet...');
 
       let dem_bones: number = zobj.buf.readUInt8(
         pointer_to_skeleton_pointer + 0x4
       );
       let spooky_scary: Skeleton = new Skeleton(dem_bones);
 
-      //console.log('Found a skeleton with ' + dem_bones + ' bones.');
+      console.log('Found a skeleton with ' + dem_bones + ' bones.');
 
       for (let i = 0; i < spooky_scary.total; i++) {
         spooky_scary.bones.push(
@@ -258,59 +258,24 @@ export class zzstatic {
       }
 
       for (let i = 0; i < spooky_scary.bones.length; i++) {
-        let lookingForFF = '';
         let cur: number = spooky_scary.bones[i].pointer;
-        let dl: Display_List_Command = new Display_List_Command(
-          0xdeadbeef,
-          zobj.buf.readUInt32BE(cur + 0xc),
-          cur + 0xc - 0x4
-        );
-        if (dl.is06()) {
-          repoints.push(dl);
-        }
         if (!NPC_SKEL_FORMAT) {
-          let dl2: Display_List_Command = new Display_List_Command(
+          let dl: Display_List_Command = new Display_List_Command(
             0xdeadbeef,
-            zobj.buf.readUInt32BE(cur + 0x8),
-            cur + 0x8 - 0x4
+            zobj.buf.readUInt32BE(cur + 0xc),
+            cur + 0xc - 0x4
           );
-          if (dl2.is06()) {
-            repoints.push(dl2);
+          if (dl.is06()) {
+            repoints.push(dl);
           }
         }
-        lookingForFF = zobj.buf
-          .readUInt8(cur + 0x6)
-          .toString(16)
-          .toUpperCase();
-        cur += NPC_SKEL_FORMAT ? 0xC : 0x10;
-        while (lookingForFF !== 'FF') {
-          try {
-            let dl: Display_List_Command = new Display_List_Command(
-              0xdeadbeef,
-              zobj.buf.readUInt32BE(cur + 0xc),
-              cur + 0xc - 0x4
-            );
-            if (dl.is06()) {
-              repoints.push(dl);
-            }
-            if (!NPC_SKEL_FORMAT) {
-              let dl2: Display_List_Command = new Display_List_Command(
-                0xdeadbeef,
-                zobj.buf.readUInt32BE(cur + 0x8),
-                cur + 0x8 - 0x4
-              );
-              if (dl2.is06()) {
-                repoints.push(dl2);
-              }
-            }
-            lookingForFF = zobj.buf
-              .readUInt8(cur + 0x6)
-              .toString(16)
-              .toUpperCase();
-              cur += NPC_SKEL_FORMAT ? 0xC : 0x10;
-          } catch (err) {
-            break;
-          }
+        let dl2: Display_List_Command = new Display_List_Command(
+          0xdeadbeef,
+          zobj.buf.readUInt32BE(cur + 0x8),
+          cur + 0x8 - 0x4
+        );
+        if (dl2.is06()) {
+          repoints.push(dl2);
         }
         zobj.buf.writeUInt32BE(
           spooky_scary.bones[i].pointer + r,
