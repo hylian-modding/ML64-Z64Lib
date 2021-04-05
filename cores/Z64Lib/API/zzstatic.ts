@@ -105,6 +105,7 @@ export class zzstatic {
     let header_start: number = zobj.buf.indexOf(Buffer.from("MODLOADER64"));
 
     let modeByte: number = zobj.buf.readUInt8(header_start + 0xB);
+    let NPC_SKEL_FORMAT: boolean = false;
 
     if (this.game === Z64LibSupportedGames.OCARINA_OF_TIME) {
       if (modeByte === 0x0) {
@@ -119,12 +120,7 @@ export class zzstatic {
       } else if (modeByte === 0x70) { // 0x70 works the same as 0x69, it follows the hierarchy at the end of the LUT commands
         ALIAS_TABLE_START = header_start + 0x10;
         ALIAS_TABLE_END = ALIAS_TABLE_START + (zobj.buf.readUInt32BE(header_start + 0xC) * 0x8);
-      } else if (modeByte === 0x67) {
-        ALIAS_TABLE_START = zobj.buf.readUInt32BE(header_start + 0x0010);
-        ALIAS_TABLE_END = zobj.buf.readUInt32BE(header_start + 0x0014);
-      } else if (modeByte === 0x68){
-        ALIAS_TABLE_START = header_start + 0x10;
-        ALIAS_TABLE_END = header_start + 0x20;
+        NPC_SKEL_FORMAT = true;
       }
     } else if (this.game === Z64LibSupportedGames.MAJORAS_MASK) {
       // FD
@@ -240,13 +236,8 @@ export class zzstatic {
     lookForRepoints();
 
     if (modeByte !== 0x69) {
-      let pointer_to_skeleton_pointer: number =
-        modeByte !== 0x70 ?
-          zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000
-        :
-          ALIAS_TABLE_END;
-      let pointer_to_skeleton: number =
-        zobj.buf.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
+      let pointer_to_skeleton_pointer: number = (modeByte !== 0x70) ? zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000 : ALIAS_TABLE_END;
+      let pointer_to_skeleton: number = zobj.buf.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
 
       //console.log('Looking in the closet...');
 
@@ -277,13 +268,15 @@ export class zzstatic {
         if (dl.is06()) {
           repoints.push(dl);
         }
-        let dl2: Display_List_Command = new Display_List_Command(
-          0xdeadbeef,
-          zobj.buf.readUInt32BE(cur + 0x8),
-          cur + 0x8 - 0x4
-        );
-        if (dl2.is06()) {
-          repoints.push(dl2);
+        if (!NPC_SKEL_FORMAT) {
+          let dl2: Display_List_Command = new Display_List_Command(
+            0xdeadbeef,
+            zobj.buf.readUInt32BE(cur + 0x8),
+            cur + 0x8 - 0x4
+          );
+          if (dl2.is06()) {
+            repoints.push(dl2);
+          }
         }
         lookingForFF = zobj.buf
           .readUInt8(cur + 0x6)
@@ -300,13 +293,15 @@ export class zzstatic {
             if (dl.is06()) {
               repoints.push(dl);
             }
-            let dl2: Display_List_Command = new Display_List_Command(
-              0xdeadbeef,
-              zobj.buf.readUInt32BE(cur + 0x8),
-              cur + 0x8 - 0x4
-            );
-            if (dl2.is06()) {
-              repoints.push(dl2);
+            if (!NPC_SKEL_FORMAT) {
+              let dl2: Display_List_Command = new Display_List_Command(
+                0xdeadbeef,
+                zobj.buf.readUInt32BE(cur + 0x8),
+                cur + 0x8 - 0x4
+              );
+              if (dl2.is06()) {
+                repoints.push(dl2);
+              }
             }
             lookingForFF = zobj.buf
               .readUInt8(cur + 0x6)
