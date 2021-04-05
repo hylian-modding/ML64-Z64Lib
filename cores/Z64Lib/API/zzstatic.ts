@@ -282,7 +282,7 @@ export class zzstatic {
           .readUInt8(cur + 0x6)
           .toString(16)
           .toUpperCase();
-        cur += 0x10;
+        cur += NPC_SKEL_FORMAT ? 0xC : 0x10;
         while (lookingForFF !== 'FF') {
           try {
             let dl: Display_List_Command = new Display_List_Command(
@@ -307,7 +307,7 @@ export class zzstatic {
               .readUInt8(cur + 0x6)
               .toString(16)
               .toUpperCase();
-            cur += 0x10;
+              cur += NPC_SKEL_FORMAT ? 0xC : 0x10;
           } catch (err) {
             break;
           }
