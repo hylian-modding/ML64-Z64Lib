@@ -239,14 +239,14 @@ export class zzstatic {
       let pointer_to_skeleton_pointer: number = (modeByte !== 0x70) ? zobj.buf.readUInt32BE(header_start + 0x000C) - 0x06000000 : ALIAS_TABLE_END;
       let pointer_to_skeleton: number = zobj.buf.readUInt32BE(pointer_to_skeleton_pointer) - 0x06000000;
 
-      console.log('Looking in the closet...');
+      //console.log('Looking in the closet...');
 
       let dem_bones: number = zobj.buf.readUInt8(
         pointer_to_skeleton_pointer + 0x4
       );
       let spooky_scary: Skeleton = new Skeleton(dem_bones);
 
-      console.log('Found a skeleton with ' + dem_bones + ' bones.');
+      //console.log('Found a skeleton with ' + dem_bones + ' bones.');
 
       for (let i = 0; i < spooky_scary.total; i++) {
         spooky_scary.bones.push(
