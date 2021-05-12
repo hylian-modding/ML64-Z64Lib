@@ -6,6 +6,7 @@ import path from 'path';
 
 let CURRENT_EXTENDED_ROM_OFFSET: number = 0x2000000;
 let VROM_END = 0x04000000;
+const mb = Buffer.alloc(1 * 1024 * 1024);
 
 export class Z64RomTools {
 
@@ -223,6 +224,8 @@ export class Z64RomTools {
   }
 
   relocateFileToExtendedRom(rom: Buffer, index: number, file: Buffer, sizeOverride = 0, nocompress = false): number {
+    let f = rom.indexOf(mb, CURRENT_EXTENDED_ROM_OFFSET);
+    CURRENT_EXTENDED_ROM_OFFSET = f;
     let r = 0;
     let buf: Buffer | undefined;
     if (!nocompress) {
@@ -270,6 +273,8 @@ export class Z64RomTools {
   }
 
   injectNewFile(rom: Buffer, index: number, file: Buffer) {
+    let f = rom.indexOf(mb, CURRENT_EXTENDED_ROM_OFFSET);
+    CURRENT_EXTENDED_ROM_OFFSET = f;
     let r = 0;
     let buf: Buffer = this.ModLoader.utils.yaz0Encode(file);
     let dma = this.DMA_Offset;
