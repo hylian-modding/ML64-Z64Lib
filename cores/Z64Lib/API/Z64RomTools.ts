@@ -7,6 +7,7 @@ import path from 'path';
 let CURRENT_EXTENDED_ROM_OFFSET: number = 0x2000000;
 let VROM_END = 0x04000000;
 const mb = Buffer.alloc(1 * 1024 * 1024);
+let HAS_MOVED_CODE_FILE: boolean = false;
 
 export class Z64RomTools {
 
@@ -46,6 +47,15 @@ export class Z64RomTools {
         this.Object_Offset = 0x10A6C0;
         break;
     }
+  }
+
+  getCodeFile(rom: Buffer): Buffer{
+    if (!HAS_MOVED_CODE_FILE){
+      let code: Buffer = this.decompressDMAFileFromRom(rom, this.Code_DMA);
+      this.relocateFileToExtendedRom(rom, this.Code_DMA, code, code.byteLength, true);
+      HAS_MOVED_CODE_FILE = true;
+    }
+    return this.decompressDMAFileFromRom(rom, this.Code_DMA);
   }
 
   injectActorIntoSlot(rom: Buffer, actorID: number, file: Buffer, initvars: string): boolean {
