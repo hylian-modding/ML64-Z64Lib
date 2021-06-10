@@ -139,7 +139,6 @@ export class Z64RomTools {
       size =
         rom.readUInt32BE(dma + offset + 0x4) - rom.readUInt32BE(dma + offset);
       end = start + size;
-      console.log("File is not compressed.");
     }
     let buf: Buffer = Buffer.alloc(size);
     rom.copy(buf, 0, start, end);
