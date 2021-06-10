@@ -49,13 +49,28 @@ export class Z64RomTools {
     }
   }
 
-  getCodeFile(rom: Buffer): Buffer{
-    if (!HAS_MOVED_CODE_FILE){
+  getCodeFile(rom: Buffer): Buffer {
+    if (!HAS_MOVED_CODE_FILE) {
       let code: Buffer = this.decompressDMAFileFromRom(rom, this.Code_DMA);
       this.relocateFileToExtendedRom(rom, this.Code_DMA, code, code.byteLength, true);
       HAS_MOVED_CODE_FILE = true;
     }
     return this.decompressDMAFileFromRom(rom, this.Code_DMA);
+  }
+
+  isFileCompressed(rom: Buffer, index: number) {
+    let dma = this.DMA_Offset;
+    let offset: number = index * 0x10;
+    let start: number = rom.readUInt32BE(dma + offset + 0x8);
+    let end: number = rom.readUInt32BE(dma + offset + 0xc);
+    let size: number = end - start;
+    let isFileCompressed = true;
+    if (end === 0) {
+      isFileCompressed = false;
+      size = rom.readUInt32BE(dma + offset + 0x4) - rom.readUInt32BE(dma + offset);
+      end = start + size;
+    }
+    return isFileCompressed;
   }
 
   injectActorIntoSlot(rom: Buffer, actorID: number, file: Buffer, initvars: string): boolean {

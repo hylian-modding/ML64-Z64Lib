@@ -66,6 +66,13 @@ export class OOTAdultManifest implements IManifest {
         }
 
         temp.forEach((file: Buffer, _r: RomPatch) => {
+            if (indexer.tools.isFileCompressed(rom, indexer.findIndexFromSearch(_r.finder, rom))){
+                let original = indexer.tools.decompressDMAFileFromRom(rom, indexer.findIndexFromSearch(_r.finder, rom));
+                indexer.tools.relocateFileToExtendedRom(rom, indexer.findIndexFromSearch(_r.finder, rom), original, original.byteLength, true);
+            }
+        });
+
+        temp.forEach((file: Buffer, _r: RomPatch) => {
             indexer.tools.recompressDMAFileIntoRom(rom, indexer.findIndexFromSearch(_r.finder, rom), file);
         });
 

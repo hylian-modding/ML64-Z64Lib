@@ -30,16 +30,16 @@ export class OOTChildManifest implements IManifest {
         // Trim excess space.
         zobj = trimBuffer(zobj);
         // Attempt to put the file back.
-        if (nocompress === undefined || nocompress === false){
+        if (nocompress === undefined || nocompress === false) {
             if (!tools.recompressObjectFileIntoRom(rom, OBJ_CHILD, zobj)) {
                 // If we get here it means the compressed object is bigger than the original.
                 // This can happen because the compression ratio ends up different due to texture differences.
-    
+
                 // Move the file to extended ROM space.
                 r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_CHILD), zobj, originalSize);
                 rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
             }
-        }else{
+        } else {
             // Move the file to extended ROM space.
             r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_CHILD), zobj, originalSize, nocompress);
             rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
@@ -65,6 +65,13 @@ export class OOTChildManifest implements IManifest {
             ModLoader.logger.error(err);
             return false;
         }
+
+        temp.forEach((file: Buffer, _r: RomPatch) => {
+            if (indexer.tools.isFileCompressed(rom, indexer.findIndexFromSearch(_r.finder, rom))){
+                let original = indexer.tools.decompressDMAFileFromRom(rom, indexer.findIndexFromSearch(_r.finder, rom));
+                indexer.tools.relocateFileToExtendedRom(rom, indexer.findIndexFromSearch(_r.finder, rom), original, original.byteLength, true);
+            }
+        });
 
         temp.forEach((file: Buffer, _r: RomPatch) => {
             indexer.tools.recompressDMAFileIntoRom(rom, indexer.findIndexFromSearch(_r.finder, rom), file);
