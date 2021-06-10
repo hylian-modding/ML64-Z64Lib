@@ -301,16 +301,20 @@ export class Z64RomTools {
     CURRENT_EXTENDED_ROM_OFFSET = f;
     let r = 0;
     let buf: Buffer = file;
+    if (!nocompress) {
+      buf = this.ModLoader.utils.yaz0Encode(file);
+    }
     let dma = this.DMA_Offset;
     let offset: number = index * 0x10;
     rom.writeUInt32BE(VROM_END, dma + offset + 0x0);
     rom.writeUInt32BE(VROM_END + file.byteLength, dma + offset + 0x4);
     VROM_END += file.byteLength;
     rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
-    if (nocompress){
-      rom.writeUInt32BE(0, dma + offset + 0xC);
-    }else{
-      buf = this.ModLoader.utils.yaz0Encode(file);
+    if (nocompress) {
+      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
+      rom.writeUInt32BE(0x0, dma + offset + 0xC);
+    } else {
+      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
       rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
     }
     let start: number = rom.readUInt32BE(dma + offset + 0x8);
