@@ -311,10 +311,8 @@ export class Z64RomTools {
     VROM_END += file.byteLength;
     rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
     if (nocompress) {
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
       rom.writeUInt32BE(0x0, dma + offset + 0xC);
     } else {
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
       rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
     }
     let start: number = rom.readUInt32BE(dma + offset + 0x8);

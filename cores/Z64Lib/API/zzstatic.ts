@@ -5,6 +5,8 @@ import { Skeleton_Entry } from './data/skeleton_entry';
 import crypto from 'crypto';
 import fs from 'fs';
 import { Z64LibSupportedGames } from './Z64LibSupportedGames';
+import zlib from 'zlib';
+import path from 'path';
 
 const ZZSTATIC_CACHE_DATA: Map<string, zzstatic_cache> = new Map<
   string,
@@ -62,12 +64,24 @@ export class zzstatic {
 
   constructor(game: Z64LibSupportedGames) {
     this.game = game;
+    let dir = fs.readdirSync(path.resolve(global.ModLoader.startdir, "cache"));
+    for (let i = 0; i < dir.length; i++) {
+      let file = path.resolve(global.ModLoader.startdir, "cache", dir[i]);
+      let parse = path.parse(file);
+      if (parse.ext === ".zzcache") {
+        let zz = JSON.parse(zlib.inflateSync(fs.readFileSync(file)).toString());
+        this.addToCache(zz);
+      }
+    }
   }
 
   addToCache(c: zzstatic_cache) {
     let cache = new zzstatic_cache();
     cache.cache = c.cache;
     cache.skeleton = c.skeleton;
+    if (!fs.existsSync(path.resolve(global.ModLoader.startdir, "cache", `${c.hash}.zzcache`))) {
+      fs.writeFileSync(path.resolve(global.ModLoader.startdir, "cache", `${c.hash}.zzcache`), zlib.deflateSync(Buffer.from(JSON.stringify(cache))));
+    }
     ZZSTATIC_CACHE_DATA.set(c.hash, cache);
   }
 
@@ -343,7 +357,7 @@ export class zzstatic {
     zzCache.hash = hash;
 
     if (cache) {
-      ZZSTATIC_CACHE_DATA.set(hash, zzCache);
+      this.addToCache(zzCache);
     }
 
     //console.log('Done!');
