@@ -76,6 +76,9 @@ export class zzstatic {
   }
 
   addToCache(c: zzstatic_cache) {
+    if (c.hash === undefined){
+      return;
+    }
     let cache = new zzstatic_cache();
     cache.cache = c.cache;
     cache.skeleton = c.skeleton;
