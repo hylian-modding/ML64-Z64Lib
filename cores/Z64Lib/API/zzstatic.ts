@@ -64,7 +64,7 @@ export class zzstatic {
 
   constructor(game: Z64LibSupportedGames) {
     this.game = game;
-    let dir = fs.readdirSync(path.resolve(global.ModLoader.startdir, "cache"));
+    /* let dir = fs.readdirSync(path.resolve(global.ModLoader.startdir, "cache"));
     for (let i = 0; i < dir.length; i++) {
       let file = path.resolve(global.ModLoader.startdir, "cache", dir[i]);
       let parse = path.parse(file);
@@ -72,7 +72,7 @@ export class zzstatic {
         let zz = JSON.parse(zlib.inflateSync(fs.readFileSync(file)).toString());
         this.addToCache(zz);
       }
-    }
+    } */
   }
 
   addToCache(c: zzstatic_cache) {
@@ -112,9 +112,9 @@ export class zzstatic {
       .update(buf)
       .digest('hex');
 
-    if (ZZSTATIC_CACHE_DATA.has(hash)) {
+    /* if (ZZSTATIC_CACHE_DATA.has(hash)) {
       return ZZSTATIC_CACHE_DATA.get(hash)!.doRepoint(index, buf, rebase);
-    }
+    } */
 
     let ALIAS_TABLE_START = 0x5090;
     let ALIAS_TABLE_END = 0x5380;
