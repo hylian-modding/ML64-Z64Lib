@@ -100,7 +100,7 @@ export class Z64Lib implements ICore {
 
     @onTick()
     onTick() {
-
+        
     }
 
     @onPostTick()

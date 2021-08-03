@@ -1,6 +1,6 @@
 import { ICore } from 'modloader64_api/IModLoaderAPI';
 import Vector3 from 'modloader64_api/math/Vector3';
-import { AgeOrForm } from '../Common/Z64API';
+import { AgeOrForm, Wallet } from '../Common/Z64API';
 import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../imports';
 
@@ -220,6 +220,7 @@ export interface IBoots {
 }
 
 export interface IInventoryFields {
+  wallet: Wallet;
   strength: Strength;
   swimming: ZoraScale;
   dekuSticks: boolean;
@@ -259,6 +260,7 @@ export interface IInventoryCounts {
   bombsCount: number;
   bombchuCount: number;
   magicBeansCount: number;
+  dekuSeeds: number;
   arrows: number;
 }
 

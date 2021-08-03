@@ -13,3 +13,4 @@ export const MM_ACTOR_ROTATION_OFFSET = 0xbc;
 export const MM_ACTOR_ROTATION_SIZE = 0x6;
 export const MM_ACTOR_POSITION_OFFSET = 0x24;
 export const MM_ACTOR_POSITION_SIZE = 0xc;
+export const MM_DUNGEON_ITEM_ADDR = (MM_SAVE + 0xC0);

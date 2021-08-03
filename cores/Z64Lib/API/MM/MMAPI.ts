@@ -2,6 +2,7 @@ import { ICore } from 'modloader64_api/IModLoaderAPI';
 import Vector3 from 'modloader64_api/math/Vector3';
 import { IPacketHeader } from 'modloader64_api/NetworkHandler';
 import * as Z64API from '../../API/imports';
+import { Wallet } from '../Common/Z64API';
 import * as Z64CORE from '../imports';
 
 export const enum Scene {
@@ -244,6 +245,7 @@ export interface ISkull {
 }
 
 export interface IInventoryFields {
+  wallet: Wallet;
   dekuSticksCapacity: Z64API.Z64.AmmoUpgrade;
   dekuNutsCapacity: Z64API.Z64.AmmoUpgrade;
   bombBag: Z64API.Z64.AmmoUpgrade;

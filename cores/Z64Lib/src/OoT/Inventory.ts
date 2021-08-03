@@ -37,7 +37,7 @@ export class Inventory extends JSONTemplate implements Z64API.OoT.IInventory {
       'bottle_4',
       'childTradeItem',
       'adultTradeItem',
-      'Z64API.Z64.Wallet',
+      'Wallet',
       'quiver',
       'bulletBag',
       'bombBag',
@@ -348,7 +348,7 @@ export class Inventory extends JSONTemplate implements Z64API.OoT.IInventory {
       this.emulator.rdramWriteBits8(this.inventory_upgrades_addr + 0x3, buf);
   }
 
-  get Wallet(): Z64API.Z64.Wallet {
+  get wallet(): Z64API.Z64.Wallet {
       let buf: Buffer = this.emulator.rdramReadBits8(
           this.inventory_upgrades_addr + 0x2
       );
@@ -366,7 +366,7 @@ export class Inventory extends JSONTemplate implements Z64API.OoT.IInventory {
       return Z64API.Z64.Wallet.CHILD;
   }
 
-  set Wallet(w: Z64API.Z64.Wallet) {
+  set wallet(w: Z64API.Z64.Wallet) {
       let buf: Buffer = this.emulator.rdramReadBits8(
           this.inventory_upgrades_addr + 0x2
       );
@@ -396,7 +396,7 @@ export class Inventory extends JSONTemplate implements Z64API.OoT.IInventory {
       for (let i = 0; i < 8; i+=2){
           capacities.push(this.emulator.rdramRead16(addr + i));
       }
-      return capacities[this.Wallet];
+      return capacities[this.wallet];
   }
 
   get dekuSticks(): boolean {

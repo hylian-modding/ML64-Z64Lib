@@ -14,6 +14,7 @@ export class Inventory extends JSONTemplate implements Z64API.MM.IInventory {
     private inventory_upgrades_addr: number = this.instance + 0x00B8;
     private log: ILogger;
     jsonFields: string[] = [
+        'wallet',
         'dekuSticksCapacity',
         'dekuNutsCapacity',
         'bombBag',

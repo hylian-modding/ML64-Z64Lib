@@ -1,5 +1,6 @@
 import IMemory from 'modloader64_api/IMemory';
 import * as Z64API from '../../API/Imports';
+import { Z64_DUNGEON_ITEM_ADDR } from './types/GameAliases';
 
 export class DungeonItemManager implements Z64API.IDungeonItemManager {
     emulator: IMemory;
@@ -93,7 +94,7 @@ export class DungeonItemManager implements Z64API.IDungeonItemManager {
 }
 
 export class DungeonItemContainer implements Z64API.IDungeonItemContainer {
-    private addr: number = 0x801EF730;
+    private addr: number = Z64_DUNGEON_ITEM_ADDR;
     private emulator: IMemory;
     private index: number;
 
