@@ -1,4 +1,4 @@
-import { ManifestOffets } from "../Z64ManifestMapper";
+import { ManifestOffets } from "../../Utilities/Z64ManifestMapper";
 import path from 'path';
 
 export class OotManifests {

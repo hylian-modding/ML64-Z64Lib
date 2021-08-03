@@ -1,12 +1,12 @@
-import { IManifest } from "../Z64ManifestBuffer";
+import { IManifest } from "../../Utilities/Z64ManifestBuffer";
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
-import { DMAIndexer } from "..//DMAIndexer";
-import { RomPatch, FilePatch } from "../FileSystemCompare";
-import { Z64LibSupportedGames } from "../Z64LibSupportedGames";
+import { DMAIndexer } from "../../Utilities/DMAIndexer";
+import { RomPatch, FilePatch } from "../../Utilities/FileSystemCompare";
+import { Z64LibSupportedGames } from "../../Utilities/Z64LibSupportedGames";
 import fs from 'fs';
 import path from 'path';
-import { Z64RomTools, trimBuffer } from "../Z64RomTools";
-import { zzstatic } from "../zzstatic";
+import { Z64RomTools, trimBuffer } from "../../Utilities/Z64RomTools";
+import { zzstatic } from "../../Utilities/zzstatic";
 import { PatchTypes } from "modloader64_api/Patchers/PatchManager";
 
 const OBJ_CHILD: number = 11;

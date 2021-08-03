@@ -13,10 +13,14 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "Z64Lib/*": [
-        "./libs/Z64Lib/*"
+      "@sound/*": [
+        "./build/emulator/*"
+      ],
+      "@Z64Lib/*": [
+        "./src/Z64Lib/*"
       ]
-    }
+    },
+    "noImplicitAny": false
   },
   "include": [
     "src/**/*.ts",

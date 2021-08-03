@@ -1,23 +1,27 @@
+import { IManifest } from "../../Utilities/Z64ManifestBuffer";
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
-import { Z64RomTools, trimBuffer } from "../Z64RomTools";
-import { Z64LibSupportedGames } from "../Z64LibSupportedGames";
-import { IManifest, } from "../Z64ManifestBuffer";
-import { DMAIndexer } from "../DMAIndexer";
-import { RomPatch, FilePatch } from "../FileSystemCompare";
-import fs from 'fs-extra';
-import path from "path";
+import { DMAIndexer } from "../../Utilities/DMAIndexer";
+import { RomPatch, FilePatch } from "../../Utilities/FileSystemCompare";
+import { Z64LibSupportedGames } from "../../Utilities/Z64LibSupportedGames";
+import fs from 'fs';
+import path from 'path';
+import { Z64RomTools, trimBuffer } from "../../Utilities/Z64RomTools";
+import { zzstatic } from "../../Utilities/zzstatic";
 import { PatchTypes } from "modloader64_api/Patchers/PatchManager";
 
-export class OOTAdultManifest implements IManifest {
+const OBJ_CHILD: number = 0x0015;
+
+export class OOTChildManifest implements IManifest {
 
     inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer, nocompress?: boolean): number {
-        let r = 0;
         // Get original zobj from ROM.
+        let r = 0;
         let tools = new Z64RomTools(ModLoader, Z64LibSupportedGames.OCARINA_OF_TIME);
-        let zobj: Buffer = tools.decompressObjectFileFromRom(rom, OBJ_BOY);
+        let zobj: Buffer = tools.decompressObjectFileFromRom(rom, OBJ_CHILD);
         let originalSize: number = zobj.byteLength;
         if (model.byteLength > zobj.byteLength) {
             // This shouldn't be possible because zzplayas would throw a tantrum before you got this far.
+            ModLoader.logger.error("Wtf happened here?!");
             return r;
         }
         // Clear its contents.
@@ -28,17 +32,17 @@ export class OOTAdultManifest implements IManifest {
         zobj = trimBuffer(zobj);
         // Attempt to put the file back.
         if (nocompress === undefined || nocompress === false) {
-            if (!tools.recompressObjectFileIntoRom(rom, OBJ_BOY, zobj)) {
+            if (!tools.recompressObjectFileIntoRom(rom, OBJ_CHILD, zobj)) {
                 // If we get here it means the compressed object is bigger than the original.
                 // This can happen because the compression ratio ends up different due to texture differences.
 
                 // Move the file to extended ROM space.
-                r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj, originalSize);
+                r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_CHILD), zobj, originalSize);
                 rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
             }
         } else {
             // Move the file to extended ROM space.
-            r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_BOY), zobj, originalSize, nocompress);
+            r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, OBJ_CHILD), zobj, originalSize, nocompress);
             rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
         }
         return r;
@@ -48,8 +52,7 @@ export class OOTAdultManifest implements IManifest {
         let indexer: DMAIndexer = new DMAIndexer(Z64LibSupportedGames.OCARINA_OF_TIME, ModLoader, rom);
         let temp: Map<RomPatch, Buffer> = new Map<RomPatch, Buffer>();
         try {
-            let rp: RomPatch[] = JSON.parse(fs.readFileSync(path.resolve(__dirname, "adult.json")).toString());
-            // First loop make sure we can find everything. If not we abort.
+            let rp: RomPatch[] = JSON.parse(fs.readFileSync(path.resolve(__dirname, "child.json")).toString());
             for (let i = 0; i < rp.length; i++) {
                 let _r: RomPatch = rp[i];
                 let file: Buffer = indexer.tools.decompressDMAFileFromRom(rom, indexer.findIndexFromSearch(_r.finder, rom));
@@ -58,7 +61,6 @@ export class OOTAdultManifest implements IManifest {
                     file.writeUInt8(_f.value, _f.offset);
                 }
                 temp.set(_r, file);
-
             }
         } catch (err) {
             ModLoader.logger.error(err);
@@ -77,8 +79,5 @@ export class OOTAdultManifest implements IManifest {
         });
 
         return true;
-
     }
 }
-
-const OBJ_BOY: number = 0x0014;
