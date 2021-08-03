@@ -49,8 +49,6 @@ export class Z64Lib implements ICore {
     @Preinit()
     preinit() {
 
-        this.ModLoader.logger.info('ZELDA64 GAME: ' + this.rom_header.name + '.');
-
         switch (this.rom_header.id) {
             case (ROM_REGIONS.NTSC_OOT):
                 this.OOT = new OcarinaofTime();
@@ -84,7 +82,6 @@ export class Z64Lib implements ICore {
         if (this.rom_header.revision === ROM_VERSIONS.REV_A) {
             this.applyVersionPatch("Rom downgrade in progress... (1.1 -> 1.0)", "RevA.bps", ROM_VERSIONS.N0);
         }
-
 
         if (Z64_GAME !== undefined) {
             this.ModLoader.logger.info('Loaded Core: ' + Z64LibSupportedGames[Z64_GAME]);

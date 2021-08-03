@@ -111,7 +111,7 @@ export const actorDeathBehaviorMap: Map<number, ActorDeathBehavior> = new Map<
     number,
     ActorDeathBehavior
 >();
-
+/*
 fs.readdirSync(path.join(__dirname, 'actorDeaths')).forEach((file: string) => {
     let parse = path.parse(file);
     if (parse.ext === '.js') {
@@ -121,7 +121,7 @@ fs.readdirSync(path.join(__dirname, 'actorDeaths')).forEach((file: string) => {
         let instance: IActorDeathFile = new cls();
         actorDeathBehaviorMap.set(instance.id, instance.death);
     }
-});
+});*/
 
 export function setActorBehavior(
     emulator: IMemory,
