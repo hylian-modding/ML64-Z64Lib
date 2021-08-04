@@ -1,19 +1,15 @@
-import { onTick, Preinit, Init, Postinit, onPostTick } from "modloader64_api/PluginLifecycle";
 import { IRomHeader } from 'modloader64_api/IRomHeader';
-import { ModLoaderAPIInject } from "modloader64_api/ModLoaderAPIInjector";
-import { IModLoaderAPI, ILogger, ICore, ModLoaderEvents } from "modloader64_api/IModLoaderAPI";
-import { bus, EventHandler } from "modloader64_api/EventHandler";
-import { PayloadType } from "modloader64_api/PayloadType";
-import IMemory from "modloader64_api/IMemory";
+import { IModLoaderAPI, ICore } from "modloader64_api/IModLoaderAPI";
 import fs from 'fs';
 import path from 'path';
-import * as Z64API from './API/imports';
-import * as Z64CORE from './src/importsMM';
 import { setupMM, setupOot, Z64_GAME } from "./src/Common/types/GameAliases";
 import { MajorasMask } from "./src/MajorasMask";
 import { OcarinaofTime } from "./src/OcarinaofTime";
 import { Z64LibSupportedGames } from "./API/Utilities/Z64LibSupportedGames";
 import { PatchTypes } from 'modloader64_api/Patchers/PatchManager';
+import { setupEventHandlers } from 'modloader64_api/EventHandler';
+import { setupLifecycle, setupLifecycle_IPlugin } from 'modloader64_api/PluginLifecycle';
+import { setupMLInjects } from 'modloader64_api/ModLoaderAPIInjector';
 
 export enum ROM_VERSIONS {
     N0 = 0x00,
@@ -28,16 +24,25 @@ export enum ROM_REGIONS {
 
 export class Z64Lib implements ICore {
     header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
-    @ModLoaderAPIInject()
-    ModLoader: IModLoaderAPI = {} as IModLoaderAPI;
+    ModLoader!: IModLoaderAPI;
     eventTicks: Map<string, Function> = new Map<string, Function>();
 
     OOT: OcarinaofTime | undefined;
     MM: MajorasMask | undefined;
 
     rom_header!: IRomHeader;
-    heap_start: number = 0;
-    heap_size: number = 0;
+
+    get heap_size(): number{
+        if (this.OOT !== undefined) return this.OOT.heap_size;
+        if (this.MM !== undefined) return this.MM.heap_size;
+        return -1;
+    }
+
+    get heap_start(): number{
+        if (this.OOT !== undefined) return this.OOT.heap_start;
+        if (this.MM !== undefined) return this.MM.heap_start;
+        return -1;
+    }
 
     applyVersionPatch(msg: string, bps: string, target: ROM_VERSIONS) {
         this.ModLoader.logger.info(msg);
@@ -46,9 +51,7 @@ export class Z64Lib implements ICore {
         this.rom_header.revision = target;
     }
 
-    @Preinit()
     preinit() {
-
         switch (this.rom_header.id) {
             case (ROM_REGIONS.NTSC_OOT):
                 this.OOT = new OcarinaofTime();
@@ -89,23 +92,25 @@ export class Z64Lib implements ICore {
         else this.ModLoader.logger.error("No core loaded! Debug[ ID: " + this.rom_header.id + " || VERSION: " + this.rom_header.revision + " || COUNTRY: " + this.rom_header.country_code + ']');
     }
 
-    @Init()
     init(): void {
+        if (this.OOT !== undefined){
+            setupEventHandlers(this.OOT, this.ModLoader.publicBus);
+            setupLifecycle_IPlugin(this.OOT);
+            setupLifecycle(this.OOT);
+            setupMLInjects(this.OOT, this.ModLoader);
+            this.OOT.preinit();
+        }else if (this.MM !== undefined){
+            setupEventHandlers(this.MM, this.ModLoader.publicBus);
+            setupLifecycle_IPlugin(this.MM);
+            setupLifecycle(this.MM);
+            setupMLInjects(this.MM, this.ModLoader);
+            this.MM.preinit();
+        }
     }
 
-    @Postinit()
     postinit(): void {
-
     }
 
-    @onTick()
     onTick() {
-        
     }
-
-    @onPostTick()
-    onPostTick() {
-
-    }
-
 }
