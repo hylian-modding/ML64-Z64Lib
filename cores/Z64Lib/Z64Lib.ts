@@ -11,6 +11,7 @@ import { setupEventHandlers } from 'modloader64_api/EventHandler';
 import { setupLifecycle, setupLifecycle_IPlugin } from 'modloader64_api/PluginLifecycle';
 import { setupMLInjects } from 'modloader64_api/ModLoaderAPIInjector';
 import { ExternalAPIProvider } from 'modloader64_api/ExternalAPIProvider';
+import { IZ64Main } from './API/Common/IZ64Main';
 
 export enum ROM_VERSIONS {
     N0 = 0x00,
@@ -24,7 +25,7 @@ export enum ROM_REGIONS {
 }
 
 @ExternalAPIProvider("Z64Lib", require(path.resolve(__dirname, "package.json")).version, path.resolve(__dirname))
-export class Z64Lib implements ICore {
+export class Z64Lib implements ICore, IZ64Main{
     header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
     ModLoader!: IModLoaderAPI;
     eventTicks: Map<string, Function> = new Map<string, Function>();
