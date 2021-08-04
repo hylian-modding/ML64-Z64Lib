@@ -10,6 +10,7 @@ import { PatchTypes } from 'modloader64_api/Patchers/PatchManager';
 import { setupEventHandlers } from 'modloader64_api/EventHandler';
 import { setupLifecycle, setupLifecycle_IPlugin } from 'modloader64_api/PluginLifecycle';
 import { setupMLInjects } from 'modloader64_api/ModLoaderAPIInjector';
+import { ExternalAPIProvider } from 'modloader64_api/ExternalAPIProvider';
 
 export enum ROM_VERSIONS {
     N0 = 0x00,
@@ -22,6 +23,7 @@ export enum ROM_REGIONS {
     NTSC_MM = "NZS"
 }
 
+@ExternalAPIProvider("Z64Lib", require(path.resolve(__dirname, "package.json")).version, path.resolve(__dirname))
 export class Z64Lib implements ICore {
     header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
     ModLoader!: IModLoaderAPI;
