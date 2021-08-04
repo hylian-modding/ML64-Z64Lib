@@ -1,17 +1,18 @@
 import { bus, EventHandler, EventsClient } from 'modloader64_api/EventHandler';
-import { ICore, IModLoaderAPI, ILogger, ModLoaderEvents } from 'modloader64_api/IModLoaderAPI';
+import { ICore, IModLoaderAPI, ModLoaderEvents } from 'modloader64_api/IModLoaderAPI';
 import { IRomHeader } from 'modloader64_api/IRomHeader';
 import { PayloadType } from 'modloader64_api/PayloadType';
 import fs from 'fs';
 import path from 'path';
 import IMemory from 'modloader64_api/IMemory';
-import { PatchTypes } from 'modloader64_api/Patchers/PatchManager';
 import { onPostTick } from 'modloader64_api/PluginLifecycle';
 import { SmartBuffer } from 'smart-buffer';
 import Vector3 from 'modloader64_api/math/Vector3';
 import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsOOT';
 import { ROM_REGIONS, ROM_VERSIONS } from '../Z64Lib';
+import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
+import { Z64_GLOBAL_PTR } from './Common/types/GameAliases';
 
 export interface OOT_Offsets {
     state: number;
@@ -23,6 +24,7 @@ export interface OOT_Offsets {
 
 export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
     header = [ROM_REGIONS.NTSC_OOT];
+    @ModLoaderAPIInject()
     ModLoader!: IModLoaderAPI;
     link!: Z64API.Z64.ILink
     save!: Z64CORE.SaveContext;
@@ -223,7 +225,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
     onInject(evt: any) {
         if (this.ModLoader.config.data["OcarinaofTime"]["skipN64Logo"]) {
             this.ModLoader.logger.info("Skipping N64 logo screen...");
-            this.ModLoader.emulator.rdramWritePtr8(global.ModLoader['global_context_pointer'], 0x1E1, 0x1);
+            this.ModLoader.emulator.rdramWritePtr8(Z64_GLOBAL_PTR, 0x1E1, 0x1);
         }
     }
 
