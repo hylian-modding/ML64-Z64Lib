@@ -151,14 +151,14 @@ export class GlobalContext extends JSONTemplate implements Z64API.OoT.IGlobalCon
 
   getSaveDataForCurrentScene(): Buffer {
       return this.emulator.rdramReadBuffer(
-          global.ModLoader.save_context + 0x00d4 + this.scene * 0x1c,
+          Z64CORE.Z64_SAVE + 0x00d4 + this.scene * 0x1c,
           0x1c
       );
   }
   writeSaveDataForCurrentScene(buf: Buffer): void {
       if (buf.byteLength === 0x1c) {
           this.emulator.rdramWriteBuffer(
-              global.ModLoader.save_context + 0x00d4 + this.scene * 0x1c,
+            Z64CORE.Z64_SAVE + 0x00d4 + this.scene * 0x1c,
               buf
           );
       }

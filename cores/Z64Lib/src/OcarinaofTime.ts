@@ -12,7 +12,7 @@ import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsOOT';
 import { ROM_REGIONS, ROM_VERSIONS } from '../Z64Lib';
 import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
-import { Z64_GLOBAL_PTR } from './Common/types/GameAliases';
+import { Z64_GLOBAL_PTR, Z64_SAVE } from './Common/types/GameAliases';
 
 export interface OOT_Offsets {
     state: number;
@@ -134,7 +134,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
                 bus.emit(Z64API.OoT.OotEvents.ON_SCENE_CHANGE, this.last_known_scene);
                 this.touching_loading_zone = false;
                 let inventory: Buffer = this.ModLoader.emulator.rdramReadBuffer(
-                    global.ModLoader.save_context + 0x0074,
+                    Z64_SAVE + 0x0074,
                     0x24
                 );
                 for (let i = 0; i < inventory.byteLength; i++) {
@@ -144,7 +144,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
                 }
                 inventory.copy(this.inventory_cache);
                 this.ModLoader.emulator.rdramWriteBuffer(
-                    global.ModLoader.save_context + 0x0074,
+                    Z64_SAVE + 0x0074,
                     inventory
                 );
             }
@@ -157,7 +157,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
                 this.doorcheck = false;
             }
             let doorState = this.ModLoader.emulator.rdramReadPtr8(
-                global.ModLoader.global_context_pointer,
+                Z64_GLOBAL_PTR,
                 0x11ced
             );
             if (doorState === 1 && !this.doorcheck) {

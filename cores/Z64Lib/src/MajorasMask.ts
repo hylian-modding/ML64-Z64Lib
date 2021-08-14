@@ -92,7 +92,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     @onTick()
     onTick() {
 
-        this.commandBuffer.onTick();
+        //this.commandBuffer.onTick();
 
         if (this.helper.isTitleScreen() || !this.helper.isSceneNumberValid()) return;
         
@@ -136,7 +136,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header!.revision);
+        //this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header!.revision);
     }
     
 }

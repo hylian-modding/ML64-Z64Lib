@@ -49,7 +49,7 @@ export class Z64Lib implements ICore, IZ64Main{
 
     applyVersionPatch(msg: string, bps: string, target: ROM_VERSIONS) {
         this.ModLoader.logger.info(msg);
-        let r = PatchTypes.get(".bps")!.patch(this.ModLoader.rom.romReadBuffer(0x0, (32 * 1024 * 1024)), fs.readFileSync(path.join(__dirname, "OOT", bps)));
+        let r = PatchTypes.get(".bps")!.patch(this.ModLoader.rom.romReadBuffer(0x0, (32 * 1024 * 1024)), fs.readFileSync(path.join(__dirname, "OoT/conversionPatch", bps)));
         this.ModLoader.rom.romWriteBuffer(0x0, r);
         this.rom_header.revision = target;
     }

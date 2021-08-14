@@ -1,6 +1,6 @@
 import IMemory from 'modloader64_api/IMemory';
 import * as Z64API from '../../API/Imports';
-import { Z64_DUNGEON_ITEM_ADDR } from './types/GameAliases';
+import { Z64_DUNGEON_ITEM_ADDR, Z64_SAVE } from './types/GameAliases';
 
 export class DungeonItemManager implements Z64API.IDungeonItemManager {
     emulator: IMemory;
@@ -85,11 +85,11 @@ export class DungeonItemManager implements Z64API.IDungeonItemManager {
         );
     }
     setRawBuffer(buf: Buffer): void {
-        this.emulator.rdramWriteBuffer(global.ModLoader.save_context + 0xa8, buf);
+        this.emulator.rdramWriteBuffer(Z64_SAVE + 0xa8, buf);
     }
 
     getRawBuffer(): Buffer {
-        return this.emulator.rdramReadBuffer(global.ModLoader.save_context + 0xa8, 0x14);
+        return this.emulator.rdramReadBuffer(Z64_SAVE + 0xa8, 0x14);
     }
 }
 

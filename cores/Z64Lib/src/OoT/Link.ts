@@ -18,7 +18,7 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private mask_addr: number = this.pointer + 0x014f;
     private pos_addr: number = this.pointer + 0x24;
     private rot_addr: number = this.pointer + 0xb4;
-    private sword_addr: number = global.ModLoader.save_context + 0x0070 + 0x1;
+    private sword_addr: number = Z64CORE.Z64_SAVE + 0x0070 + 0x1;
     /*This is provided by OotCore's ASM.
       Anim data is safely copied into this space at the end of each rendering cycle.
       This helps prevent jittering.*/
