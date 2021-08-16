@@ -5,13 +5,14 @@ import Vector3 from 'modloader64_api/math/Vector3';
 import { IMath } from 'modloader64_api/math/IMath';
 import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../importsOOT';
+import { Z64_PLAYER_STATE, Z64_PLAYER_STATE2 } from '../Common/types/GameAliases';
 
 export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private emulator: IMemory;
     private math: IMath;
     pointer = Z64CORE.Z64_PLAYER;
-    private state_addr: number = this.pointer + (global.ModLoader["offsets"]["link"] as OOT_Offsets).state;
-    private state2_addr: number = this.pointer + (global.ModLoader["offsets"]["link"] as OOT_Offsets).state2;
+    private state_addr: number = Z64_PLAYER_STATE;
+    private state2_addr: number =Z64_PLAYER_STATE2;
     private tunic_addr: number = this.pointer + 0x013c;
     private shield_addr: number = this.pointer + 0x013e;
     private boots_addr: number = this.pointer + 0x013f;

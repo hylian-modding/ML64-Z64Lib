@@ -12,7 +12,7 @@ import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsOOT';
 import { ROM_REGIONS, ROM_VERSIONS } from '../Z64Lib';
 import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
-import { Z64_GLOBAL_PTR, Z64_SAVE } from './Common/types/GameAliases';
+import { setupOotDBG, Z64_GLOBAL_PTR, Z64_OVERLAY_TABLE, Z64_SAVE } from './Common/types/GameAliases';
 
 export interface OOT_Offsets {
     state: number;
@@ -60,35 +60,6 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
         this.ModLoader.config.setData("OcarinaofTime", "skipN64Logo", true);
         this.ModLoader.config.save();
         this.ModLoader.logger.info('OOT VERSION: ' + ROM_VERSIONS[this.rom_header.revision] + '.');
-        global.ModLoader["offsets"] = {};
-        global.ModLoader["offsets"]["link"] = {} as OOT_Offsets;
-        let offsets: OOT_Offsets = global.ModLoader["offsets"]["link"];
-
-        switch (this.rom_header.revision) {
-            case ROM_VERSIONS.GAMECUBE:
-                global.ModLoader['overlay_table'] = 0x1162A0;
-                global.ModLoader['gui_isShown'] = 0x1C4357;
-                offsets.state = 0x067C;
-                offsets.state2 = 0x0680;
-                offsets.paused = 0x166600;
-                offsets.raw_anim = 0x0200;
-                offsets.dma_rom = 0x00012F70;
-                global.ModLoader['isDebugRom'] = true;
-                break;
-            default:
-                global.ModLoader['overlay_table'] = 0x0e8530;
-                global.ModLoader['gui_isShown'] = global.ModLoader['save_context'] + 0xbe613;
-                global.ModLoader["SCENE_TABLE"] = 0x800FB4E0;
-                global.ModLoader["ENTRANCE_TABLE"] = 0x800F9C90;
-                global.ModLoader["RESTRICTION_TABLE"] = 0x800F7350;
-                offsets.state = 0x066c;
-                offsets.state2 = 0x0670;
-                offsets.paused = 0x1c6fa0;
-                offsets.raw_anim = 0x01F0;
-                offsets.dma_rom = 0x00007430;
-                global.ModLoader['isDebugRom'] = false;
-                break;
-        }
     }
 
     @EventHandler(ModLoaderEvents.ON_SOFT_RESET_PRE)
@@ -326,7 +297,7 @@ export class OverlayPayload extends PayloadType {
 
     parse(file: string, buf: Buffer, dest: IMemory) {
         this.ModLoader.logger.debug('Trying to allocate actor...');
-        let overlay_start: number = global.ModLoader['overlay_table'];
+        let overlay_start: number = Z64_OVERLAY_TABLE;
         let size = 0x01d6;
         let empty_slots: number[] = new Array<number>();
         for (let i = 0; i < size; i++) {

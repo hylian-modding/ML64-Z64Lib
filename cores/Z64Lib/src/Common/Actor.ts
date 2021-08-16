@@ -5,6 +5,7 @@ import * as Z64CORE from '../importsMM';
 import fs from 'fs';
 import path from 'path';
 import Vector3 from 'modloader64_api/math/Vector3';
+import { Z64_OVERLAY_TABLE } from './types/GameAliases';
 
 export class Position extends JSONTemplate implements Z64API.IPosition {
     private readonly parent: IMemory;
@@ -130,7 +131,7 @@ export function setActorBehavior(
     behavior: number
 ) {
     let id: number = actor.actorID;
-    let overlay_table: number = global.ModLoader['overlay_table'];
+    let overlay_table: number = Z64_OVERLAY_TABLE;
     let overlay_entry = overlay_table + id * 32;
     let behavior_start = overlay_entry + 0x10;
     let pointer = emulator.dereferencePointer(behavior_start);
@@ -144,7 +145,7 @@ export function getActorBehavior(
     offset: number
 ): number {
     let id: number = actor.actorID;
-    let overlay_table: number = global.ModLoader['overlay_table'];
+    let overlay_table: number = Z64_OVERLAY_TABLE;
     let overlay_entry = overlay_table + id * 32;
     let behavior_start = overlay_entry + 0x10;
     let pointer = emulator.dereferencePointer(behavior_start);

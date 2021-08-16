@@ -2,7 +2,7 @@ import { IRomHeader } from 'modloader64_api/IRomHeader';
 import { IModLoaderAPI, ICore } from "modloader64_api/IModLoaderAPI";
 import fs from 'fs';
 import path from 'path';
-import { setupMM, setupOot, Z64_GAME } from "./src/Common/types/GameAliases";
+import { setupMM, setupOot, setupOotDBG, Z64_GAME } from "./src/Common/types/GameAliases";
 import { MajorasMask } from "./src/MajorasMask";
 import { OcarinaofTime } from "./src/OcarinaofTime";
 import { Z64LibSupportedGames } from "./API/Utilities/Z64LibSupportedGames";
@@ -20,12 +20,13 @@ export enum ROM_VERSIONS {
     REV_B = 0x02,
 }
 export enum ROM_REGIONS {
+    DEBUG_OOT = "NZL",
     NTSC_OOT = "CZL",
     NTSC_MM = "NZS"
 }
 
 @ExternalAPIProvider("Z64Lib", require(path.resolve(__dirname, "package.json")).version, path.resolve(__dirname))
-export class Z64Lib implements ICore, IZ64Main{
+export class Z64Lib implements ICore, IZ64Main {
     header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
     ModLoader!: IModLoaderAPI;
     eventTicks: Map<string, Function> = new Map<string, Function>();
@@ -35,13 +36,13 @@ export class Z64Lib implements ICore, IZ64Main{
 
     rom_header!: IRomHeader;
 
-    get heap_size(): number{
+    get heap_size(): number {
         if (this.OOT !== undefined) return this.OOT.heap_size;
         if (this.MM !== undefined) return this.MM.heap_size;
         return -1;
     }
 
-    get heap_start(): number{
+    get heap_start(): number {
         if (this.OOT !== undefined) return this.OOT.heap_start;
         if (this.MM !== undefined) return this.MM.heap_start;
         return -1;
@@ -60,6 +61,11 @@ export class Z64Lib implements ICore, IZ64Main{
                 this.OOT = new OcarinaofTime();
                 this.OOT.rom_header = this.rom_header;
                 setupOot();
+                break;
+            case (ROM_REGIONS.DEBUG_OOT):
+                this.OOT = new OcarinaofTime();
+                this.OOT.rom_header = this.rom_header;
+                setupOotDBG();
                 break;
             case (ROM_REGIONS.NTSC_MM):
                 this.MM = new MajorasMask();
@@ -96,13 +102,13 @@ export class Z64Lib implements ICore, IZ64Main{
     }
 
     init(): void {
-        if (this.OOT !== undefined){
+        if (this.OOT !== undefined) {
             setupEventHandlers(this.OOT, this.ModLoader.publicBus);
             setupLifecycle_IPlugin(this.OOT);
             setupLifecycle(this.OOT);
             setupMLInjects(this.OOT, this.ModLoader);
             this.OOT.preinit();
-        }else if (this.MM !== undefined){
+        } else if (this.MM !== undefined) {
             setupEventHandlers(this.MM, this.ModLoader.publicBus);
             setupLifecycle_IPlugin(this.MM);
             setupLifecycle(this.MM);
