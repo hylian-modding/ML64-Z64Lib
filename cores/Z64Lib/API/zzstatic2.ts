@@ -108,22 +108,23 @@ export class zzstatic2 {
             }
         }
         let start = buf.indexOf(Buffer.from("MODLOADER64"));
-        let cur = start + 0x90;
-        let end = this.readPointer(buf, start + 0xC);
-        this.pointerList.push(start + 0xC);
-        this.pointerList.push(end);
-        while (cur !== end) {
+        let cur = start + 0x20;
+        let count = buf.readUInt32BE(start + 0xC);
+        while (count > 0) {
             let cmd = this.readCommand(buf, cur);
             if (this.doesOpCodeHavePointer(cmd.id)) {
                 this.pointerList.push(cur + 4);
             }
             cur += 8;
+            count--;
         }
-        let skelp = this.readPointer(buf, end);
-        let bones = buf.readUInt8(end + 4) + 1;
+        let skelsec = this.readPointer(buf, start + 0x1C);
+        let skelp = this.readPointer(buf, skelsec);
+        let bones = buf.readUInt8(skelp + 4) + 1;
+        let skel = this.readPointer(buf, skelp);
         for (let i = 0; i < bones; i++) {
-            this.pointerList.push(skelp + (i * 4));
-            let bone = this.readPointer(buf, skelp + (i * 4));
+            this.pointerList.push(skel + (i * 4));
+            let bone = this.readPointer(buf, skel + (i * 4));
             bone += 8;
             this.temp.writeUInt32BE(bone);
             if (this.temp.readUInt8(0) === 0x06) {
