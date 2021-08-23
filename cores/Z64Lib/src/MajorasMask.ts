@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsMM';
-import { ROM_REGIONS } from "../Z64Lib";
+import { ROM_REGIONS } from "./Z64Lib";
 
 export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     header = [ROM_REGIONS.NTSC_MM];

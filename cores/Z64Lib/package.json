@@ -2,7 +2,7 @@
   "name": "Z64Lib",
   "version": "2.1.1",
   "description": "",
-  "main": "Z64Lib.js",
+  "main": "Z64LibEntryPoint.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

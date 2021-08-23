@@ -2,16 +2,15 @@ import { IRomHeader } from 'modloader64_api/IRomHeader';
 import { IModLoaderAPI, ICore } from "modloader64_api/IModLoaderAPI";
 import fs from 'fs';
 import path from 'path';
-import { setupMM, setupOot, setupOotDBG, Z64_GAME } from "./src/Common/types/GameAliases";
-import { MajorasMask } from "./src/MajorasMask";
-import { OcarinaofTime } from "./src/OcarinaofTime";
-import { Z64LibSupportedGames } from "./API/Utilities/Z64LibSupportedGames";
+import { setupMM, setupOot, setupOotDBG, Z64_GAME } from "./Common/types/GameAliases";
+import { MajorasMask } from "./MajorasMask";
+import { OcarinaofTime } from "./OcarinaofTime";
+import { Z64LibSupportedGames } from "../API/Utilities/Z64LibSupportedGames";
 import { PatchTypes } from 'modloader64_api/Patchers/PatchManager';
 import { setupEventHandlers } from 'modloader64_api/EventHandler';
 import { setupLifecycle, setupLifecycle_IPlugin } from 'modloader64_api/PluginLifecycle';
 import { setupMLInjects } from 'modloader64_api/ModLoaderAPIInjector';
-import { ExternalAPIProvider } from 'modloader64_api/ExternalAPIProvider';
-import { IZ64Main } from './API/Common/IZ64Main';
+import { IZ64Main } from '../API/Common/IZ64Main';
 
 export enum ROM_VERSIONS {
     N0 = 0x00,
@@ -25,8 +24,7 @@ export enum ROM_REGIONS {
     NTSC_MM = "NZS"
 }
 
-@ExternalAPIProvider("Z64Lib", require(path.resolve(__dirname, "package.json")).version, path.resolve(__dirname))
-export class Z64Lib implements ICore, IZ64Main {
+export default class Z64Lib implements ICore, IZ64Main {
     header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
     ModLoader!: IModLoaderAPI;
     eventTicks: Map<string, Function> = new Map<string, Function>();

@@ -10,10 +10,10 @@ import { SmartBuffer } from 'smart-buffer';
 import Vector3 from 'modloader64_api/math/Vector3';
 import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsOOT';
-import { ROM_REGIONS, ROM_VERSIONS } from '../Z64Lib';
+import { ROM_REGIONS, ROM_VERSIONS } from './Z64Lib';
 import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
 import { Z64_GAME, Z64_GLOBAL_PTR, Z64_OVERLAY_TABLE, Z64_SAVE } from './Common/types/GameAliases';
-import { EventSystem } from '../API/OoT/EventSystem';
+import { EventSystem } from './OoT/EventSystem';
 
 export interface OOT_Offsets {
     state: number;
