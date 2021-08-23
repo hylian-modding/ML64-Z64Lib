@@ -56,7 +56,9 @@ export enum DisplayOpcodes {
 
 export class zzstatic2 {
 
+    pointerSet: Set<number> = new Set();
     pointerList: Array<number> = [];
+    displayListStarts: Set<number> = new Set();
     temp: Buffer = Buffer.alloc(4);
 
     isValidOpCode(op: number) {
@@ -94,49 +96,61 @@ export class zzstatic2 {
     }
 
     repoint(buf: Buffer, base: number) {
+        this.pointerSet.clear();
         for (let i = 0; i < buf.byteLength; i += 8) {
             let cmd = this.readCommand(buf, i);
-            if (this.isOpCodeEnd(cmd.id)) {
+            if (this.isOpCodeEnd(cmd.id) && buf.readUInt32BE(i) === 0xDF000000 && buf.readUInt32BE(i + 0x4) === 0) {
                 let reverse = i;
                 while (this.isValidOpCode(cmd.id)) {
                     if (this.doesOpCodeHavePointer(cmd.id)) {
-                        this.pointerList.push(reverse + 4);
+                        this.pointerSet.add(reverse + 4);
                     }
                     reverse -= 8;
                     cmd = this.readCommand(buf, reverse);
                 }
+                this.displayListStarts.add(reverse);
             }
         }
         let start = buf.indexOf(Buffer.from("MODLOADER64"));
-        let cur = start + 0x90;
-        let end = this.readPointer(buf, start + 0xC);
-        this.pointerList.push(start + 0xC);
-        this.pointerList.push(end);
-        while (cur !== end) {
+        let count = buf.readUInt32BE(start + 0xC) << 2;
+        let cur = start + 0x20;
+        while (count > 0) {
             let cmd = this.readCommand(buf, cur);
             if (this.doesOpCodeHavePointer(cmd.id)) {
-                this.pointerList.push(cur + 4);
+                this.pointerSet.add(cur + 4);
             }
             cur += 8;
+            count--;
         }
-        let skelp = this.readPointer(buf, end);
-        let bones = buf.readUInt8(end + 4) + 1;
-        for (let i = 0; i < bones; i++) {
-            this.pointerList.push(skelp + (i * 4));
-            let bone = this.readPointer(buf, skelp + (i * 4));
-            bone += 8;
-            this.temp.writeUInt32BE(bone);
-            if (this.temp.readUInt8(0) === 0x06) {
-                this.pointerList.push(bone);
-            }
-            bone += 4;
-            this.temp.writeUInt32BE(bone);
-            if (this.temp.readUInt8(0) === 0x06) {
-                this.pointerList.push(bone);
+        let skelsec = this.readPointer(buf, start + 0x1C);
+        if (skelsec > 0) {
+            this.pointerSet.add(start + 0x1C);
+            let bones = buf.readUInt8(skelsec + 4);
+            if (bones > 0) {
+                this.pointerSet.add(skelsec);
+                let skel = this.readPointer(buf, skelsec);
+                for (let i = 0; i < bones; i++) {
+                    this.pointerSet.add(skel + (i * 4));
+                    let bone = this.readPointer(buf, skel + (i * 4));
+                    bone += 8;
+                    let d1 = buf.readUInt32BE(bone);
+                    this.temp.writeUInt32BE(d1);
+                    if (this.temp.readUInt8(0) === 0x06) {
+                        this.pointerSet.add(bone);
+                    }
+                    bone += 4;
+                    let d2 = buf.readUInt32BE(bone);
+                    this.temp.writeUInt32BE(d2);
+                    if (this.temp.readUInt8(0) === 0x06) {
+                        this.pointerSet.add(bone);
+                    }
+                }
             }
         }
-
+        this.pointerList = Array.from(this.pointerSet);
         for (let i = 0; i < this.pointerList.length; i++) {
+            this.temp.writeUInt32BE(buf.readUInt32BE(this.pointerList[i]));
+            if (this.temp.readUInt8(0) !== 0x06) continue;
             let p = this.readPointer(buf, this.pointerList[i]);
             p += base;
             buf.writeUInt32BE(p, this.pointerList[i]);

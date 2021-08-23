@@ -6,9 +6,13 @@ export class ZZPlayasEmbedParser {
 
     constructor() { }
 
-    parse(file: string) {
-        let buf = fs.readFileSync(file);
-        console.log("Parsing embedded playas data...");
+    parse(file: string | Buffer) {
+        let buf: Buffer;
+        if (Buffer.isBuffer(file)){
+            buf = file;
+        }else{
+            buf = fs.readFileSync(file);
+        }
         let head: number = buf.indexOf(this.h) + this.h.byteLength;
         let map: any = {};
         let entries: number = buf.readUInt16BE(head);

@@ -1,13 +1,14 @@
 import { IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import { PatchTypes } from 'modloader64_api/Patchers/PatchManager';
 import { Z64LibSupportedGames } from './Z64LibSupportedGames';
+import { RomHeap } from 'modloader64_api/romheap';
 import fs from 'fs';
 import path from 'path';
 
-let CURRENT_EXTENDED_ROM_OFFSET: number = 0x2000000;
 let VROM_END = 0x04000000;
 const mb = Buffer.alloc(1 * 1024 * 1024);
 let HAS_MOVED_CODE_FILE: boolean = false;
+let heap!: RomHeap;
 
 export class Z64RomTools {
 
@@ -248,18 +249,21 @@ export class Z64RomTools {
   }
 
   relocateFileToExtendedRom(rom: Buffer, index: number, file: Buffer, sizeOverride = 0, nocompress = false): number {
-    let f = rom.indexOf(mb, CURRENT_EXTENDED_ROM_OFFSET);
-    CURRENT_EXTENDED_ROM_OFFSET = f;
+    if (heap === undefined){
+      let f = rom.indexOf(mb, 0x2000000);
+      heap = new RomHeap(this.ModLoader.rom, f, (0x100 * 1024 * 1024) - f);
+    }
     let r = 0;
-    let buf: Buffer | undefined;
+    let buf: Buffer = file;
     if (!nocompress) {
       buf = this.ModLoader.utils.yaz0Encode(file);
     }
+    let alloc = heap.malloc(buf.byteLength);
     let dma = this.DMA_Offset;
     let offset: number = index * 0x10;
     if (sizeOverride > 0) {
       if (!nocompress) {
-        let vram_start: number = CURRENT_EXTENDED_ROM_OFFSET;
+        let vram_start: number = alloc;
         let vram_end: number = vram_start + sizeOverride;
         rom.writeUInt32BE(vram_start, dma + offset);
         rom.writeUInt32BE(vram_end, dma + offset + 0x4);
@@ -269,11 +273,11 @@ export class Z64RomTools {
       file = temp;
     }
     if (nocompress) {
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
+      rom.writeUInt32BE(alloc, dma + offset + 0x8);
       rom.writeUInt32BE(0x0, dma + offset + 0xC);
     } else {
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf!.byteLength, dma + offset + 0xC);
+      rom.writeUInt32BE(alloc, dma + offset + 0x8);
+      rom.writeUInt32BE(alloc + buf!.byteLength, dma + offset + 0xC);
     }
     let start: number = rom.readUInt32BE(dma + offset + 0x8);
     let end: number = rom.readUInt32BE(dma + offset + 0xc);
@@ -291,29 +295,31 @@ export class Z64RomTools {
       file.copy(rom, start);
       r = file.byteLength;
     }
-    let loc = CURRENT_EXTENDED_ROM_OFFSET;
-    CURRENT_EXTENDED_ROM_OFFSET += r;
+    let loc = alloc;
     return loc;
   }
 
   injectNewFile(rom: Buffer, index: number, file: Buffer, nocompress: boolean = false) {
-    let f = rom.indexOf(mb, CURRENT_EXTENDED_ROM_OFFSET);
-    CURRENT_EXTENDED_ROM_OFFSET = f;
+    if (heap === undefined){
+      let f = rom.indexOf(mb, 0x2000000);
+      heap = new RomHeap(this.ModLoader.rom, f, (0x100 * 1024 * 1024) - f);
+    }
     let r = 0;
     let buf: Buffer = file;
     if (!nocompress) {
       buf = this.ModLoader.utils.yaz0Encode(file);
     }
+    let alloc = heap.malloc(buf.byteLength);
     let dma = this.DMA_Offset;
     let offset: number = index * 0x10;
     rom.writeUInt32BE(VROM_END, dma + offset + 0x0);
     rom.writeUInt32BE(VROM_END + file.byteLength, dma + offset + 0x4);
     VROM_END += file.byteLength;
-    rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET, dma + offset + 0x8);
+    rom.writeUInt32BE(alloc, dma + offset + 0x8);
     if (nocompress) {
       rom.writeUInt32BE(0x0, dma + offset + 0xC);
     } else {
-      rom.writeUInt32BE(CURRENT_EXTENDED_ROM_OFFSET + buf.byteLength, dma + offset + 0xC);
+      rom.writeUInt32BE(alloc + buf.byteLength, dma + offset + 0xC);
     }
     let start: number = rom.readUInt32BE(dma + offset + 0x8);
     let end: number = rom.readUInt32BE(dma + offset + 0xc);
@@ -331,7 +337,6 @@ export class Z64RomTools {
       file.copy(rom, start);
       r = file.byteLength;
     }
-    CURRENT_EXTENDED_ROM_OFFSET += r;
     return r;
   }
 
