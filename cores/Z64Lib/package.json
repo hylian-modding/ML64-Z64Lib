@@ -10,5 +10,8 @@
   "author": "",
   "license": "ISC",
   "updateUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/update/update.json",
-  "devUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/dev/update.json"
+  "devUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/dev/update.json",
+  "dependencies": {
+    "optimize_zobj": "https://github.com/Neirn/optimize_zobj"
+  }
 }

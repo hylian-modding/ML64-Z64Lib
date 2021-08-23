@@ -26,13 +26,13 @@ export class ManifestBuffer {
     Hi32(data: number) {
         let temp: Buffer = Buffer.alloc(0x4);
         temp.writeUInt32BE(data, 0);
-        this.buf.writeUInt32BE(temp.readUInt16BE(0), this.cur);
+        this.buf.writeUInt16BE(temp.readUInt16BE(0), this.cur);
     }
 
     Lo32(data: number) {
         let temp: Buffer = Buffer.alloc(0x4);
         temp.writeUInt32BE(data, 0);
-        this.buf.writeUInt32BE(temp.readUInt16BE(2), this.cur);
+        this.buf.writeUInt16BE(temp.readUInt16BE(2), this.cur);
     }
 
     HexString(hex: string) {
@@ -63,5 +63,5 @@ export class ManifestBuffer {
 
 export interface IManifest {
     repoint(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer): boolean;
-    inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer, nocompress?: boolean): number;
+    inject(ModLoader: IModLoaderAPI, rom: Buffer, model: Buffer, nocompress?: boolean, obj_id?: number): number;
 }
