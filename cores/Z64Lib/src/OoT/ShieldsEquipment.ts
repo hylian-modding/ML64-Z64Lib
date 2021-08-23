@@ -18,34 +18,36 @@ export class ShieldsEquipment extends JSONTemplate implements Pick<Z64API.Z64.IS
         super();
         this.emulator = emulator;
     }
-    set dekuShield(flag: Z64API.Z64.Shield) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[ShieldBitMap.DEKU] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    set dekuShield(bool: boolean) {
+        this.emulator.rdramWriteBit8(this.equipment_addr, ShieldBitMap.DEKU, bool);
     }
-    get dekuShield(): Z64API.Z64.Shield {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[ShieldBitMap.DEKU] === 1) return Z64API.Z64.Shield.DEKU;
-        else return Z64API.Z64.Shield.NONE;
+    get dekuShield(): boolean {
+        return this.emulator.rdramReadBit8(this.equipment_addr, ShieldBitMap.DEKU);
     }
-    set hylianShield(flag: Z64API.Z64.Shield) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[ShieldBitMap.HYLIAN] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    set hylianShield(bool: boolean) {
+        this.emulator.rdramWriteBit8(
+            this.equipment_addr,
+            ShieldBitMap.HYLIAN,
+            bool
+        );
     }
-    get hylianShield(): Z64API.Z64.Shield {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[ShieldBitMap.HYLIAN] === 1) return Z64API.Z64.Shield.HYLIAN;
-        else return Z64API.Z64.Shield.NONE;
+    get hylianShield(): boolean {
+        return this.emulator.rdramReadBit8(
+            this.equipment_addr,
+            ShieldBitMap.HYLIAN
+        );
     }
-    set mirrorShield(flag: Z64API.Z64.Shield) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[ShieldBitMap.MIRROR] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    set mirrorShield(bool: boolean) {
+        this.emulator.rdramWriteBit8(
+            this.equipment_addr,
+            ShieldBitMap.MIRROR,
+            bool
+        );
     }
-    get mirrorShield(): Z64API.Z64.Shield {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[ShieldBitMap.MIRROR] === 1) return Z64API.Z64.Shield.MIRROR_OOT;
-        else return Z64API.Z64.Shield.NONE;
+    get mirrorShield(): boolean {
+        return this.emulator.rdramReadBit8(
+            this.equipment_addr,
+            ShieldBitMap.MIRROR
+        );
     }
 }

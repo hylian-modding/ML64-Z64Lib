@@ -369,7 +369,7 @@ export interface ISaveContext {
   inventory: IInventory;
   swords: Pick<Z64API.Z64.ISwords, | 'swordLevel'>;
   sword_helper: ISwordHelper;
-  shields: Z64API.Z64.IShields;
+  shields: Pick<Z64API.Z64.IShields, "shieldLevel">;
   questStatus: IQuestStatus;
   owlStatues: IOwlStatues;
   checksum: number;

@@ -27,50 +27,35 @@ export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISw
         super();
         this.emulator = emulator;
     }
-
-    get kokiriSword(): Z64API.Z64.Sword {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[SwordBitMap.KOKIRI] === 1) return Z64API.Z64.Sword.KOKIRI_OOT;
-        else return Z64API.Z64.Sword.NONE;
+    get kokiriSword() {
+        return this.emulator.rdramReadBit8(this.equipment_addr, SwordBitMap.KOKIRI);
     }
-    set kokiriSword(flag: Z64API.Z64.Sword) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[SwordBitMap.KOKIRI] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    set kokiriSword(bool: boolean) {
+        this.emulator.rdramWriteBit8(this.equipment_addr, SwordBitMap.KOKIRI, bool);
     }
     get masterSword() {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[SwordBitMap.MASTER] === 1) return Z64API.Z64.Sword.MASTER;
-        else return Z64API.Z64.Sword.NONE;
+        return this.emulator.rdramReadBit8(this.equipment_addr, SwordBitMap.MASTER);
     }
-    set masterSword(flag: Z64API.Z64.Sword) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[SwordBitMap.MASTER] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    set masterSword(bool: boolean) {
+        this.emulator.rdramWriteBit8(this.equipment_addr, SwordBitMap.MASTER, bool);
     }
     get giantKnife() {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[SwordBitMap.GIANT] === 1) return Z64API.Z64.Sword.GIANT_KNIFE
-        else if (this.emulator.rdramRead8(this.biggoron_flag_addr) === 0) return Z64API.Z64.Sword.GIANT_KNIFE;
-        else return Z64API.Z64.Sword.NONE;
+        return this.emulator.rdramReadBit8(this.equipment_addr, SwordBitMap.GIANT) && this.emulator.rdramRead8(this.biggoron_flag_addr) === 0;
     }
-    set giantKnife(flag: Z64API.Z64.Sword) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[SwordBitMap.GIANT] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    set giantKnife(bool: boolean) {
+        this.emulator.rdramWriteBit8(this.equipment_addr, SwordBitMap.GIANT, bool);
         this.emulator.rdramWrite8(this.biggoron_flag_addr, 0);
         this.emulator.rdramWrite16(this.biggoron_dmg_addr, 8);
     }
     get biggoronSword() {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        if (bits[SwordBitMap.BIGGORON] === 1) return Z64API.Z64.Sword.BIGGORON
-        else if (this.emulator.rdramRead8(this.biggoron_flag_addr) === 1) return Z64API.Z64.Sword.BIGGORON;
-        else return Z64API.Z64.Sword.NONE;
+        return this.emulator.rdramReadBit8(this.equipment_addr,SwordBitMap.BIGGORON) && this.emulator.rdramRead8(this.biggoron_flag_addr) === 1;
     }
-    set biggoronSword(flag: Z64API.Z64.Sword) {
-        let bits = this.emulator.rdramReadBits8(this.equipment_addr);
-        bits[SwordBitMap.BIGGORON] = flag;
-        this.emulator.rdramWriteBits8(this.equipment_addr, bits);
-        this.emulator.rdramWrite8(this.biggoron_flag_addr, bits[SwordBitMap.BIGGORON] ? 1 : 0);
+    set biggoronSword(bool: boolean) {
+        this.emulator.rdramWriteBit8(
+            this.equipment_addr,
+            SwordBitMap.BIGGORON,
+            bool
+        );
+        this.emulator.rdramWrite8(this.biggoron_flag_addr, bool ? 1 : 0);
     }
-}
+  }
