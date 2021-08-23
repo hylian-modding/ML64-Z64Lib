@@ -72,19 +72,19 @@ export const enum Ocarina {
 
 export interface ISwords {
     //OoT
-    kokiriSword: Sword;
-    masterSword: Sword;
-    giantKnife: Sword;
-    biggoronSword: Sword;
+    kokiriSword: boolean;
+    masterSword: boolean;
+    giantKnife: boolean;
+    biggoronSword: boolean;
     //MM
     swordLevel: Sword;
 }
 
 export interface IShields {
     //OoT
-    dekuShield: Shield;
-    hylianShield: Shield;
-    mirrorShield: Shield;
+    dekuShield: boolean;
+    hylianShield: boolean;
+    mirrorShield: boolean;
     //MM
     shieldLevel: Shield;
 }

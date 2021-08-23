@@ -70,25 +70,25 @@ export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISw
       case Z64API.Z64.Sword.NONE:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0xFF);
-          this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
+          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
       case Z64API.Z64.Sword.KOKIRI_MM:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0x4D);
-          this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
+          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
       case Z64API.Z64.Sword.RAZOR:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0x4E);
-          this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
+          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
       case Z64API.Z64.Sword.GILDED:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0x4F);
-          this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
+          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
     }

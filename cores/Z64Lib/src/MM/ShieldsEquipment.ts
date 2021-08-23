@@ -8,7 +8,7 @@ export const enum ShieldBitMap {
   MIRROR = 0x2,
 }
 
-export class ShieldsEquipment extends JSONTemplate implements Z64API.Z64.IShields {
+export class ShieldsEquipment extends JSONTemplate implements Pick<Z64API.Z64.IShields, 'shieldLevel'>  {
   private emulator: IMemory;
   private instance: number = Z64CORE.Z64_SAVE;
   private equipment_addr: number = this.instance + 0x6D;
@@ -17,11 +17,6 @@ export class ShieldsEquipment extends JSONTemplate implements Z64API.Z64.IShield
     super();
     this.emulator = emulator;
   }
-
-  //TEMP
-  dekuShield!: Z64API.Z64.Shield;
-  hylianShield!: Z64API.Z64.Shield;
-  mirrorShield!: Z64API.Z64.Shield;
 
   get shieldLevel(): Z64API.Z64.Shield {
     let bits = this.emulator.rdramReadBits8(this.equipment_addr);
