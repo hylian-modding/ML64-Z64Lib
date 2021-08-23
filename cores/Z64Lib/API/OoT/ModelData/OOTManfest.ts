@@ -5,7 +5,7 @@ import path from 'path';
 import { Z64LibSupportedGames } from '../../Utilities/Z64LibSupportedGames';
 import { IManifest, ManifestBuffer } from '../../Utilities/Z64ManifestBuffer';
 import { trimBuffer, Z64RomTools } from '../../Utilities/Z64RomTools';
-import { Z64Offsets } from './IOOTOffsets';
+import { Z64Offsets } from '../../Common/ModelData/IZ64Offsets';
 
 export class OOTManifest implements IManifest {
 
