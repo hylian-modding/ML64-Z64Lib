@@ -1,4 +1,4 @@
-import Vector3 from "modloader64_api/math/Vector3";
+import Vector3 from "modloader64_api/Math/Vector3";
 import { IActor } from "./IActor";
 
 export const enum Command {
@@ -24,7 +24,7 @@ export interface ICommandBuffer {
   updateButton(button: number): void;
   playSound(sfxId: number, a1: Vector3, a2: number, a3: number, a4: number, a5: number): void;
   // #ifdef DANGEROUS_FUNCTIONS
-  arbitraryFunctionCall(functionAddress: number, argsPointer: number): Promise<Buffer>;
+  arbitraryFunctionCall(functionAddress: number, argsPointer: number, argsCount: number): Promise<Buffer>;
   movePlayerActorToAddress(address: number): Promise<boolean>;
   // #endif
 }

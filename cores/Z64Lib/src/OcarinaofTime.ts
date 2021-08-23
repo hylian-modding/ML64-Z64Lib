@@ -12,7 +12,8 @@ import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsOOT';
 import { ROM_REGIONS, ROM_VERSIONS } from '../Z64Lib';
 import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
-import { setupOotDBG, Z64_GLOBAL_PTR, Z64_OVERLAY_TABLE, Z64_SAVE } from './Common/types/GameAliases';
+import { Z64_GAME, Z64_GLOBAL_PTR, Z64_OVERLAY_TABLE, Z64_SAVE } from './Common/types/GameAliases';
+import { EventSystem } from '../API/OoT/EventSystem';
 
 export interface OOT_Offsets {
     state: number;
@@ -212,14 +213,18 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
             skipped += (0x100000);
             scan = this.ModLoader.emulator.rdramReadBuffer(start, 0x100000);
         }
-        this.heap_start = start;
-        this.heap_size = (0x1000000 - skipped);
-        this.ModLoader.logger.debug(`Oot Core Context: ${start.toString(16)}. Size: 0x${this.heap_size.toString(16)}`);
+        let gfx_heap_start = start;
+        let gfx_heap_size = (0x1000000 - skipped);
+        evt["gfx_heap_start"] = gfx_heap_start;
+        evt["gfx_heap_size"] = gfx_heap_size;
+        this.ModLoader.logger.debug(`Oot Core Context: ${this.heap_start.toString(16)}. Size: 0x${this.heap_size.toString(16)}`);
+        this.ModLoader.logger.debug(`Oot GFX Context: ${gfx_heap_start.toString(16)}. Size: 0x${gfx_heap_size.toString(16)}`);
     }
 
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision);
+        this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
+        this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
     }
 
     mapSelectCode(): void {

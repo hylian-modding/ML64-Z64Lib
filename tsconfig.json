@@ -17,7 +17,7 @@
         "./build/emulator/*"
       ],
       "@Z64Lib/*": [
-        "./src/Z64Lib/*"
+        "./cores/Z64Lib/*"
       ]
     },
     "noImplicitAny": false
