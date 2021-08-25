@@ -537,9 +537,9 @@ export class MMManifest implements IManifest {
 
         // End
 
-        tools.recompressDMAFileIntoRom(rom, 27, _code.buf);
-        tools.recompressDMAFileIntoRom(rom, 120, _hook.buf);
-        tools.recompressDMAFileIntoRom(rom, 34, _player.buf);
+        tools.recompressDMAFileIntoRom(rom, 31, _code.buf);
+        tools.recompressDMAFileIntoRom(rom, 83, _hook.buf);
+        tools.recompressDMAFileIntoRom(rom, 26, _player.buf);
         tools.recompressDMAFileIntoRom(rom, 511, _zot.buf)
 
         return true;
