@@ -134,9 +134,32 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
         this.link.current_sound_id = 0;
     }
     
+    @EventHandler(EventsClient.ON_HEAP_SETUP)
+    onHeapSetup(evt: any) {
+        // Scan memory.
+        let mb_1: Buffer = Buffer.alloc(0x100000);
+        let start: number = 0x80000000;
+        let scan: Buffer = Buffer.alloc(0x100000, 0xFF);
+        let skipped: number = 0;
+        while (!scan.equals(mb_1)) {
+            start += (0x100000);
+            skipped += (0x100000);
+            scan = this.ModLoader.emulator.rdramReadBuffer(start, 0x100000);
+        }
+        let gfx_heap_start = start;
+        let gfx_heap_size = (0x1000000 - skipped);
+        evt["gfx_heap_start"] = gfx_heap_start;
+        evt["gfx_heap_size"] = gfx_heap_size;
+        this.heap_start = 0x81000000;
+        this.heap_size = 0x2E00000;
+        this.ModLoader.logger.debug(`MM Core Context: ${this.heap_start.toString(16)}. Size: 0x${this.heap_size.toString(16)}`);
+        this.ModLoader.logger.debug(`MM GFX Context: ${gfx_heap_start.toString(16)}. Size: 0x${gfx_heap_size.toString(16)}`);
+    }
+
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        //this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header!.revision);
+        //this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
+        //this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
     }
     
 }

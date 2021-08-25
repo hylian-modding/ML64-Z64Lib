@@ -6,6 +6,7 @@ import { Z64LibSupportedGames } from '../../Utilities/Z64LibSupportedGames';
 import { IManifest, ManifestBuffer } from '../../Utilities/Z64ManifestBuffer';
 import { trimBuffer, Z64RomTools } from '../../Utilities/Z64RomTools';
 import { Z64Offsets } from '../../Common/ModelData/IZ64Offsets';
+import { MMRomPatches } from './MMRomPatches';
 
 export class MMManifest implements IManifest {
 
@@ -32,13 +33,14 @@ export class MMManifest implements IManifest {
 
                 // Move the file to extended ROM space.
                 r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, obj_id), zobj, 0);
-                rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
+                tools.noCRC(rom);
             }
         } else {
             // Move the file to extended ROM space.
             r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, obj_id), zobj, 0, nocompress);
-            rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
+            tools.noCRC(rom);
         }
+        new MMRomPatches().patch(rom);
         return r;
     }
 
@@ -46,7 +48,7 @@ export class MMManifest implements IManifest {
         let tools = new Z64RomTools(ModLoader, Z64LibSupportedGames.MAJORAS_MASK);
 
         let code: Buffer = tools.getCodeFile(rom);
-        let files = [83, 38];
+        let files = [83, 38, 511];
         for (let i = 0; i < files.length; i++) {
             let r = tools.relocateFileToExtendedRom(rom, files[i], tools.decompressDMAFileFromRom(rom, files[i]), 0, true);
             console.log(`${i} -> ${r.toString(16)}`);
@@ -156,29 +158,32 @@ export class MMManifest implements IManifest {
 
         // FPS Glitch Fix (Thanks Fkualol!)
         _code.GoTo(0x11A7E4);
-        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DL_DF);
 
         // Swordless fix    (Thanks Nick!)
         _code.GoTo(0x11A5E4);
-        _code.Write32(Z64Offsets.DF_COMMAND);                   // Sheathed Sword + Shield
+        _code.Write32(Z64Offsets.DL_DF);                   // Sheathed Sword + Shield
 
         _code.GoTo(0x11A5BC);
-        _code.Write32(Z64Offsets.DF_COMMAND);                   // Sheathed Sword
+        _code.Write32(Z64Offsets.DL_DF);                   // Sheathed Sword
 
         // Unknown Pointers (?)
         _code.GoTo(0x11A594);
-        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DL_DF);
 
         _code.GoTo(0x11A598);
-        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DL_DF);
 
         _code.GoTo(0x11A5C0);
-        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DL_DF);
 
         _code.GoTo(0x11A5E8);
-        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DL_DF);
 
-        // Deku Link
+        _code.GoTo(0x11A350);
+        _code.Write32(Z64Offsets.SKEL_SECTION);
+
+        /* // Deku Link
 
         _code.GoTo(0x11A554);
         _code.Write32(Z64Offsets.DL_WAIST);  // Waist
@@ -528,11 +533,11 @@ export class MMManifest implements IManifest {
 
         // skeleton pointer
         _code.GoTo(0x11A340);
-        _code.Write32(Z64Offsets.SKEL_SECTION);
+        _code.Write32(Z64Offsets.SKEL_SECTION); */
 
         // End
 
-        tools.recompressDMAFileIntoRom(rom, 27, code);
+        tools.recompressDMAFileIntoRom(rom, 27, _code.buf);
         tools.recompressDMAFileIntoRom(rom, 120, _hook.buf);
         tools.recompressDMAFileIntoRom(rom, 34, _player.buf);
         tools.recompressDMAFileIntoRom(rom, 511, _zot.buf)
