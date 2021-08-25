@@ -138,6 +138,9 @@ export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext
             this.emulator.rdramReadBuffer(this.player_name_addr, 8)
         );
     }
+    set player_name(str: string){
+        this.emulator.rdramWriteBuffer(this.player_name_addr, Z64API.zeldaString.encode(str));
+    }
     // Will always be false normally.
     get dd_flag(): boolean {
         return this.emulator.rdramRead16(this.dd_flag_addr) === 1;

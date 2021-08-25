@@ -6,4 +6,3 @@ class Z64LibAPI{
 }
 
 module.exports = require("./src/Z64Lib.js");
-console.log(module.exports);

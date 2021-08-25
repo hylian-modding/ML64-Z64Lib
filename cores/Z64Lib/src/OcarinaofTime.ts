@@ -50,8 +50,8 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
     localFlagsHash: string = "";
     permFlagsScene: Buffer = Buffer.alloc(0xb0c);
     permFlagsSceneHash: string = "";
-    heap_start: number = 0x80700000;
-    heap_size: number = 0x00900000;
+    heap_start: number = 0x0;
+    heap_size: number = 0x0;
     isNight: boolean = false;
     lastHealth: number = 0;
     lastTunic: Z64API.OoT.Tunic = Z64API.OoT.Tunic.KOKIRI;
@@ -217,6 +217,8 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
         let gfx_heap_size = (0x1000000 - skipped);
         evt["gfx_heap_start"] = gfx_heap_start;
         evt["gfx_heap_size"] = gfx_heap_size;
+        this.heap_start = 0x81000000;
+        this.heap_size = 0x2E00000;
         this.ModLoader.logger.debug(`Oot Core Context: ${this.heap_start.toString(16)}. Size: 0x${this.heap_size.toString(16)}`);
         this.ModLoader.logger.debug(`Oot GFX Context: ${gfx_heap_start.toString(16)}. Size: 0x${gfx_heap_size.toString(16)}`);
     }
@@ -354,8 +356,8 @@ export class OverlayPayload extends PayloadType {
         alloc.writeUInt32BE(buf.byteLength);
         dest.rdramWriteBuffer(final, alloc.toBuffer());
         let hash: string = this.ModLoader.utils.hashBuffer(buf);
-        this.ModLoader.utils.setTimeoutFrames(()=>{
-            this.core.commandBuffer.relocateOverlay(final, final + (buf.byteLength - buf.readUInt32BE(buf.byteLength - 0x4)), 0x80800000).then(()=>{
+        this.ModLoader.utils.setTimeoutFrames(() => {
+            this.core.commandBuffer.relocateOverlay(final, final + (buf.byteLength - buf.readUInt32BE(buf.byteLength - 0x4)), 0x80800000).then(() => {
                 let hash2 = this.ModLoader.utils.hashBuffer(this.ModLoader.emulator.rdramReadBuffer(final, buf.byteLength));
                 if (hash !== hash2) {
                     this.ModLoader.logger.info(`${path.parse(file).base} relocated.`);

@@ -483,10 +483,10 @@ export class CommandBuffer_Factory {
         spawnCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
         emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnCave")!, spawnCave.toBuffer());
 
-/*         let objectCave = new SmartBuffer();
-        objectCave.writeUInt32BE(J_ENCODE(Object_SpawnCave_malloc));
-        objectCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
-        emu.rdramWriteBuffer(this.VERSIONS.get(revision)!.get("Object_SpawnCave")!, objectCave.toBuffer()); */
+        /*         let objectCave = new SmartBuffer();
+                objectCave.writeUInt32BE(J_ENCODE(Object_SpawnCave_malloc));
+                objectCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
+                emu.rdramWriteBuffer(this.VERSIONS.get(revision)!.get("Object_SpawnCave")!, objectCave.toBuffer()); */
 
         this.cmd_pointer = heap.malloc(0x10);
         this.cmdbuf = heap.malloc(COMMANDBUFFER_SIZEOF);
@@ -514,36 +514,36 @@ export class CommandBuffer_Factory {
             return p;
         };
 
-/*         let SuperDynaPoly_AllocPolyList_malloc = alloc(SuperDynaPoly_AllocPolyList);
-        let SuperDynaPoly_AllocVtxList_malloc = alloc(SuperDynaPoly_AllocVtxList);
-        let SuperDynaSSNodeList_Alloc_malloc = alloc(SuperDynaSSNodeList_Alloc);
-
-        let SuperPoly1Size = (512 * 10) * 0x10
-        let SuperPoly2Size = (512 * 10) * 0x6
-        let SuperPoly3Size = (1000 * 10) * 0xC
-
-        let SuperPoly1 = heap.malloc(SuperPoly1Size);
-        let SuperPoly2 = heap.malloc(SuperPoly2Size);
-        let SuperPoly3 = heap.malloc(SuperPoly3Size);
-        let SuperPoly3_size = SuperPoly3Size / 0xC;
+        /*         let SuperDynaPoly_AllocPolyList_malloc = alloc(SuperDynaPoly_AllocPolyList);
+                let SuperDynaPoly_AllocVtxList_malloc = alloc(SuperDynaPoly_AllocVtxList);
+                let SuperDynaSSNodeList_Alloc_malloc = alloc(SuperDynaSSNodeList_Alloc);
         
-        let pointers = alloc_pointers([SuperPoly1, SuperPoly2, SuperPoly3, SuperPoly3_size, 0])
-
-        let SuperPoly1_pointer = pointers
-        let SuperPoly2_pointer = pointers + 4
-        let SuperPoly3_pointer = pointers + 8
-        let SuperPoly3_size_pointer = pointers + 0x10
-        emu.rdramWrite32(pointers + 0x10, pointers + 0xC)
-
-        emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaPoly_AllocPolyList")!, JAL_ENCODE(SuperDynaPoly_AllocPolyList_malloc));
-        emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaPoly_AllocVtxList")!, JAL_ENCODE(SuperDynaPoly_AllocVtxList_malloc));
-        emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaSSNodeList_Alloc")!, JAL_ENCODE(SuperDynaSSNodeList_Alloc_malloc));
-
-        this.ReplaceAddress(SuperDynaPoly_AllocPolyList_malloc, SuperDynaPoly_AllocPolyList.byteLength, emu, 0x12345678, SuperPoly1_pointer);
-        this.ReplaceAddress(SuperDynaPoly_AllocVtxList_malloc, SuperDynaPoly_AllocVtxList.byteLength, emu, 0x12345678, SuperPoly2_pointer);
-        this.ReplaceAddress(SuperDynaSSNodeList_Alloc_malloc, SuperDynaSSNodeList_Alloc.byteLength, emu, 0x12345678, SuperPoly3_pointer);
-
-        this.ReplaceAddress(SuperDynaSSNodeList_Alloc_malloc, SuperDynaSSNodeList_Alloc.byteLength, emu, 0x43215678, SuperPoly3_size_pointer); */
+                let SuperPoly1Size = (512 * 10) * 0x10
+                let SuperPoly2Size = (512 * 10) * 0x6
+                let SuperPoly3Size = (1000 * 10) * 0xC
+        
+                let SuperPoly1 = heap.malloc(SuperPoly1Size);
+                let SuperPoly2 = heap.malloc(SuperPoly2Size);
+                let SuperPoly3 = heap.malloc(SuperPoly3Size);
+                let SuperPoly3_size = SuperPoly3Size / 0xC;
+                
+                let pointers = alloc_pointers([SuperPoly1, SuperPoly2, SuperPoly3, SuperPoly3_size, 0])
+        
+                let SuperPoly1_pointer = pointers
+                let SuperPoly2_pointer = pointers + 4
+                let SuperPoly3_pointer = pointers + 8
+                let SuperPoly3_size_pointer = pointers + 0x10
+                emu.rdramWrite32(pointers + 0x10, pointers + 0xC)
+        
+                emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaPoly_AllocPolyList")!, JAL_ENCODE(SuperDynaPoly_AllocPolyList_malloc));
+                emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaPoly_AllocVtxList")!, JAL_ENCODE(SuperDynaPoly_AllocVtxList_malloc));
+                emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaSSNodeList_Alloc")!, JAL_ENCODE(SuperDynaSSNodeList_Alloc_malloc));
+        
+                this.ReplaceAddress(SuperDynaPoly_AllocPolyList_malloc, SuperDynaPoly_AllocPolyList.byteLength, emu, 0x12345678, SuperPoly1_pointer);
+                this.ReplaceAddress(SuperDynaPoly_AllocVtxList_malloc, SuperDynaPoly_AllocVtxList.byteLength, emu, 0x12345678, SuperPoly2_pointer);
+                this.ReplaceAddress(SuperDynaSSNodeList_Alloc_malloc, SuperDynaSSNodeList_Alloc.byteLength, emu, 0x12345678, SuperPoly3_pointer);
+        
+                this.ReplaceAddress(SuperDynaSSNodeList_Alloc_malloc, SuperDynaSSNodeList_Alloc.byteLength, emu, 0x43215678, SuperPoly3_size_pointer); */
 
         return this.cmdbuf;
     }

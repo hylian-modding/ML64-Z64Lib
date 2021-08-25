@@ -1,5 +1,5 @@
 import { IRomHeader } from 'modloader64_api/IRomHeader';
-import { IModLoaderAPI, ICore } from "modloader64_api/IModLoaderAPI";
+import { IModLoaderAPI, ICore, IExtendedCore } from "modloader64_api/IModLoaderAPI";
 import fs from 'fs';
 import path from 'path';
 import { setupMM, setupOot, setupOotDBG, Z64_GAME } from "./Common/types/GameAliases";
@@ -24,7 +24,7 @@ export enum ROM_REGIONS {
     NTSC_MM = "NZS"
 }
 
-export default class Z64Lib implements ICore, IZ64Main {
+export default class Z64Lib implements ICore, IZ64Main, IExtendedCore {
     header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
     ModLoader!: IModLoaderAPI;
     eventTicks: Map<string, Function> = new Map<string, Function>();
@@ -46,14 +46,7 @@ export default class Z64Lib implements ICore, IZ64Main {
         return -1;
     }
 
-    applyVersionPatch(msg: string, bps: string, target: ROM_VERSIONS) {
-        this.ModLoader.logger.info(msg);
-        let r = PatchTypes.get(".bps")!.patch(this.ModLoader.rom.romReadBuffer(0x0, (32 * 1024 * 1024)), fs.readFileSync(path.join(__dirname, "OoT/conversionPatch", bps)));
-        this.ModLoader.rom.romWriteBuffer(0x0, r);
-        this.rom_header.revision = target;
-    }
-
-    preinit() {
+    postconstructor(): void {
         switch (this.rom_header.id) {
             case (ROM_REGIONS.NTSC_OOT):
                 this.OOT = new OcarinaofTime();
@@ -71,7 +64,16 @@ export default class Z64Lib implements ICore, IZ64Main {
                 setupMM();
                 break;
         }
+    }
 
+    applyVersionPatch(msg: string, bps: string, target: ROM_VERSIONS) {
+        this.ModLoader.logger.info(msg);
+        let r = PatchTypes.get(".bps")!.patch(this.ModLoader.rom.romReadBuffer(0x0, (32 * 1024 * 1024)), fs.readFileSync(path.join(__dirname, "OoT/conversionPatch", bps)));
+        this.ModLoader.rom.romWriteBuffer(0x0, r);
+        this.rom_header.revision = target;
+    }
+
+    preinit() {
         if (this.rom_header.revision === ROM_VERSIONS.GAMECUBE && this.rom_header.id === ROM_REGIONS.NTSC_OOT) {
             // Check if its the retail Gamecube roms from the collector's edition discs or the actual debug rom.
             let rom: Buffer = this.ModLoader.rom.romReadBuffer(0x0, (32 * 1024 * 1024));

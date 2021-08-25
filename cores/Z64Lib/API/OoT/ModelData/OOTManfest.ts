@@ -32,12 +32,12 @@ export class OOTManifest implements IManifest {
 
                 // Move the file to extended ROM space.
                 r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, obj_id), zobj, 0);
-                rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
+                tools.noCRC(rom);
             }
         } else {
             // Move the file to extended ROM space.
             r = tools.relocateFileToExtendedRom(rom, tools.findDMAIndexOfObject(rom, obj_id), zobj, 0, nocompress);
-            rom = PatchTypes.get(".txt")!.patch(rom, fs.readFileSync(path.join(__dirname, "../", "no_crc.txt")));
+            tools.noCRC(rom);
         }
         return r;
     }
