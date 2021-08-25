@@ -452,15 +452,19 @@ export class CommandBuffer_Factory {
         let CommandBuffer_Update_malloc = alloc(inject.commandbuffer);
         let Actor_SpawnWithAddress_malloc = alloc(inject.Actor_SpawnWithAddress);
         let Actor_DestroyCave_malloc = alloc(inject.Actor_DestroyCave);
-        let Actor_InitCave_malloc = alloc(inject.Actor_InitCave);
+        //let Actor_InitCave_malloc = alloc(inject.Actor_InitCave);
         let Actor_SpawnEntryCave_malloc = alloc(inject.Actor_SpawnEntryCave);
-        let Actor_SpawnCave_malloc = alloc(inject.Actor_SpawnCave);
+        //let Actor_SpawnWithParentAndCutsceneCave_malloc = //@BUG This causes a redbar, I think I missed something up
+        //let Actor_SpawnCave_malloc = alloc(inject.Actor_SpawnCave);
         let Actor_SpawnTransitionActorCave_malloc = alloc(inject.Actor_SpawnTransitionActorCave);
         let Actor_UpdateCave_malloc = alloc(inject.Actor_UpdateCave);
-        let Object_SpawnCave_malloc = alloc(inject.Object_SpawnCave); //@BUG This rainbow crashes. Why? The code is right...
 
-        //let Sfx_Cave_malloc = alloc(Sfx_Cave);
+        // if MM
+        if (1 && inject.Actor_SpawnWithParentAndCutsceneCave !== undefined) {
+            //Actor_SpawnWithParentAndCutsceneCave_malloc = alloc(inject.Actor_SpawnWithParentAndCutsceneCave);
+        }
 
+        // write JAL's to Actor_SpawnWithAddress
         for (let i = 0; i < inject.commandbuffer.byteLength; i += 4) {
             let inst = DecodeOpcode(inject.commandbuffer.slice(i, i + 4));
             if (inst.type === OPCODEINDEXTYPE.DEFAULT && inst.indx === OPCODE_DEFAULT.JAL) {
@@ -472,38 +476,54 @@ export class CommandBuffer_Factory {
         }
 
         emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_DestroyCave")!, JAL_ENCODE(Actor_DestroyCave_malloc));
-        emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_InitCave")!, JAL_ENCODE(Actor_InitCave_malloc)); // @BUG This is never reached because we overwrite Actor_Spawn!
         emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnEntryCave")!, JAL_ENCODE(Actor_SpawnEntryCave_malloc));
-        emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnTransitionActorCave")!, JAL_ENCODE(Actor_SpawnTransitionActorCave_malloc));
+        //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_InitCave")!, JAL_ENCODE(Actor_InitCave_malloc)); // @BUG This is never reached because we overwrite Actor_Spawn!
         emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_UpdateCave")!, JAL_ENCODE(Actor_UpdateCave_malloc));
         emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("CommandBuffer_Update")!, JAL_ENCODE(CommandBuffer_Update_malloc));
 
-        let spawnCave = new SmartBuffer();
-        spawnCave.writeUInt32BE(J_ENCODE(Actor_SpawnCave_malloc));
-        spawnCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
-        emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnCave")!, spawnCave.toBuffer());
+        let smartCave = new SmartBuffer()
 
-        /*         let objectCave = new SmartBuffer();
-                objectCave.writeUInt32BE(J_ENCODE(Object_SpawnCave_malloc));
-                objectCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
-                emu.rdramWriteBuffer(this.VERSIONS.get(revision)!.get("Object_SpawnCave")!, objectCave.toBuffer()); */
+        // if oot
+        if (0) {
+            emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnTransitionActorCave")!, JAL_ENCODE(Actor_SpawnTransitionActorCave_malloc));
+            emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("CommandBuffer_Update")!, JAL_ENCODE(CommandBuffer_Update_malloc));
+        }
+        else {
+            smartCave.clear()
+            smartCave.writeUInt32BE(J_ENCODE(Actor_SpawnTransitionActorCave_malloc));
+            smartCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
+            emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnTransitionActorCave")!, smartCave.toBuffer());
+
+            /*if (Actor_SpawnWithParentAndCutsceneCave_malloc) {
+                smartCave.clear()
+                smartCave.writeUInt32BE(J_ENCODE(Actor_SpawnWithParentAndCutsceneCave_malloc));
+                smartCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
+                emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnWithParentAndCutsceneCave")!, smartCave.toBuffer());
+            }*/
+
+            emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnEntryCave2")!, JAL_ENCODE(Actor_SpawnEntryCave_malloc));
+        }
+
+        //smartCave.clear()
+        //smartCave.writeUInt32BE(J_ENCODE(Actor_SpawnCave_malloc));
+        //smartCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
+        //emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnCave")!, smartCave.toBuffer());
 
         this.cmd_pointer = heap.malloc(0x10);
         this.cmdbuf = heap.malloc(COMMANDBUFFER_SIZEOF);
         emu.rdramWrite32(this.cmd_pointer, this.cmdbuf);
         console.log(`Command buffer: ${this.cmdbuf.toString(16)}`);
+
         this.ReplaceAddress(CommandBuffer_Update_malloc, inject.commandbuffer.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnWithAddress_malloc, inject.Actor_SpawnWithAddress.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_DestroyCave_malloc, inject.Actor_DestroyCave.byteLength, emu, 0x12345678, this.cmd_pointer);
-        this.ReplaceAddress(Actor_InitCave_malloc, inject.Actor_InitCave.byteLength, emu, 0x12345678, this.cmd_pointer);
+        //this.ReplaceAddress(Actor_InitCave_malloc, inject.Actor_InitCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnEntryCave_malloc, inject.Actor_SpawnEntryCave.byteLength, emu, 0x12345678, this.cmd_pointer);
-        this.ReplaceAddress(Actor_SpawnCave_malloc, inject.Actor_SpawnCave.byteLength, emu, 0x12345678, this.cmd_pointer);
+        // if mm
+        //if (1 && inject.Actor_SpawnWithParentAndCutsceneCave !== undefined && Actor_SpawnWithParentAndCutsceneCave_malloc) this.ReplaceAddress(Actor_SpawnWithParentAndCutsceneCave_malloc, inject.Actor_SpawnWithParentAndCutsceneCave.byteLength, emu, 0x12345678, this.cmd_pointer);
+        //this.ReplaceAddress(Actor_SpawnCave_malloc, inject.Actor_SpawnCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnTransitionActorCave_malloc, inject.Actor_SpawnTransitionActorCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_UpdateCave_malloc, inject.Actor_UpdateCave.byteLength, emu, 0x12345678, this.cmd_pointer);
-        //this.ReplaceAddress(Object_SpawnCave_malloc, Object_SpawnCave.byteLength, emu, 0x12345678, this.cmd_pointer);
-
-        //this.ReplaceAddress(Sfx_Cave_malloc, Sfx_Cave.byteLength, emu, this.cmd_pointer);
-        //emu.rdramWriteBuffer(0x80025F04, Buffer.from('2402000103E0000800000000', 'hex'));
 
         let alloc_pointers = (values: number[]) => {
             let p = heap.malloc(values.length * 4);
@@ -517,32 +537,32 @@ export class CommandBuffer_Factory {
         /*         let SuperDynaPoly_AllocPolyList_malloc = alloc(SuperDynaPoly_AllocPolyList);
                 let SuperDynaPoly_AllocVtxList_malloc = alloc(SuperDynaPoly_AllocVtxList);
                 let SuperDynaSSNodeList_Alloc_malloc = alloc(SuperDynaSSNodeList_Alloc);
-        
+
                 let SuperPoly1Size = (512 * 10) * 0x10
                 let SuperPoly2Size = (512 * 10) * 0x6
                 let SuperPoly3Size = (1000 * 10) * 0xC
-        
+
                 let SuperPoly1 = heap.malloc(SuperPoly1Size);
                 let SuperPoly2 = heap.malloc(SuperPoly2Size);
                 let SuperPoly3 = heap.malloc(SuperPoly3Size);
                 let SuperPoly3_size = SuperPoly3Size / 0xC;
-                
+
                 let pointers = alloc_pointers([SuperPoly1, SuperPoly2, SuperPoly3, SuperPoly3_size, 0])
-        
+
                 let SuperPoly1_pointer = pointers
                 let SuperPoly2_pointer = pointers + 4
                 let SuperPoly3_pointer = pointers + 8
                 let SuperPoly3_size_pointer = pointers + 0x10
                 emu.rdramWrite32(pointers + 0x10, pointers + 0xC)
-        
+
                 emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaPoly_AllocPolyList")!, JAL_ENCODE(SuperDynaPoly_AllocPolyList_malloc));
                 emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaPoly_AllocVtxList")!, JAL_ENCODE(SuperDynaPoly_AllocVtxList_malloc));
                 emu.rdramWrite32(this.VERSIONS.get(revision)!.get("SuperDynaSSNodeList_Alloc")!, JAL_ENCODE(SuperDynaSSNodeList_Alloc_malloc));
-        
+
                 this.ReplaceAddress(SuperDynaPoly_AllocPolyList_malloc, SuperDynaPoly_AllocPolyList.byteLength, emu, 0x12345678, SuperPoly1_pointer);
                 this.ReplaceAddress(SuperDynaPoly_AllocVtxList_malloc, SuperDynaPoly_AllocVtxList.byteLength, emu, 0x12345678, SuperPoly2_pointer);
                 this.ReplaceAddress(SuperDynaSSNodeList_Alloc_malloc, SuperDynaSSNodeList_Alloc.byteLength, emu, 0x12345678, SuperPoly3_pointer);
-        
+
                 this.ReplaceAddress(SuperDynaSSNodeList_Alloc_malloc, SuperDynaSSNodeList_Alloc.byteLength, emu, 0x43215678, SuperPoly3_size_pointer); */
 
         return this.cmdbuf;

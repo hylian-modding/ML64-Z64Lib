@@ -1,4 +1,4 @@
-import { onTick, Preinit, Init, Postinit, onPostTick } from "modloader64_api/PluginLifecycle";
+import { onTick, Preinit, Init, Postinit, onPostTick, onViUpdate } from "modloader64_api/PluginLifecycle";
 import { IRomHeader } from 'modloader64_api/IRomHeader';
 import { ModLoaderAPIInject } from "modloader64_api/ModLoaderAPIInjector";
 import { IModLoaderAPI, ILogger, ICore, ModLoaderEvents } from "modloader64_api/IModLoaderAPI";
@@ -10,6 +10,8 @@ import path from 'path';
 import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsMM';
 import { ROM_REGIONS } from "./Z64Lib";
+import Vector3 from "modloader64_api/math/Vector3";
+import { InputTextFlags, number_ref } from "modloader64_api/Sylvain/ImGui";
 
 export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     header = [ROM_REGIONS.NTSC_MM];
@@ -38,6 +40,9 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     payloads: string[] = new Array<string>();
     inventory_cache: Buffer = Buffer.alloc(0x18, 0xff);
 
+    id: number_ref = [4]
+    param: number_ref = [0]
+
     constructor() {
     }
     rom_header?: IRomHeader | undefined;
@@ -50,7 +55,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
 
     }
 
-    
+
     @EventHandler(ModLoaderEvents.ON_SOFT_RESET_PRE)
     onReset1(evt: any) {
         this.isSaveLoaded = false;
@@ -60,7 +65,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     onReset2(evt: any) {
         this.isSaveLoaded = false;
     }
-    
+
     @Init()
     init(): void {
         this.eventTicks.set('waitingForSaveload', () => {
@@ -91,11 +96,14 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
 
     @onTick()
     onTick() {
-
         //this.commandBuffer.onTick();
 
         if (this.helper.isTitleScreen() || !this.helper.isSceneNumberValid()) return;
-        
+
+        if (this.commandBuffer !== undefined) {
+            this.commandBuffer.onTick();
+        }
+
         // Loading zone check
         if (this.helper.isLinkEnteringLoadingZone() && !this.touching_loading_zone) {
             bus.emit(Z64API.MM.MMEvents.ON_LOADING_ZONE, {});
@@ -123,17 +131,32 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
             this.isPaused = false;
             bus.emit(Z64API.MM.MMEvents.ON_UNPAUSE);
         }
-        
+
         this.eventTicks.forEach((value: Function, key: string) => {
             value();
         });
     }
-    
+
+    @onViUpdate()
+    onViUpdate() {
+        this.ModLoader.ImGui.begin("Dood spawner")
+        {
+            this.ModLoader.ImGui.inputInt("Id", this.id, undefined, undefined, InputTextFlags.CharsHexadecimal)
+            this.ModLoader.ImGui.inputInt("Param", this.param, undefined, undefined, InputTextFlags.CharsHexadecimal)
+            if (this.ModLoader.ImGui.button("Spawn dood")) {
+                if (this.commandBuffer !== undefined) {
+                    this.commandBuffer.spawnActor(this.id[0], this.param[0], new Vector3(), this.link.position.getVec3())
+                }
+            }
+        }
+        this.ModLoader.ImGui.end()
+    }
+
     @onPostTick()
     onPostTick() {
         this.link.current_sound_id = 0;
     }
-    
+
     @EventHandler(EventsClient.ON_HEAP_SETUP)
     onHeapSetup(evt: any) {
         // Scan memory.
@@ -160,6 +183,10 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     onHeapReady(evt: any) {
         //this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
         //this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
+
+        if (this.rom_header !== undefined) {
+            this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64_GAME);
+        }
     }
-    
+
 }
