@@ -183,7 +183,7 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x11A350);
         _code.Write32(Z64Offsets.SKEL_SECTION);
 
-        /* // Deku Link
+        // Deku Link
 
         _code.GoTo(0x11A554);
         _code.Write32(Z64Offsets.DL_WAIST);  // Waist
@@ -250,14 +250,14 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x11B054);
         _code.Write32(Z64Offsets.DL_STEM_RIGHT);
 
-        _player.GoTo(0x2FAE8); // Pad Wood
-        _player.Write32(Z64Offsets.DL_PAD_WOOD);
-
-        _player.GoTo(0x2FAE4); // Pad Grass
-        _player.Write32(Z64Offsets.DL_PAD_GRASS);
-
-        _player.GoTo(0x2FAEC); // Pad Opening
-        _player.Write32(Z64Offsets.DL_PAD_OPENING);
+        /*         _player.GoTo(0x2FAE8); // Pad Wood
+                _player.Write32(Z64Offsets.DL_PAD_WOOD);
+        
+                _player.GoTo(0x2FAE4); // Pad Grass
+                _player.Write32(Z64Offsets.DL_PAD_GRASS);
+        
+                _player.GoTo(0x2FAEC); // Pad Opening
+                _player.Write32(Z64Offsets.DL_PAD_OPENING); */
 
 
         _code.GoTo(0x83ED6); // Deku Pipe Mouthpiece
@@ -280,16 +280,18 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x8190E); // Deku Flower Open
         _code.Lo32(Z64Offsets.DL_FLOWER_PROPELLER_OPEN);
 
-        _player.GoTo(0x923A); // Deku Flower Landing Particle Effect
-        _player.Hi32(Z64Offsets.DL_PETAL_PARTICLE);
-        _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
-        _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE);
+                _player.GoTo(0x923A); // Deku Flower Landing Particle Effect
+                _player.Hi32(Z64Offsets.DL_PETAL_PARTICLE);
+                _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
+                _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE);
+        
+/*                 _player.GoTo(0x6D45); // Left Shin
+                _player.Hi32(Z64Offsets.DL_LSHIN);
+                _player.GoTo(0x6D49); // Left Shin
+                _player.Lo32(Z64Offsets.DL_LSHIN); */
 
-        _player.GoTo(0x6D45); // Left Shin
-        _player.Hi32(Z64Offsets.DL_LSHIN);
-        _player.GoTo(0x6D49); // Left Shin
-        _player.Lo32(Z64Offsets.DL_LSHIN);
-
+        _code.GoTo(0x11A34C);
+        _code.Write32(Z64Offsets.SKEL_SECTION);
 
         // Goron Link (LOL)
 
@@ -356,15 +358,34 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_LHAND_BOTTLE);
         _code.Write32(Z64Offsets.DL_LHAND_BOTTLE);
 
-
         //skeleton pointer
         _code.GoTo(0x11A344);
         _code.Write32(Z64Offsets.SKEL_SECTION);
+
+        _code.GoTo(0x11A314);
+        _code.Write32(Z64Offsets.DL_CURLED);
 
         _player.GoTo(0x13EE2); //lui     a2, 0x0x01 ## a2 = 06010000
         _player.Hi32(Z64Offsets.SKEL_SECTION + 0x10);
         _player.GoTo(0x13F06); //addiu   a2, a2, 0x77B8  ## a2 = 060177B8
         _player.Lo32(Z64Offsets.SKEL_SECTION + 0x10);
+
+        _player.GoTo(0x13EE6);
+        _player.Hi32(Z64Offsets.GORON_MAGIC_0);
+        _player.GoTo(0x13F02);
+        _player.Lo32(Z64Offsets.GORON_MAGIC_0);
+
+        let hilo = (m: ManifestBuffer, hi: number, lo: number, p: number)=>{
+            m.GoTo(hi);
+            m.Hi32(p);
+            m.GoTo(lo);
+            m.Lo32(p);
+        }
+
+        hilo(_player, 0x1917E, 0x19182, Z64Offsets.DL_INIT_FIRE);
+        hilo(_player, 0x191AE, 0x191B2, Z64Offsets.DL_FIRE_ROLL);
+        hilo(_player, 0x18EEE, 0x18EF2, Z64Offsets.DL_CURLED);
+        hilo(_player, 0x18F8A, 0x18F8E, Z64Offsets.DL_SPIKES);
 
         // Zora Link
 
@@ -472,13 +493,15 @@ export class MMManifest implements IManifest {
         _code.Lo32(Z64Offsets.DL_MAGIC_BARRIER);
 
         _code.GoTo(0x7F90A);                      //Do Magic Branch Stuff
-        _code.Hi32(Z64Offsets.ZORA_MAGIC_0);
+        _code.Hi32(Z64Offsets.ZORA_MAGIC_1);
         _code.GoTo(0x7F916);
-        _code.Lo32(Z64Offsets.ZORA_MAGIC_0);
+        _code.Lo32(Z64Offsets.ZORA_MAGIC_1);
 
         _code.GoTo(0x7F97C);
         _code.HexString("0x1000001B00000000"); //Do Magic Branch Stuff
 
+        _code.GoTo(0x11A348);
+        _code.Write32(Z64Offsets.SKEL_SECTION);
 
         // Fierce Deity
 
@@ -492,6 +515,9 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_LSHOULDER);
         _code.GoTo(0x11A7E8);    // FPS Left Hand
         _code.Write32(Z64Offsets.DL_LHAND);
+
+        _code.GoTo(0x11A340);
+        _code.Write32(Z64Offsets.SKEL_SECTION);
 
         //Hands
 
@@ -533,14 +559,16 @@ export class MMManifest implements IManifest {
 
         // skeleton pointer
         _code.GoTo(0x11A340);
-        _code.Write32(Z64Offsets.SKEL_SECTION); */
+        _code.Write32(Z64Offsets.SKEL_SECTION);
 
         // End
 
         tools.recompressDMAFileIntoRom(rom, 31, _code.buf);
         tools.recompressDMAFileIntoRom(rom, 83, _hook.buf);
-        tools.recompressDMAFileIntoRom(rom, 26, _player.buf);
+        tools.recompressDMAFileIntoRom(rom, 38, _player.buf);
         tools.recompressDMAFileIntoRom(rom, 511, _zot.buf)
+
+        fs.writeFileSync("./player.ovl", _player.buf);
 
         return true;
     }

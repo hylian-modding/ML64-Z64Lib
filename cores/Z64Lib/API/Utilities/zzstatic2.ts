@@ -125,24 +125,26 @@ export class zzstatic2 {
         let skelsec = this.readPointer(buf, start + 0x1C);
         if (skelsec > 0) {
             this.pointerSet.add(start + 0x1C);
-            let bones = buf.readUInt8(skelsec + 4);
-            if (bones > 0) {
-                this.pointerSet.add(skelsec);
-                let skel = this.readPointer(buf, skelsec);
-                for (let i = 0; i < bones; i++) {
-                    this.pointerSet.add(skel + (i * 4));
-                    let bone = this.readPointer(buf, skel + (i * 4));
-                    bone += 8;
-                    let d1 = buf.readUInt32BE(bone);
-                    this.temp.writeUInt32BE(d1);
-                    if (this.temp.readUInt8(0) === 0x06) {
-                        this.pointerSet.add(bone);
-                    }
-                    bone += 4;
-                    let d2 = buf.readUInt32BE(bone);
-                    this.temp.writeUInt32BE(d2);
-                    if (this.temp.readUInt8(0) === 0x06) {
-                        this.pointerSet.add(bone);
+            for (let i = 0; i < 4; i++) {
+                let bones = buf.readUInt8(skelsec + (i * 0x10) + 4);
+                if (bones > 0) {
+                    this.pointerSet.add(skelsec + (i * 0x10));
+                    let skel = this.readPointer(buf, skelsec + (i * 0x10));
+                    for (let j = 0; j < bones; j++) {
+                        this.pointerSet.add(skel + (j * 4));
+                        let bone = this.readPointer(buf, skel + (j * 4));
+                        bone += 8;
+                        let d1 = buf.readUInt32BE(bone);
+                        this.temp.writeUInt32BE(d1);
+                        if (this.temp.readUInt8(0) === 0x06) {
+                            this.pointerSet.add(bone);
+                        }
+                        bone += 4;
+                        let d2 = buf.readUInt32BE(bone);
+                        this.temp.writeUInt32BE(d2);
+                        if (this.temp.readUInt8(0) === 0x06) {
+                            this.pointerSet.add(bone);
+                        }
                     }
                 }
             }
