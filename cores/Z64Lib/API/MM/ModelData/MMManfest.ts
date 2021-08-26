@@ -387,6 +387,9 @@ export class MMManifest implements IManifest {
         hilo(_player, 0x18EEE, 0x18EF2, Z64Offsets.DL_CURLED);
         hilo(_player, 0x18F8A, 0x18F8E, Z64Offsets.DL_SPIKES);
 
+        hilo(_code, 0x81A4A , 0x81A4E , Z64Offsets.DL_FIRE_PUNCH);
+        hilo(_code, 0x83932 , 0x83936 , Z64Offsets.DL_DRUM_STRAP);
+
         // Zora Link
 
         _code.GoTo(0x11A54C);
