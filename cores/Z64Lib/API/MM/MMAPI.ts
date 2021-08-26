@@ -471,6 +471,7 @@ export interface IMMHelper {
   isLinkEnteringLoadingZone(): boolean;
   isPaused(): boolean;
   isInterfaceShown(): boolean;
+  Player_InBlockingCsMode(): boolean;
 }
 
 export interface IMMCore extends ICore {
