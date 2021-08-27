@@ -149,6 +149,10 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x11B2D4);                    // 2's Bow String
         _code.Write32(Z64Offsets.DL_BOW_STRING);
 
+        // skeleton pointer
+        _code.GoTo(0x11A340);
+        _code.Write32(Z64Offsets.SKEL_SECTION);
+
         // Hookshot Spike
         _hook.GoTo(0xA2E);
         _hook.Hi32(Z64Offsets.DL_HOOKSHOT_HOOK);
@@ -158,27 +162,27 @@ export class MMManifest implements IManifest {
 
         // FPS Glitch Fix (Thanks Fkualol!)
         _code.GoTo(0x11A7E4);
-        _code.Write32(Z64Offsets.DL_DF);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         // Swordless fix    (Thanks Nick!)
         _code.GoTo(0x11A5E4);
-        _code.Write32(Z64Offsets.DL_DF);                   // Sheathed Sword + Shield
+        _code.Write32(Z64Offsets.DF_COMMAND);                   // Sheathed Sword + Shield
 
         _code.GoTo(0x11A5BC);
-        _code.Write32(Z64Offsets.DL_DF);                   // Sheathed Sword
+        _code.Write32(Z64Offsets.DF_COMMAND);                   // Sheathed Sword
 
         // Unknown Pointers (?)
         _code.GoTo(0x11A594);
-        _code.Write32(Z64Offsets.DL_DF);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A598);
-        _code.Write32(Z64Offsets.DL_DF);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A5C0);
-        _code.Write32(Z64Offsets.DL_DF);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A5E8);
-        _code.Write32(Z64Offsets.DL_DF);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A350);
         _code.Write32(Z64Offsets.SKEL_SECTION);
@@ -280,15 +284,15 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x8190E); // Deku Flower Open
         _code.Lo32(Z64Offsets.DL_FLOWER_PROPELLER_OPEN);
 
-                _player.GoTo(0x923A); // Deku Flower Landing Particle Effect
-                _player.Hi32(Z64Offsets.DL_PETAL_PARTICLE);
-                _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
-                _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE);
-        
-/*                 _player.GoTo(0x6D45); // Left Shin
-                _player.Hi32(Z64Offsets.DL_LSHIN);
-                _player.GoTo(0x6D49); // Left Shin
-                _player.Lo32(Z64Offsets.DL_LSHIN); */
+        /*                 _player.GoTo(0x923A); // Deku Flower Landing Particle Effect
+                        _player.Hi32(Z64Offsets.DL_PETAL_PARTICLE);
+                        _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
+                        _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE); */
+
+        /*                 _player.GoTo(0x6D45); // Left Shin
+                        _player.Hi32(Z64Offsets.DL_LSHIN);
+                        _player.GoTo(0x6D49); // Left Shin
+                        _player.Lo32(Z64Offsets.DL_LSHIN); */
 
         _code.GoTo(0x11A34C);
         _code.Write32(Z64Offsets.SKEL_SECTION);
@@ -362,8 +366,8 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x11A344);
         _code.Write32(Z64Offsets.SKEL_SECTION);
 
-        _code.GoTo(0x11A314);
-        _code.Write32(Z64Offsets.DL_CURLED);
+        //_code.GoTo(0x11A314);
+        //_code.Write32(Z64Offsets.DL_CURLED);
 
         _player.GoTo(0x13EE2); //lui     a2, 0x0x01 ## a2 = 06010000
         _player.Hi32(Z64Offsets.SKEL_SECTION + 0x10);
@@ -375,7 +379,7 @@ export class MMManifest implements IManifest {
         _player.GoTo(0x13F02);
         _player.Lo32(Z64Offsets.GORON_MAGIC_0);
 
-        let hilo = (m: ManifestBuffer, hi: number, lo: number, p: number)=>{
+        let hilo = (m: ManifestBuffer, hi: number, lo: number, p: number) => {
             m.GoTo(hi);
             m.Hi32(p);
             m.GoTo(lo);
@@ -557,9 +561,11 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_SWORD_DEITY);
         _code.Write32(Z64Offsets.DL_SWORD_DEITY);
 
-        // skeleton pointer
-        _code.GoTo(0x11A340);
-        _code.Write32(Z64Offsets.SKEL_SECTION);
+        _code.GoTo(0x11B0B0);
+        _code.Write32(Z64Offsets.DL_DEITY_MASK);
+        _code.Write32(Z64Offsets.DL_GORON_MASK);
+        _code.Write32(Z64Offsets.DL_ZORA_MASK);
+        _code.Write32(Z64Offsets.DL_DEKU_MASK);
 
         // End
 
@@ -569,6 +575,7 @@ export class MMManifest implements IManifest {
         tools.recompressDMAFileIntoRom(rom, 511, _zot.buf)
 
         fs.writeFileSync("./player.ovl", _player.buf);
+        fs.writeFileSync("./code_dirty.bin", _code.buf);
 
         return true;
     }

@@ -122,6 +122,9 @@ export class zzstatic2 {
             cur += 8;
             count--;
         }
+        if (buf.readUInt32BE(start + 0x17) > 0){
+            this.pointerSet.add(start + 0x17);
+        }
         let skelsec = this.readPointer(buf, start + 0x1C);
         if (skelsec > 0) {
             this.pointerSet.add(start + 0x1C);
