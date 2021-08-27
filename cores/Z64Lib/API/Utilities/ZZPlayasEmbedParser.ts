@@ -34,8 +34,6 @@ export class ZZPlayasEmbedParser {
                 head += 4;
                 map[str] = offset;
             } catch (err) {
-                console.log(`Parsing problem?`);
-                console.log(err.stack);
                 break;
             }
         }
