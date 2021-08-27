@@ -336,6 +336,18 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_RHAND);
         _code.Write32(Z64Offsets.DL_RHAND);
 
+        _code.GoTo(0x11A73C);                    // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
+        _code.GoTo(0x11A764);                    // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
+        _code.GoTo(0x11A78C);                    // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
         _code.GoTo(0x11A714);                    // Right Fist
         _code.Write32(Z64Offsets.DL_RFIST);
         _code.Write32(Z64Offsets.DL_RFIST);
@@ -390,6 +402,14 @@ export class MMManifest implements IManifest {
         hilo(_player, 0x191AE, 0x191B2, Z64Offsets.DL_FIRE_ROLL);
         hilo(_player, 0x18EEE, 0x18EF2, Z64Offsets.DL_CURLED);
         hilo(_player, 0x18F8A, 0x18F8E, Z64Offsets.DL_SPIKES);
+
+        hilo(_code, 0x81A4A , 0x81A4E , Z64Offsets.DL_FIRE_PUNCH);
+
+        _code.GoTo(0x83932);
+        _code.Hi32(Z64Offsets.DL_DRUM_STRAP);
+        _code.GoTo(0x83936);
+        _code.Lo32(Z64Offsets.DL_DRUM_STRAP);
+
 
         // Zora Link
 
@@ -467,9 +487,9 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_RSHOULDER);
 
         _code.GoTo(0x80522);
-        _code.Hi32(Z64Offsets.DL_ZORA_GUITAR);
+        _code.Hi32(Z64Offsets.DL_GUITAR_HAND);
         _code.GoTo(0x80526);
-        _code.Lo32(Z64Offsets.DL_ZORA_GUITAR);
+        _code.Lo32(Z64Offsets.DL_GUITAR_HAND);
 
         _code.GoTo(0x805A2);                      // Hard Coded Right Hand
         _code.Hi32(Z64Offsets.DL_RHAND);
