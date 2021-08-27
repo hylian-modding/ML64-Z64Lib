@@ -193,6 +193,10 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_WAIST);  // Waist
         _code.Write32(Z64Offsets.DL_WAIST);
 
+        _code.GoTo(0x11A644); // Left Hand
+        _code.Write32(Z64Offsets.DL_LHAND);
+        _code.Write32(Z64Offsets.DL_LHAND);
+
         _code.GoTo(0x11A66C); // Left Hand
         _code.Write32(Z64Offsets.DL_LHAND);
         _code.Write32(Z64Offsets.DL_LHAND);
@@ -205,13 +209,41 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_RHAND);
         _code.Write32(Z64Offsets.DL_RHAND);
 
+        _code.GoTo(0x11A6BC); // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
         _code.GoTo(0x11A724); // Right Fist
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
+        _code.GoTo(0x11A74C); // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
+        _code.GoTo(0x11A79C); // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
+        _code.GoTo(0x11A814); // Right Hand
+        _code.Write32(Z64Offsets.DL_RHAND);
+        _code.Write32(Z64Offsets.DL_RHAND);
+
+        _code.GoTo(0x11A828); // Right Hand
         _code.Write32(Z64Offsets.DL_RHAND);
         _code.Write32(Z64Offsets.DL_RHAND);
 
         _code.GoTo(0x11A7C4); // Bottle Hand
         _code.Write32(Z64Offsets.DL_LHAND);
         _code.Write32(Z64Offsets.DL_LHAND);
+
+        _code.GoTo(0x11A58C); // Sheath 
+        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
+        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
+
+        _code.GoTo(0x11A5B4); // Sheath 
+        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
+        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
 
         _code.GoTo(0x11A5DC); // Sword and Shield in Sheath (Unused)
         _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
@@ -284,15 +316,13 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x8190E); // Deku Flower Open
         _code.Lo32(Z64Offsets.DL_FLOWER_PROPELLER_OPEN);
 
-        /*                 _player.GoTo(0x923A); // Deku Flower Landing Particle Effect
-                        _player.Hi32(Z64Offsets.DL_PETAL_PARTICLE);
-                        _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
-                        _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE); */
+        _player.GoTo(0x923A); // Deku Flower Landing Particle Effect
+        _player.Hi32(Z64Offsets.DL_PETAL_PARTICLE);
+        _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
+        _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE);
 
-        /*                 _player.GoTo(0x6D45); // Left Shin
-                        _player.Hi32(Z64Offsets.DL_LSHIN);
-                        _player.GoTo(0x6D49); // Left Shin
-                        _player.Lo32(Z64Offsets.DL_LSHIN); */
+        
+
 
         _code.GoTo(0x11A34C);
         _code.Write32(Z64Offsets.SKEL_SECTION);
@@ -403,7 +433,7 @@ export class MMManifest implements IManifest {
         hilo(_player, 0x18EEE, 0x18EF2, Z64Offsets.DL_CURLED);
         hilo(_player, 0x18F8A, 0x18F8E, Z64Offsets.DL_SPIKES);
 
-        hilo(_code, 0x81A4A , 0x81A4E , Z64Offsets.DL_FIRE_PUNCH);
+        hilo(_code, 0x81A4A, 0x81A4E, Z64Offsets.DL_FIRE_PUNCH);
 
         _code.GoTo(0x83932);
         _code.Hi32(Z64Offsets.DL_DRUM_STRAP);
