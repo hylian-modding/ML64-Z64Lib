@@ -12,7 +12,7 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private math: IMath;
     pointer = Z64CORE.Z64_PLAYER;
     private state_addr: number = Z64_PLAYER_STATE;
-    private state2_addr: number =Z64_PLAYER_STATE2;
+    private state2_addr: number = Z64_PLAYER_STATE2;
     private tunic_addr: number = this.pointer + 0x013c;
     private shield_addr: number = this.pointer + 0x013e;
     private boots_addr: number = this.pointer + 0x013f;
@@ -410,6 +410,26 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
         this.emulator.rdramWritePtrF32(this.pointer + addr, offset, value);
     }
     memoryDebugLogger(bool: boolean): void { }
+
+    rdramRead64(addr: number): number {
+        return this.emulator.rdramRead64(this.pointer + addr);
+    }
+
+    rdramReadS64(addr: number): number {
+        return this.emulator.rdramReadS64(this.pointer + addr);
+    }
+
+    rdramReadF64(addr: number): number {
+        return this.emulator.rdramReadF64(this.pointer + addr);
+    }
+
+    rdramWrite64(addr: number, val: number): void {
+        this.emulator.rdramWrite64(this.pointer + addr, val)
+    }
+
+    rdramWriteF64(addr: number, val: number): void {
+        this.emulator.rdramWriteF64(this.pointer + addr, val);
+    }
 
     get projected_position(): Vector3 {
         return this.math.rdramReadV3(this.pointer + 0xE4);

@@ -51,7 +51,6 @@ export class MMManifest implements IManifest {
         let files = [83, 38, 511];
         for (let i = 0; i < files.length; i++) {
             let r = tools.relocateFileToExtendedRom(rom, files[i], tools.decompressDMAFileFromRom(rom, files[i]), 0, true);
-            console.log(`${i} -> ${r.toString(16)}`);
         }
 
         let _code = new ManifestBuffer(code);
@@ -238,16 +237,16 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_LHAND);
 
         _code.GoTo(0x11A58C); // Sheath 
-        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
-        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
+        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A5B4); // Sheath 
-        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
-        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
+        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A5DC); // Sword and Shield in Sheath (Unused)
-        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
-        _code.Write32(Z64Offsets.DL_SWORD_SHEATH_1);
+        _code.Write32(Z64Offsets.DF_COMMAND);
+        _code.Write32(Z64Offsets.DF_COMMAND);
 
         _code.GoTo(0x11A7F4); // FPS Left Hand
         _code.Write32(Z64Offsets.DL_LHAND);
@@ -286,15 +285,14 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x11B054);
         _code.Write32(Z64Offsets.DL_STEM_RIGHT);
 
-        /*         _player.GoTo(0x2FAE8); // Pad Wood
-                _player.Write32(Z64Offsets.DL_PAD_WOOD);
-        
-                _player.GoTo(0x2FAE4); // Pad Grass
-                _player.Write32(Z64Offsets.DL_PAD_GRASS);
-        
-                _player.GoTo(0x2FAEC); // Pad Opening
-                _player.Write32(Z64Offsets.DL_PAD_OPENING); */
+        _player.GoTo(0x2FAE8); // Pad Wood
+        _player.Write32(Z64Offsets.DL_PAD_WOOD);
 
+        _player.GoTo(0x2FAE4); // Pad Grass
+        _player.Write32(Z64Offsets.DL_PAD_GRASS);
+
+        _player.GoTo(0x2FAEC); // Pad Opening
+        _player.Write32(Z64Offsets.DL_PAD_OPENING);
 
         _code.GoTo(0x83ED6); // Deku Pipe Mouthpiece
         _code.Hi32(Z64Offsets.DL_PIPE_MOUTH);
@@ -321,7 +319,7 @@ export class MMManifest implements IManifest {
         _player.GoTo(0x924A); // Deku Flower Landing Particle Effect
         _player.Lo32(Z64Offsets.DL_PETAL_PARTICLE);
 
-        
+
 
 
         _code.GoTo(0x11A34C);

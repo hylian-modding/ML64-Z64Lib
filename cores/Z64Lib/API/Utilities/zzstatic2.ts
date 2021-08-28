@@ -95,8 +95,7 @@ export class zzstatic2 {
         return buf.readUInt32BE(offset) & 0x00FFFFFF;
     }
 
-    repoint(buf: Buffer, base: number) {
-        this.pointerSet.clear();
+    findAllDisplayLists(buf: Buffer){
         for (let i = 0; i < buf.byteLength; i += 8) {
             let cmd = this.readCommand(buf, i);
             if (this.isOpCodeEnd(cmd.id) && buf.readUInt32BE(i) === 0xDF000000 && buf.readUInt32BE(i + 0x4) === 0) {
@@ -111,8 +110,14 @@ export class zzstatic2 {
                 this.displayListStarts.add(reverse);
             }
         }
+        return this.displayListStarts;
+    }
+
+    repoint(buf: Buffer, base: number) {
+        this.pointerSet.clear();
+        this.findAllDisplayLists(buf);
         let start = buf.indexOf(Buffer.from("MODLOADER64"));
-        let count = buf.readUInt32BE(start + 0xC) << 2;
+        let count = buf.readUInt32BE(start + 0xC);
         let cur = start + 0x20;
         while (count > 0) {
             let cmd = this.readCommand(buf, cur);

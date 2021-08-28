@@ -405,4 +405,24 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
         this.emulator.rdramWritePtrF32(this.instance + addr, offset, value);
     }
     memoryDebugLogger(bool: boolean): void { }
+
+    rdramRead64(addr: number): number {
+        return this.emulator.rdramRead64(this.pointer + addr);
+    }
+
+    rdramReadS64(addr: number): number {
+        return this.emulator.rdramReadS64(this.pointer + addr);
+    }
+
+    rdramReadF64(addr: number): number {
+        return this.emulator.rdramReadF64(this.pointer + addr);
+    }
+
+    rdramWrite64(addr: number, val: number): void {
+        this.emulator.rdramWrite64(this.pointer + addr, val)
+    }
+
+    rdramWriteF64(addr: number, val: number): void {
+        this.emulator.rdramWriteF64(this.pointer + addr, val);
+    }
 }
