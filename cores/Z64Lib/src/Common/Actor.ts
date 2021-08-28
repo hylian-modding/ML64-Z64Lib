@@ -418,5 +418,17 @@ export class ActorBase extends JSONTemplate implements Z64API.IActor {
         this.emulator.rdramWriteF64(this.pointer + addr, val);
     }
 
+    rdramReadBigInt64(addr: number): BigInt {
+        return this.emulator.rdramReadBigInt64(this.pointer + addr);
+    }
+
+    rdramReadBigIntS64(addr: number): BigInt {
+        return this.emulator.rdramReadBigIntS64(this.pointer + addr);
+    }
+    
+    rdramWriteBigInt64(addr: number, val: BigInt): void {
+        this.emulator.rdramWriteBigInt64(this.pointer + addr, val);
+    }
+
     memoryDebugLogger(bool: boolean): void { }
 }

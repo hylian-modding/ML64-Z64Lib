@@ -48,6 +48,7 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
         this.rotation = new Z64CORE.Rotation(this);
         this.position = new Z64CORE.Position(this);
     }
+
     tunic: any;
     boots: any;
     projected_position!: Vector3;
@@ -424,5 +425,17 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
 
     rdramWriteF64(addr: number, val: number): void {
         this.emulator.rdramWriteF64(this.pointer + addr, val);
+    }
+
+    rdramReadBigInt64(addr: number): BigInt {
+        return this.emulator.rdramReadBigInt64(this.pointer + addr);
+    }
+
+    rdramReadBigIntS64(addr: number): BigInt {
+        return this.emulator.rdramReadBigIntS64(this.pointer + addr);
+    }
+    
+    rdramWriteBigInt64(addr: number, val: BigInt): void {
+        this.emulator.rdramWriteBigInt64(this.pointer + addr, val);
     }
 }
