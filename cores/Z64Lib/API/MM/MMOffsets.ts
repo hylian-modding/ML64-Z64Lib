@@ -98,11 +98,11 @@ export class MMOffsets {
     stone_item: number = 0x801EF733; //0x1 bitfield
 
     double_defense: number = 0x801EF743; //0x1
-    scene_flags = 0x801EF768; //0xD20 dig chest flags out of here
+    permSceneData = 0x801EF768; //0xD20 dig chest flags out of here
     bank_rupees = 0x801F054E; //0x2
 
-    event_flg: number = 0x801F0568;
-    event_inf: number = 0x801F067C;
+    weekEventFlags: number = 0x801F0568;
+    infTable: number = 0x801F067C;
 
     switch_flags_addr = 0x803E8978; //Might be wrong
     temp_switch_flags_addr = 0x803E8988; //Wrong

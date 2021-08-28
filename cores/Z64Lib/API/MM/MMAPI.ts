@@ -365,7 +365,7 @@ export interface IOwlStatues {
 }
 
 export interface ISaveContext {
-  scene_flags: Buffer;
+
   inventory: IInventory;
   swords: Pick<Z64API.Z64.ISwords, | 'swordLevel'>;
   sword_helper: ISwordHelper;
@@ -413,13 +413,17 @@ export interface ISaveContext {
 
   pictoboxUsed: boolean;
 
+  permSceneData: Buffer;
+  weekEventFlags: Buffer;
+  infTable: Buffer;
+
   permFlags: Buffer;
 }
 
 
 
 export interface IGlobalContext {
-  current_scene: number;
+  scene: number;
   room: number;
   scene_framecount: number;
   continue_state: boolean;

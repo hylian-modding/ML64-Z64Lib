@@ -356,7 +356,7 @@ export interface IGlobalContext {
   lastOrCurrentEntrance: number;
 }
 
-export interface IInventory extends IInventoryFields, Z64API.OoT.IInventoryCounts {
+export interface IInventory extends Z64API.OoT.IInventoryFields, Z64API.OoT.IInventoryCounts {
   hasBottle(): boolean;
   getBottleCount(): number;
   getBottledItems(): InventoryItem[];

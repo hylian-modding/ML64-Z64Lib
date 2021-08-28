@@ -21,6 +21,34 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     shields: Z64CORE.ShieldsEquipment;
     commandBuffer!: Z64API.ICommandBuffer;
 
+    jsonFields: string[] = [
+        'entrance_index',
+        'cutscene_number',
+        'world_time',
+        'world_night_flag',
+        'map_visible',
+        'map_visited',
+        'player_name',
+        'heart_containers',
+        'magic_meter_size',
+        'magic_current',
+        'rupee_count',
+        'owl_statues',
+        'checksum',
+        'form',
+        'swords',
+        'shields',
+        'double_defense',
+        'have_tatl',
+        'inventory',
+        'masks',
+        'questStatus',
+        'intro_flag',
+        'updrades',
+        'spider_house_mask_order',
+        'bomber_code'
+    ];
+
     constructor(emu: IMemory, log: ILogger, core: Z64API.MM.IMMCore) {
         super();
         this.emulator = emu;
@@ -237,19 +265,26 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         this.emulator.rdramWrite8(0x801EF743, flag);
     }
 
-    get scene_flags(): Buffer {
+    get permSceneData(): Buffer {
         return this.emulator.rdramReadBuffer(0x801EF768, 0xD20);
     }
 
-    set scene_flags(flag: Buffer) {
+    set permSceneData(flag: Buffer) {
         this.emulator.rdramWriteBuffer(0x801EF768, flag);
     }
 
-    get event_flags(): Buffer {
+    get weekEventFlags(): Buffer {
+        return this.emulator.rdramReadBuffer(0x801F0568, 0x64);
+    }
+    set weekEventFlags(buf: Buffer) {
+        this.emulator.rdramWriteBuffer(0x801F0568, buf);
+    }
+
+    get infTable(): Buffer {
         return this.emulator.rdramReadBuffer(0x801F067C, 0x8);
     }
 
-    set event_flags(flag: Buffer) {
+    set infTable(flag: Buffer) {
         this.emulator.rdramWriteBuffer(0x801F067C, flag);
     }
 

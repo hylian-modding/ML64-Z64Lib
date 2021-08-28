@@ -12,7 +12,7 @@ export class ShieldsEquipment extends JSONTemplate implements Pick<Z64API.Z64.IS
   private emulator: IMemory;
   private instance: number = Z64CORE.Z64_SAVE;
   private equipment_addr: number = this.instance + 0x6D;
-  jsonFields: string[] = ['heroesShield', 'mirrorShield'];
+  jsonFields: string[] = ['shieldLevel'];
   constructor(emulator: IMemory) {
     super();
     this.emulator = emulator;

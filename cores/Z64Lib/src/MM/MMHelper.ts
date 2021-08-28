@@ -44,7 +44,7 @@ export class MMHelper extends JSONTemplate implements Z64API.MM.IMMHelper {
     }
 
     isSceneNumberValid(): boolean {
-        return this.global.current_scene <= 112;
+        return this.global.scene <= 112;
     }
 
     isPaused(): boolean {

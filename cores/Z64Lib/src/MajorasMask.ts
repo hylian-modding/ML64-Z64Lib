@@ -113,7 +113,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
         if (
             this.global.scene_framecount === 1
         ) {
-            this.last_known_scene = this.global.current_scene;
+            this.last_known_scene = this.global.scene;
             bus.emit(Z64API.MM.MMEvents.ON_SCENE_CHANGE, this.last_known_scene);
             this.touching_loading_zone = false;
         }

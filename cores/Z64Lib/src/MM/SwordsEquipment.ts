@@ -18,9 +18,7 @@ export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISw
   private equipment_addr: number = this.instance + 0x6D;
   private commandBuf: Z64API.ICommandBuffer;
   jsonFields: string[] = [
-    'kokiriSwordMM',
-    'razorSword',
-    'gildedSword',
+    'swordLevel',
   ];
   constructor(emulator: IMemory, commandBuf: Z64API.ICommandBuffer) {
     super();

@@ -9,13 +9,14 @@ export class GlobalContext {
     instance: number = Z64CORE.Z64_GLOBAL_PTR;
     save_context: number = Z64CORE.Z64_SAVE;
     continue_state!: boolean;
-
+    jsonFields: string[] = ['scene', 'room', 'framecount'];
+    
     constructor(ModLoader: IModLoaderAPI) {
         this.ModLoader = ModLoader;
         this.viewStruct = new Z64CORE.viewStruct(ModLoader);
     }
 
-    get current_scene(): number {
+    get scene(): number {
 
         return this.ModLoader.emulator.rdramReadPtr16(this.instance, 0xA4);
     }
@@ -75,14 +76,14 @@ export class GlobalContext {
 
     getSaveDataForCurrentScene(): Buffer {
         return this.ModLoader.emulator.rdramReadBuffer(
-            this.save_context + 0x00F8 + this.current_scene * 0xD20,
+            this.save_context + 0x00F8 + this.scene * 0xD20,
             0x1c
         );
     }
     writeSaveDataForCurrentScene(buf: Buffer): void {
         if (buf.byteLength === 0x1c) {
             this.ModLoader.emulator.rdramWriteBuffer(
-                this.save_context + 0x00F8 + this.current_scene * 0xD20,
+                this.save_context + 0x00F8 + this.scene * 0xD20,
                 buf
             );
         }
