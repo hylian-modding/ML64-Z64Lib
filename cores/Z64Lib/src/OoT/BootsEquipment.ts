@@ -1,7 +1,7 @@
 import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export const enum BootsBitMap {
   KOKIRI = 3,
@@ -11,7 +11,7 @@ export const enum BootsBitMap {
 
 export class BootsEquipment extends JSONTemplate implements Z64API.OoT.IBoots {
   private emulator: IMemory;
-  private instance: number = Z64CORE.Z64_SAVE;
+  private instance: number = Z64CORE.Z64.Z64_SAVE;
   private equipment_addr: number = this.instance + 0x009c;
   jsonFields: string[] = ['kokiriBoots', 'ironBoots', 'hoverBoots'];
   constructor(emulator: IMemory) {

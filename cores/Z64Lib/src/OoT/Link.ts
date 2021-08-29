@@ -4,13 +4,13 @@ import { OOT_Offsets } from '../OcarinaofTime';
 import Vector3 from 'modloader64_api/math/Vector3';
 import { IMath } from 'modloader64_api/math/IMath';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsOOT';
+import * as Z64CORE from '../importsZ64';
 import { Z64_PLAYER_STATE, Z64_PLAYER_STATE2 } from '../Common/types/GameAliases';
 
 export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private emulator: IMemory;
     private math: IMath;
-    pointer = Z64CORE.Z64_PLAYER;
+    pointer = Z64CORE.Z64.Z64_PLAYER;
     private state_addr: number = Z64_PLAYER_STATE;
     private state2_addr: number = Z64_PLAYER_STATE2;
     private tunic_addr: number = this.pointer + 0x013c;
@@ -19,7 +19,7 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private mask_addr: number = this.pointer + 0x014f;
     private pos_addr: number = this.pointer + 0x24;
     private rot_addr: number = this.pointer + 0xb4;
-    private sword_addr: number = Z64CORE.Z64_SAVE + 0x0070 + 0x1;
+    private sword_addr: number = Z64CORE.Z64.Z64_SAVE + 0x0070 + 0x1;
     /*This is provided by OotCore's ASM.
       Anim data is safely copied into this space at the end of each rendering cycle.
       This helps prevent jittering.*/
@@ -45,8 +45,8 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     constructor(emu: IMemory, math: IMath) {
         super();
         this.emulator = emu;
-        this.rotation = new Z64CORE.Rotation(this);
-        this.position = new Z64CORE.Position(this);
+        this.rotation = new Z64CORE.Z64.Rotation(this);
+        this.position = new Z64CORE.Z64.Position(this);
         this.math = math;
     }
 

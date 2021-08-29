@@ -1,19 +1,19 @@
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export class GlobalContext {
 
     ModLoader: IModLoaderAPI;
     viewStruct: Z64API.Z64.IViewStruct;
-    instance: number = Z64CORE.Z64_GLOBAL_PTR;
-    save_context: number = Z64CORE.Z64_SAVE;
+    instance: number = Z64CORE.Z64.Z64_GLOBAL_PTR;
+    save_context: number = Z64CORE.Z64.Z64_SAVE;
     continue_state!: boolean;
     jsonFields: string[] = ['scene', 'room', 'framecount'];
     
     constructor(ModLoader: IModLoaderAPI) {
         this.ModLoader = ModLoader;
-        this.viewStruct = new Z64CORE.viewStruct(ModLoader);
+        this.viewStruct = new Z64CORE.Z64.viewStruct(ModLoader);
     }
 
     get scene(): number {

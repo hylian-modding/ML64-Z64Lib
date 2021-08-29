@@ -1,6 +1,6 @@
 import { JSONTemplate } from "modloader64_api/JSONTemplate";
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 import IMemory from "modloader64_api/IMemory";
 
 export class Skull implements Z64API.MM.ISkull {

@@ -1,7 +1,7 @@
 import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsOoT';
+import * as Z64CORE from '../importsZ64';
 export const enum TunicBitMap {
   KOKIRI = 7,
   GORON = 6,
@@ -10,7 +10,7 @@ export const enum TunicBitMap {
 
 export class TunicsEquipment extends JSONTemplate implements Z64API.OoT.ITunics {
   private emulator: IMemory;
-  private instance: number = Z64CORE.Z64_SAVE;
+  private instance: number = Z64CORE.Z64.Z64_SAVE;
   private equipment_addr: number = this.instance + 0x009c;
   jsonFields: string[] = ['kokiriTunic', 'goronTunic', 'zoraTunic'];
   constructor(emulator: IMemory) {

@@ -4,11 +4,11 @@ import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import { ILogger } from 'modloader64_api/IModLoaderAPI';
 import { NONAME } from 'dns';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export class Inventory extends JSONTemplate implements Z64API.MM.IInventory {
     private emulator: IMemory;
-    private instance: number = Z64CORE.Z64_SAVE;
+    private instance: number = Z64CORE.Z64.Z64_SAVE;
     private inventory_addr: number = this.instance + 0x0070;
     private inventory_ammo_addr: number = this.instance + 0x00A0;
     private inventory_upgrades_addr: number = this.instance + 0x00B8;

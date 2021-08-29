@@ -1,6 +1,5 @@
 import { JSONTemplate } from "modloader64_api/JSONTemplate";
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
 import IMemory from "modloader64_api/IMemory";
 
 export class Photo implements Z64API.MM.IPhoto {

@@ -27,7 +27,7 @@ export const OOT_PLAYER_STATE2 = (OOT_PLAYER + 0x0670);
 export const OOT_PLAYER_RAWANIM = (OOT_PLAYER + 0x01F0);
 export const OOT_PAUSED = 0x801c6fa0;
 export const OOT_DMAROM = 0x00007430;
-
+export const OOT_EQUIP_ADDR = (OOT_SAVE + 0x009c);
 
 // OoT Debug
 export const OOTDBG_GLOBAL_PTR: number = 0x80157da0;
@@ -51,3 +51,4 @@ export const OOTDBG_PLAYER_STATE2 = (OOTDBG_PLAYER + 0x0680);
 export const OOTDBG_PLAYER_RAWANIM = (OOTDBG_PLAYER + 0x0200);
 export const OOTDBG_PAUSED = (0x80166600);
 export const OOTDBG_DMAROM = (0x00012F70);
+export const OOTDBG_EQUIP_ADDR = (OOTDBG_SAVE + 0x009c);

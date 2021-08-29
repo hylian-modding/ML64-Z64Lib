@@ -1,6 +1,6 @@
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 import { JSONTemplate } from "modloader64_api/JSONTemplate";
 import IMemory from "modloader64_api/IMemory";
 
@@ -29,9 +29,9 @@ export class MMHelper extends JSONTemplate implements Z64API.MM.IMMHelper {
         // link + 0x394 = csMode
         // Global + 0x18875 = sceneLoadFlag
         // Save + 0x3F28  = magic_flag
-        return ((this.link.rdramRead32(0xA6C) & 0x20000080) !== 0) || (this.link.rdramRead8(0x394) !== 0) || (this.emu.rdramReadPtr8(Z64CORE.Z64_GLOBAL_PTR, 0x18875) !== 0) ||
+        return ((this.link.rdramRead32(0xA6C) & 0x20000080) !== 0) || (this.link.rdramRead8(0x394) !== 0) || (this.emu.rdramReadPtr8(Z64CORE.Z64.Z64_GLOBAL_PTR, 0x18875) !== 0) ||
             ((this.link.rdramRead32(0xA6C) & 1) !== 0) || ((this.link.rdramRead8(0xA74) & 0x80) !== 0) ||
-            (this.emu.rdramRead16(Z64CORE.Z64_SAVE + 0x3F28) !== 0)
+            (this.emu.rdramRead16(Z64CORE.Z64.Z64_SAVE + 0x3F28) !== 0)
     }
 
     isLinkEnteringLoadingZone(): boolean {
