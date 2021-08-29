@@ -3,15 +3,10 @@ import { IRomHeader } from 'modloader64_api/IRomHeader';
 import { ModLoaderAPIInject } from "modloader64_api/ModLoaderAPIInjector";
 import { IModLoaderAPI, ILogger, ICore, ModLoaderEvents } from "modloader64_api/IModLoaderAPI";
 import { bus, EventHandler, EventsClient } from "modloader64_api/EventHandler";
-import { PayloadType } from "modloader64_api/PayloadType";
-import IMemory from "modloader64_api/IMemory";
-import fs from 'fs';
-import path from 'path';
 import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsMM';
 import { ROM_REGIONS } from "./Z64Lib";
-import Vector3 from "modloader64_api/math/Vector3";
-import { InputTextFlags, number_ref } from "modloader64_api/Sylvain/ImGui";
+import { number_ref } from "modloader64_api/Sylvain/ImGui";
 
 export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     header = [ROM_REGIONS.NTSC_MM];
@@ -39,22 +34,19 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     actorManager!: Z64API.Z64.IActorManager;
     payloads: string[] = new Array<string>();
     inventory_cache: Buffer = Buffer.alloc(0x18, 0xff);
-
     id: number_ref = [4]
     param: number_ref = [0]
+    rom_header?: IRomHeader | undefined;
+    heap_start: number = 0;
+    heap_size: number = 0;
+    sceneLockout: boolean = false;
 
     constructor() {
     }
-    rom_header?: IRomHeader | undefined;
-
-    heap_start: number = 0;
-    heap_size: number = 0;
 
     @Preinit()
     preinit() {
-
     }
-
 
     @EventHandler(ModLoaderEvents.ON_SOFT_RESET_PRE)
     onReset1(evt: any) {
@@ -78,7 +70,6 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
 
     @Postinit()
     postinit(): void {
-
         this.global = new Z64CORE.GlobalContext(this.ModLoader);
         this.link = new Z64CORE.Link(this.ModLoader.emulator);
         this.save = new Z64CORE.SaveContext(this.ModLoader.emulator, this.ModLoader.logger, this);
@@ -111,23 +102,28 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
         }
         // Scene change check
         if (
-            this.global.scene_framecount === 1
+            this.global.scene_framecount === 1 &&
+            !this.sceneLockout
         ) {
             this.last_known_scene = this.global.scene;
             bus.emit(Z64API.MM.MMEvents.ON_SCENE_CHANGE, this.last_known_scene);
             this.touching_loading_zone = false;
+            this.sceneLockout = true;
+            this.ModLoader.utils.setTimeoutFrames(()=>{
+                this.sceneLockout = false;
+            }, 20);
         }
         // Age check
-        if (this.save.form !== this.last_known_age){
+        if (this.save.form !== this.last_known_age) {
             this.last_known_age = this.save.form;
             bus.emit(Z64API.MM.MMEvents.ON_AGE_CHANGE, this.last_known_age);
         }
 
         // UnPause Check
-        if(this.helper.isPaused()){
+        if (this.helper.isPaused()) {
             this.isPaused = true;
         }
-        else if(!this.helper.isPaused() && this.isPaused){
+        else if (!this.helper.isPaused() && this.isPaused) {
             this.isPaused = false;
             bus.emit(Z64API.MM.MMEvents.ON_UNPAUSE);
         }
@@ -139,17 +135,17 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
 
     @onViUpdate()
     onViUpdate() {
-        this.ModLoader.ImGui.begin("Dood spawner")
-        {
-            this.ModLoader.ImGui.inputInt("Id", this.id, undefined, undefined, InputTextFlags.CharsHexadecimal)
-            this.ModLoader.ImGui.inputInt("Param", this.param, undefined, undefined, InputTextFlags.CharsHexadecimal)
-            if (this.ModLoader.ImGui.button("Spawn dood")) {
-                if (this.commandBuffer !== undefined) {
-                    this.commandBuffer.spawnActor(this.id[0], this.param[0], new Vector3(), this.link.position.getVec3())
+        /*         this.ModLoader.ImGui.begin("Dood spawner")
+                {
+                    this.ModLoader.ImGui.inputInt("Id", this.id, undefined, undefined, InputTextFlags.CharsHexadecimal)
+                    this.ModLoader.ImGui.inputInt("Param", this.param, undefined, undefined, InputTextFlags.CharsHexadecimal)
+                    if (this.ModLoader.ImGui.button("Spawn dood")) {
+                        if (this.commandBuffer !== undefined) {
+                            this.commandBuffer.spawnActor(this.id[0], this.param[0], new Vector3(), this.link.position.getVec3())
+                        }
+                    }
                 }
-            }
-        }
-        this.ModLoader.ImGui.end()
+                this.ModLoader.ImGui.end() */
     }
 
     @onPostTick()
