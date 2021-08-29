@@ -10,6 +10,7 @@ import { Z64LibSupportedGames } from "@Z64Lib/API/Utilities/Z64LibSupportedGames
 import { Command, IActor, ICommandBuffer } from "@Z64Lib/API/imports";
 import { IInjectedAssembly } from "@Z64Lib/API/Common/IInjectedAssembly";
 import { AssemblyList } from "@Z64Lib/API/Common/AssemblyList";
+import { Z64_GAME } from "../types/GameAliases";
 
 export enum CommandBuffer_CommandType {
     NONE,
@@ -484,7 +485,7 @@ export class CommandBuffer_Factory {
         let smartCave = new SmartBuffer()
 
         // if oot
-        if (0) {
+        if (Z64_GAME === Z64LibSupportedGames.OCARINA_OF_TIME) {
             emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnTransitionActorCave")!, JAL_ENCODE(Actor_SpawnTransitionActorCave_malloc));
             emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("CommandBuffer_Update")!, JAL_ENCODE(CommandBuffer_Update_malloc));
         }
@@ -501,7 +502,7 @@ export class CommandBuffer_Factory {
                 emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnWithParentAndCutsceneCave")!, smartCave.toBuffer());
             }*/
 
-            emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnEntryCave2")!, JAL_ENCODE(Actor_SpawnEntryCave_malloc));
+            //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnEntryCave2")!, JAL_ENCODE(Actor_SpawnEntryCave_malloc));
         }
 
         //smartCave.clear()

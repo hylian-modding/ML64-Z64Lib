@@ -18,6 +18,7 @@ export class Inventory extends JSONTemplate implements Z64API.OoT.IInventory {
       'bombs',
       'bombchus',
       'magicBeans',
+      'magicBeansCount',
       'fairySlingshot',
       'fairyBow',
       'fireArrows',

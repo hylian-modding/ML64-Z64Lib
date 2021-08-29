@@ -345,7 +345,7 @@ export class OverlayPayload extends PayloadType {
         for (let i = 0; i < 0x20; i++) {
             dest.rdramWrite8(slot * 0x20 + overlay_start + i, 0);
         }
-        let final: number = this.core.ModLoader.heap!.malloc(buf.byteLength + 0x10);
+        let final: number = this.core.ModLoader.gfx_heap!.malloc(buf.byteLength + 0x10);
         dest.rdramWrite32(slot * 0x20 + overlay_start + 0x14, final + offset);
         buf.writeUInt16BE(slot, offset);
         let alloc = new SmartBuffer();
