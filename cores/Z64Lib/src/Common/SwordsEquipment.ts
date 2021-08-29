@@ -1,7 +1,7 @@
 import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export const enum SwordBitMap {
   KOKIRI_OOT = 7,
@@ -12,12 +12,17 @@ export const enum SwordBitMap {
   GILDED = 6
 }
 
-export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISwords, 'swordLevel'>, Z64API.MM.ISwordHelper {
+export class SwordsEquipment extends JSONTemplate implements Z64API.Z64.ISwords {
   private emulator: IMemory;
-  private instance: number = Z64CORE.Z64_SAVE;
-  private equipment_addr: number = this.instance + 0x6D;
+  private biggoron_flag_addr: number = Z64CORE.Z64.Z64_SAVE + 0x003e;
+  private biggoron_dmg_addr: number = Z64CORE.Z64.Z64_SAVE + 0x0036;
   private commandBuf: Z64API.ICommandBuffer;
+  
   jsonFields: string[] = [
+    'kokiriSword',
+    'masterSword',
+    'giantKnife',
+    'biggoronSword',
     'swordLevel',
   ];
   constructor(emulator: IMemory, commandBuf: Z64API.ICommandBuffer) {
@@ -25,9 +30,40 @@ export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISw
     this.emulator = emulator;
     this.commandBuf = commandBuf;
   }
+  get kokiriSword() {
+    return this.emulator.rdramReadBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.KOKIRI_OOT);
+  }
+  set kokiriSword(bool: boolean) {
+    this.emulator.rdramWriteBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.KOKIRI_OOT, bool);
+  }
+  get masterSword() {
+    return this.emulator.rdramReadBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.MASTER);
+  }
+  set masterSword(bool: boolean) {
+    this.emulator.rdramWriteBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.MASTER, bool);
+  }
+  get giantKnife() {
+    return this.emulator.rdramReadBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.GIANT) && this.emulator.rdramRead8(this.biggoron_flag_addr) === 0;
+  }
+  set giantKnife(bool: boolean) {
+    this.emulator.rdramWriteBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.GIANT, bool);
+    this.emulator.rdramWrite8(this.biggoron_flag_addr, 0);
+    this.emulator.rdramWrite16(this.biggoron_dmg_addr, 8);
+  }
+  get biggoronSword() {
+    return this.emulator.rdramReadBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.BIGGORON) && this.emulator.rdramRead8(this.biggoron_flag_addr) === 1;
+  }
+  set biggoronSword(bool: boolean) {
+    this.emulator.rdramWriteBit8(
+      Z64CORE.Z64.Z64_SAVE,
+      SwordBitMap.BIGGORON,
+      bool
+    );
+    this.emulator.rdramWrite8(this.biggoron_flag_addr, bool ? 1 : 0);
+  }
 
   get swordLevel(): Z64API.Z64.Sword {
-    let bits = this.emulator.rdramReadBits8(this.equipment_addr);
+    let bits = this.emulator.rdramReadBits8(Z64CORE.Z64.Z64_EQUIP_ADDR);
     if (bits[SwordBitMap.KOKIRI_MM] === 1 && bits[SwordBitMap.GILDED] === 0) {
       return Z64API.Z64.Sword.KOKIRI_MM;
     } else if (bits[SwordBitMap.KOKIRI_MM] === 0 && bits[SwordBitMap.GILDED] === 1) {
@@ -40,7 +76,7 @@ export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISw
   }
 
   set swordLevel(level: Z64API.Z64.Sword) {
-    let bits = this.emulator.rdramReadBits8(this.equipment_addr);
+    let bits = this.emulator.rdramReadBits8(Z64CORE.Z64.Z64_EQUIP_ADDR);
     switch (level) {
       case Z64API.Z64.Sword.NONE:
         bits[SwordBitMap.KOKIRI_MM] = 0;
@@ -59,7 +95,7 @@ export class SwordsEquipment extends JSONTemplate implements Pick<Z64API.Z64.ISw
         bits[SwordBitMap.GILDED] = 1;
         break;
     }
-    this.emulator.rdramWriteBits8(this.equipment_addr, bits);
+    this.emulator.rdramWriteBits8(Z64CORE.Z64.Z64_EQUIP_ADDR, bits);
   }
 
   updateSwordonB(): void {

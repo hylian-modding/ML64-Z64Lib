@@ -1,12 +1,12 @@
 import IMemory from 'modloader64_api/IMemory';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 import { FlagManager, Flag } from 'modloader64_api/FlagManager';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 
 export class QuestStatus extends JSONTemplate implements Z64API.MM.IQuestStatus {
     private emulator: IMemory;
-    private instance: number = Z64CORE.Z64_SAVE; // Save Context
+    private instance: number = Z64CORE.Z64.Z64_SAVE; // Save Context
     private questFlags: FlagManager;
     private questFlagsAddr: number = this.instance + 0xBC;
     private minimapFlags: FlagManager;

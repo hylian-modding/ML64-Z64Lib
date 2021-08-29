@@ -2,12 +2,12 @@ import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import { ILogger, IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsOoT';
+import * as Z64CORE from '../importsZ64';
 
 export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext {
     private ModLoader: IModLoaderAPI;
     private emulator: IMemory;
-    private instance: number = Z64CORE.Z64_SAVE;
+    private instance: number = Z64CORE.Z64.Z64_SAVE;
     private entrance_index_addr: number = this.instance + 0x0000;
     private age_addr = this.instance + 0x0004;
     private cutscene_number_addr: number = this.instance + 0x000a;
@@ -43,15 +43,16 @@ export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext
     private double_defense_addr_2: number = this.instance + 0x3d;
 
     // Further abstractions
-    swords: Pick<Z64CORE.SwordsEquipment, 'kokiriSword' | 'masterSword' | 'giantKnife' | 'biggoronSword'>;
-    shields: Pick<Z64CORE.ShieldsEquipment, 'dekuShield' | 'hylianShield' | 'mirrorShield'>
-    tunics: Z64CORE.TunicsEquipment;
-    boots: Z64CORE.BootsEquipment;
-    inventory: Z64CORE.Inventory;
+    swords: Z64CORE.Z64.SwordsEquipment;
+    shields: Z64CORE.Z64.ShieldsEquipment;
+    tunics: Z64CORE.OoT.TunicsEquipment;
+    boots: Z64CORE.OoT.BootsEquipment;
+    inventory: Z64CORE.OoT.Inventory;
     questStatus: Z64API.OoT.IQuestStatus;
     keyManager: Z64API.OoT.IKeyManager;
     dungeonItemManager: Z64API.IDungeonItemManager;
-
+    commandBuffer!: Z64API.ICommandBuffer;
+    
     jsonFields: string[] = [
         'entrance_index',
         'cutscene_number',
@@ -84,14 +85,14 @@ export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext
         super();
         this.ModLoader = ModLoader;
         this.emulator = ModLoader.emulator;
-        this.swords = new Z64CORE.SwordsEquipment(this.emulator);
-        this.shields = new Z64CORE.ShieldsEquipment(this.emulator);
-        this.tunics = new Z64CORE.TunicsEquipment(this.emulator);
-        this.boots = new Z64CORE.BootsEquipment(this.emulator);
-        this.inventory = new Z64CORE.Inventory(this.emulator, log);
-        this.questStatus = new Z64CORE.QuestStatus(this.emulator);
-        this.keyManager = new Z64CORE.KeyManager(this.emulator);
-        this.dungeonItemManager = new Z64CORE.DungeonItemManager(this.emulator);
+        this.swords = new Z64CORE.Z64.SwordsEquipment(this.emulator, this.commandBuffer);
+        this.shields = new Z64CORE.Z64.ShieldsEquipment(this.emulator);
+        this.tunics = new Z64CORE.OoT.TunicsEquipment(this.emulator);
+        this.boots = new Z64CORE.OoT.BootsEquipment(this.emulator);
+        this.inventory = new Z64CORE.OoT.Inventory(this.emulator, log);
+        this.questStatus = new Z64CORE.OoT.QuestStatus(this.emulator);
+        this.keyManager = new Z64CORE.Z64.KeyManager(this.emulator);
+        this.dungeonItemManager = new Z64CORE.Z64.DungeonItemManager(this.emulator);
     }
     // https://wiki.cloudmodding.com/oot/Entrance_Table
     // https://wiki.cloudmodding.com/oot/Entrance_Table_(Data)

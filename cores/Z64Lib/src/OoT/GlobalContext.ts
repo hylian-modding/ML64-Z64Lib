@@ -2,7 +2,7 @@ import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import { IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 
 export class GlobalContext extends JSONTemplate implements Z64API.OoT.IGlobalContext {
@@ -23,15 +23,15 @@ export class GlobalContext extends JSONTemplate implements Z64API.OoT.IGlobalCon
   constructor(ModLoader: IModLoaderAPI) {
       super();
       this.emulator = ModLoader.emulator;
-      this.viewStruct = new Z64CORE.viewStruct(ModLoader);
+      this.viewStruct = new Z64CORE.Z64.viewStruct(ModLoader);
   }
 
   get fogDistance(): number{
-      return this.emulator.rdramReadPtr16(Z64CORE.Z64_GLOBAL_PTR, 0xD4);
+      return this.emulator.rdramReadPtr16(Z64CORE.Z64.Z64_GLOBAL_PTR, 0xD4);
   }
 
   set fogDistance(fog: number){
-    this.emulator.rdramWritePtr16(Z64CORE.Z64_GLOBAL_PTR, 0xD4, fog);
+    this.emulator.rdramWritePtr16(Z64CORE.Z64.Z64_GLOBAL_PTR, 0xD4, fog);
   }
 
   get fogColor(){
@@ -44,94 +44,94 @@ export class GlobalContext extends JSONTemplate implements Z64API.OoT.IGlobalCon
 
   get scene(): number {
       return this.emulator.rdramReadPtr16(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.current_scene_addr
       );
   }
   get room(): number {
       return this.emulator.rdramReadPtr8(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.current_room_addr
       );
   }
   get framecount(): number {
       return this.emulator.rdramReadPtr32(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.frame_count_addr
       );
   }
   get scene_framecount(): number {
       return this.emulator.rdramReadPtr32(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.scene_frame_count_addr
       );
   }
   get liveSceneData_chests(): Buffer {
       return this.emulator.rdramReadPtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.chest_flags_addr,
           0x4
       );
   }
   set liveSceneData_chests(buf: Buffer) {
       this.emulator.rdramWritePtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.chest_flags_addr,
           buf
       );
   }
   get liveSceneData_clear(): Buffer {
       return this.emulator.rdramReadPtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.room_clear_flags_addr,
           0x4
       );
   }
   set liveSceneData_clear(buf: Buffer) {
       this.emulator.rdramWritePtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.room_clear_flags_addr,
           buf
       );
   }
   get liveSceneData_switch(): Buffer {
       return this.emulator.rdramReadPtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.switch_flags_addr,
           0x4
       );
   }
   set liveSceneData_switch(buf: Buffer) {
       this.emulator.rdramWritePtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.switch_flags_addr,
           buf
       );
   }
   get liveSceneData_temp(): Buffer {
       return this.emulator.rdramReadPtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.temp_switch_flags_addr,
           0x4
       );
   }
   set liveSceneData_temp(buf: Buffer) {
       this.emulator.rdramWritePtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.temp_switch_flags_addr,
           buf
       );
   }
   get liveSceneData_collectable(): Buffer {
       return this.emulator.rdramReadPtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.collectable_flag_addr,
           0x8
       );
   }
   set liveSceneData_collectable(buf: Buffer) {
       this.emulator.rdramWritePtrBuffer(
-          Z64CORE.Z64_GLOBAL_PTR,
+          Z64CORE.Z64.Z64_GLOBAL_PTR,
           this.collectable_flag_addr,
           buf
       );
@@ -139,26 +139,26 @@ export class GlobalContext extends JSONTemplate implements Z64API.OoT.IGlobalCon
   get continue_state(): boolean {
       return (
           this.emulator.rdramReadPtr32(
-              Z64CORE.Z64_GLOBAL_PTR,
+              Z64CORE.Z64.Z64_GLOBAL_PTR,
               this.continue_state_addr
           ) === 1
       );
   }
 
   get lastOrCurrentEntrance(): number{
-      return this.emulator.rdramReadPtr16(Z64CORE.Z64_GLOBAL_PTR, 0x11E1A);
+      return this.emulator.rdramReadPtr16(Z64CORE.Z64.Z64_GLOBAL_PTR, 0x11E1A);
   }
 
   getSaveDataForCurrentScene(): Buffer {
       return this.emulator.rdramReadBuffer(
-          Z64CORE.Z64_SAVE + 0x00d4 + this.scene * 0x1c,
+          Z64CORE.Z64.Z64_SAVE + 0x00d4 + this.scene * 0x1c,
           0x1c
       );
   }
   writeSaveDataForCurrentScene(buf: Buffer): void {
       if (buf.byteLength === 0x1c) {
           this.emulator.rdramWriteBuffer(
-            Z64CORE.Z64_SAVE + 0x00d4 + this.scene * 0x1c,
+            Z64CORE.Z64.Z64_SAVE + 0x00d4 + this.scene * 0x1c,
               buf
           );
       }

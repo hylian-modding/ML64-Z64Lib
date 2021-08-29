@@ -300,8 +300,8 @@ export interface IQuestStatus {
 }
 
 export interface ISaveContext {
-  swords: Pick<Z64API.Z64.ISwords, 'kokiriSword' | 'masterSword' | 'giantKnife' | 'biggoronSword'>;
-  shields: Pick<Z64API.Z64.IShields, 'dekuShield' | 'hylianShield' | 'mirrorShield'>;
+  swords: Z64API.Z64.ISwords;
+  shields: Z64API.Z64.IShields;
   tunics: ITunics;
   boots: IBoots;
   inventory: IInventory;

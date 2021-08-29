@@ -3,12 +3,12 @@ import Vector3 from 'modloader64_api/math/Vector3';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import { IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private emulator: IMemory;
-    private instance = Z64CORE.Z64_PLAYER;
-    private save_context = Z64CORE.Z64_SAVE;
+    private instance = Z64CORE.Z64.Z64_PLAYER;
+    private save_context = Z64CORE.Z64.Z64_SAVE;
     private anim = 0x80400500;
     private state_addr: number = 0x8040081C;
     private state2_addr: number = 0x8040081C; //TODO: Find real State2_Addr
@@ -45,8 +45,8 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     constructor(emu: IMemory) {
         super();
         this.emulator = emu;
-        this.rotation = new Z64CORE.Rotation(this);
-        this.position = new Z64CORE.Position(this);
+        this.rotation = new Z64CORE.Z64.Rotation(this);
+        this.position = new Z64CORE.Z64.Position(this);
     }
 
     tunic: any;

@@ -2,7 +2,7 @@ import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import IMemory from 'modloader64_api/IMemory';
 import { OOT_Offsets } from '../OcarinaofTime';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsOOT';
+import * as Z64CORE from '../importsZ64';
 import { Z64_GLOBAL_PTR, Z64_GUI_SHOWN, Z64_PAUSED, Z64_SAVE } from '../Common/types/GameAliases';
 
 export class OotHelper extends JSONTemplate implements Z64API.OoT.IOotHelper {

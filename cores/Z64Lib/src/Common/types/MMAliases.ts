@@ -26,3 +26,5 @@ export const MM_PLAYER_STATE2 = (MM_PLAYER + 0xA70);
 export const MM_PLAYER_RAWANIM = (MM_PLAYER + 0x750);
 export const MM_PAUSED = 0x801D1500;
 export const MM_DMAROM = 0x0001A500;
+
+export const MM_EQUIP_ADDR = (MM_SAVE + 0x6D);

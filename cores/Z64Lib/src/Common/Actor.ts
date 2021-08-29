@@ -1,7 +1,7 @@
 import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 import fs from 'fs';
 import path from 'path';
 import Vector3 from 'modloader64_api/math/Vector3';
@@ -17,32 +17,32 @@ export class Position extends JSONTemplate implements Z64API.IPosition {
     }
 
     get x(): number {
-        return this.parent.rdramReadF32(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 0);
+        return this.parent.rdramReadF32(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 0);
     }
     set x(x: number) {
-        this.parent.rdramWriteF32(Z64CORE.Z64_ACTOR_POSITION_OFFSET + 0, x);
+        this.parent.rdramWriteF32(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET + 0, x);
     }
 
     get y(): number {
-        return this.parent.rdramReadF32(Z64CORE.Z64_ACTOR_POSITION_OFFSET + 4);
+        return this.parent.rdramReadF32(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET + 4);
     }
     set y(y: number) {
-        this.parent.rdramWriteF32(Z64CORE.Z64_ACTOR_POSITION_OFFSET + 4, y);
+        this.parent.rdramWriteF32(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET + 4, y);
     }
 
     get z(): number {
-        return this.parent.rdramReadF32(Z64CORE.Z64_ACTOR_POSITION_OFFSET + 8);
+        return this.parent.rdramReadF32(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET + 8);
     }
     set z(z: number) {
-        this.parent.rdramWriteF32(Z64CORE.Z64_ACTOR_POSITION_OFFSET + 8, z);
+        this.parent.rdramWriteF32(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET + 8, z);
     }
 
     getRawPos(): Buffer {
-        return this.parent.rdramReadBuffer(Z64CORE.Z64_ACTOR_POSITION_OFFSET, Z64CORE.Z64_ACTOR_POSITION_SIZE);
+        return this.parent.rdramReadBuffer(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET, Z64CORE.Z64.Z64_ACTOR_POSITION_SIZE);
     }
 
     setRawPos(pos: Buffer){
-        this.parent.rdramWriteBuffer(Z64CORE.Z64_ACTOR_POSITION_OFFSET, pos);
+        this.parent.rdramWriteBuffer(Z64CORE.Z64.Z64_ACTOR_POSITION_OFFSET, pos);
     }
 
     getVec3(): Vector3{
@@ -60,32 +60,32 @@ export class Rotation extends JSONTemplate implements Z64API.IRotation {
     }
 
     get x(): number {
-        return this.parent.rdramReadS16(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 0);
+        return this.parent.rdramReadS16(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 0);
     }
     set x(x: number) {
-        this.parent.rdramWrite16(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 0, x);
+        this.parent.rdramWrite16(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 0, x);
     }
 
     get y(): number {
-        return this.parent.rdramReadS16(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 2);
+        return this.parent.rdramReadS16(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 2);
     }
     set y(y: number) {
-        this.parent.rdramWrite16(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 2, y);
+        this.parent.rdramWrite16(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 2, y);
     }
 
     get z(): number {
-        return this.parent.rdramReadS16(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 4);
+        return this.parent.rdramReadS16(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 4);
     }
     set z(z: number) {
-        this.parent.rdramWrite16(Z64CORE.Z64_ACTOR_ROTATION_OFFSET + 4, z);
+        this.parent.rdramWrite16(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET + 4, z);
     }
 
     getRawRot(): Buffer {
-        return this.parent.rdramReadBuffer(Z64CORE.Z64_ACTOR_ROTATION_OFFSET, Z64CORE.Z64_ACTOR_ROTATION_SIZE);
+        return this.parent.rdramReadBuffer(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET, Z64CORE.Z64.Z64_ACTOR_ROTATION_SIZE);
     }
 
     setRawRot(rot: Buffer){
-        this.parent.rdramWriteBuffer(Z64CORE.Z64_ACTOR_ROTATION_OFFSET, rot);
+        this.parent.rdramWriteBuffer(Z64CORE.Z64.Z64_ACTOR_ROTATION_OFFSET, rot);
     }
 
     getVec3(): Vector3{

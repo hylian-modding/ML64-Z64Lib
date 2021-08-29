@@ -9,7 +9,7 @@ import { onPostTick } from 'modloader64_api/PluginLifecycle';
 import { SmartBuffer } from 'smart-buffer';
 import Vector3 from 'modloader64_api/math/Vector3';
 import * as Z64API from '../API/imports';
-import * as Z64CORE from './importsOOT';
+import * as Z64CORE from './importsZ64';
 import { ROM_REGIONS, ROM_VERSIONS } from './Z64Lib';
 import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
 import { Z64_GAME, Z64_GLOBAL_PTR, Z64_OVERLAY_TABLE, Z64_SAVE } from './Common/types/GameAliases';
@@ -28,11 +28,11 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
     @ModLoaderAPIInject()
     ModLoader!: IModLoaderAPI;
     link!: Z64API.Z64.ILink
-    save!: Z64CORE.SaveContext;
+    save!: Z64CORE.OoT.SaveContext;
     global!: Z64API.OoT.IGlobalContext;
     helper!: Z64API.OoT.IOotHelper;
-    commandBuffer!: Z64CORE.CommandBuffer;
-    actorManager!: Z64CORE.ActorManager;
+    commandBuffer!: Z64CORE.Z64.CommandBuffer;
+    actorManager!: Z64CORE.Z64.ActorManager;
     eventTicks: Map<string, Function> = new Map<string, Function>();
     // Client side variables
     isSaveLoaded = false;
@@ -161,16 +161,16 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
     }
 
     postinit(): void {
-        this.global = new Z64CORE.GlobalContext(this.ModLoader);
-        this.link = new Z64CORE.Link(this.ModLoader.emulator, this.ModLoader.math);
-        this.save = new Z64CORE.SaveContext(this.ModLoader, this.ModLoader.logger);
-        this.helper = new Z64CORE.OotHelper(
+        this.global = new Z64CORE.OoT.GlobalContext(this.ModLoader);
+        this.link = new Z64CORE.OoT.Link(this.ModLoader.emulator, this.ModLoader.math);
+        this.save = new Z64CORE.OoT.SaveContext(this.ModLoader, this.ModLoader.logger);
+        this.helper = new Z64CORE.OoT.OotHelper(
             this.save,
             this.global,
             this.link,
             this.ModLoader.emulator
         );
-        this.actorManager = new Z64CORE.ActorManager();
+        this.actorManager = new Z64CORE.Z64.ActorManager();
         this.ModLoader.payloadManager.registerPayloadType(
             new OverlayPayload('.ovl', this.ModLoader, this)
         );
@@ -225,7 +225,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore {
 
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
+        this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
         this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
     }
 

@@ -2,13 +2,13 @@ import { JSONTemplate } from "modloader64_api/JSONTemplate";
 import IMemory from "modloader64_api/IMemory";
 import { ILogger } from "modloader64_api/IModLoaderAPI";
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext {
 
     private emulator: IMemory;
-    save_context: number = Z64CORE.Z64_SAVE;
-    inventory: Z64CORE.Inventory;
+    save_context: number = Z64CORE.Z64.Z64_SAVE;
+    inventory: Z64CORE.MM.Inventory;
     questStatus: Z64API.MM.IQuestStatus;
     owlStatues: Z64API.MM.IOwlStatues;
     keyManager: Z64API.MM.IKeyManager;
@@ -16,9 +16,9 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     photo: Z64API.MM.IPhoto;
     stray: Z64API.MM.IStray;
     skull: Z64API.MM.ISkull;
-    swords: Z64CORE.SwordsEquipment;
+    swords: Z64CORE.Z64.SwordsEquipment;
     sword_helper: Z64API.MM.ISwordHelper;
-    shields: Z64CORE.ShieldsEquipment;
+    shields: Z64CORE.Z64.ShieldsEquipment;
     commandBuffer!: Z64API.ICommandBuffer;
 
     jsonFields: string[] = [
@@ -52,17 +52,17 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     constructor(emu: IMemory, log: ILogger, core: Z64API.MM.IMMCore) {
         super();
         this.emulator = emu;
-        this.swords = new Z64CORE.SwordsEquipment(emu, this.commandBuffer);
+        this.swords = new Z64CORE.Z64.SwordsEquipment(emu, this.commandBuffer);
         this.sword_helper = this.swords;
-        this.shields = new Z64CORE.ShieldsEquipment(emu);
-        this.inventory = new Z64CORE.Inventory(emu, log);
-        this.questStatus = new Z64CORE.QuestStatus(emu);
-        this.owlStatues = new Z64CORE.OwlStatues(emu);
-        this.keyManager = new Z64CORE.KeyManager(emu);
-        this.dungeonItemManager = new Z64CORE.DungeonItemManager(emu);
-        this.photo = new Z64CORE.Photo(emu, this);
-        this.stray = new Z64CORE.Stray(emu, this);
-        this.skull = new Z64CORE.Skull(emu, this);
+        this.shields = new Z64CORE.Z64.ShieldsEquipment(emu);
+        this.inventory = new Z64CORE.MM.Inventory(emu, log);
+        this.questStatus = new Z64CORE.MM.QuestStatus(emu);
+        this.owlStatues = new Z64CORE.MM.OwlStatues(emu);
+        this.keyManager = new Z64CORE.Z64.KeyManager(emu);
+        this.dungeonItemManager = new Z64CORE.Z64.DungeonItemManager(emu);
+        this.photo = new Z64CORE.MM.Photo(emu, this);
+        this.stray = new Z64CORE.MM.Stray(emu, this);
+        this.skull = new Z64CORE.MM.Skull(emu, this);
     }
 
     get checksum(): number {

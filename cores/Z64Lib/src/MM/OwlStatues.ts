@@ -1,11 +1,11 @@
 import IMemory from 'modloader64_api/IMemory';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 import { FlagManager, Flag } from 'modloader64_api/FlagManager';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 
 export class OwlStatues extends JSONTemplate implements Z64API.MM.IOwlStatues {
-    private instance: number = Z64CORE.Z64_SAVE; // Save Context
+    private instance: number = Z64CORE.Z64.Z64_SAVE; // Save Context
     private owlFlags: FlagManager;
     private owlFlagsAddr: number = this.instance + 0x46;
     jsonFields: string[] = [

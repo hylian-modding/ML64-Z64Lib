@@ -8,7 +8,7 @@ import IMemory from "modloader64_api/IMemory";
 import fs from 'fs';
 import path from 'path';
 import * as Z64API from '../API/imports';
-import * as Z64CORE from './importsMM';
+import * as Z64CORE from './importsZ64';
 import { ROM_REGIONS } from "./Z64Lib";
 import Vector3 from "modloader64_api/math/Vector3";
 import { InputTextFlags, number_ref } from "modloader64_api/Sylvain/ImGui";
@@ -22,7 +22,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     save!: Z64API.MM.ISaveContext;
     global!: Z64API.MM.IGlobalContext;
     helper!: Z64API.MM.IMMHelper;
-    commandBuffer!: Z64CORE.CommandBuffer;
+    commandBuffer!: Z64CORE.Z64.CommandBuffer;
     photo!: Z64API.MM.IPhoto;
     skull!: Z64API.MM.ISkull;
     stray!: Z64API.MM.IStray;
@@ -79,19 +79,19 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     @Postinit()
     postinit(): void {
 
-        this.global = new Z64CORE.GlobalContext(this.ModLoader);
-        this.link = new Z64CORE.Link(this.ModLoader.emulator);
-        this.save = new Z64CORE.SaveContext(this.ModLoader.emulator, this.ModLoader.logger, this);
-        this.helper = new Z64CORE.MMHelper(
+        this.global = new Z64CORE.MM.GlobalContext(this.ModLoader);
+        this.link = new Z64CORE.MM.Link(this.ModLoader.emulator);
+        this.save = new Z64CORE.MM.SaveContext(this.ModLoader.emulator, this.ModLoader.logger, this);
+        this.helper = new Z64CORE.MM.MMHelper(
             this.save,
             this.global,
             this.link,
             this.ModLoader.emulator
         );
-        this.photo = new Z64CORE.Photo(this.ModLoader.emulator, this.save);
-        this.stray = new Z64CORE.Stray(this.ModLoader.emulator, this.save);
-        this.skull = new Z64CORE.Skull(this.ModLoader.emulator, this.save);
-        this.actorManager = new Z64CORE.ActorManager();
+        this.photo = new Z64CORE.MM.Photo(this.ModLoader.emulator, this.save);
+        this.stray = new Z64CORE.MM.Stray(this.ModLoader.emulator, this.save);
+        this.skull = new Z64CORE.MM.Skull(this.ModLoader.emulator, this.save);
+        this.actorManager = new Z64CORE.Z64.ActorManager();
     }
 
     @onTick()
@@ -181,11 +181,11 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
 
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        //this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
+        //this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
         //this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
 
         if (this.rom_header !== undefined) {
-            this.commandBuffer = new Z64CORE.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64_GAME);
+            this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64.Z64_GAME);
         }
     }
 

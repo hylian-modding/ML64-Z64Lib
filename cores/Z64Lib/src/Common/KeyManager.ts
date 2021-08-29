@@ -1,9 +1,9 @@
 import IMemory from 'modloader64_api/IMemory';
 import * as Z64API from '../../API/imports';
-import * as Z64CORE from '../importsMM';
+import * as Z64CORE from '../importsZ64';
 
 export class KeyManager implements Z64API.Z64.IKeyManager {
-  private readonly KEY_ARRAY_ADDR: number = Z64CORE.Z64_SAVE + 0xbc;
+  private readonly KEY_ARRAY_ADDR: number = Z64CORE.Z64.Z64_SAVE + 0xbc;
   private readonly KEY_ARRAY_SIZE: number = 0x14;
   private readonly emulator: IMemory;
 
