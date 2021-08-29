@@ -24,7 +24,7 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
 
     private sound_addr: number = 0x800000 + 0x88;
     private anim_data_addr = 0x600000;
-    private anim_raw_data_addr = this.instance + this.anim;
+    private anim_raw_data_addr = this.anim;
 
     rotation: Z64API.IRotation;
     position: Z64API.IPosition;

@@ -221,7 +221,7 @@ export interface IZ64Core extends ICore {
     link: Z64API.Z64.ILink;
     save: Z64API.OoT.ISaveContext | Z64API.MM.ISaveContext;
     helper: Z64API.OoT.IOotHelper | Z64API.MM.IMMHelper;
-    global: Z64API.OoT.IGlobalContext | Z64API.OoT.IGlobalContext;
+    global: Z64API.OoT.IGlobalContext | Z64API.MM.IGlobalContext;
     commandBuffer: Z64API.ICommandBuffer;
     actorManager: IActorManager;
     toggleMapSelectKeybind(): boolean;

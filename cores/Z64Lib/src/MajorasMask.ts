@@ -7,8 +7,9 @@ import * as Z64API from '../API/imports';
 import * as Z64CORE from './importsZ64';
 import { ROM_REGIONS } from "./Z64Lib";
 import { number_ref } from "modloader64_api/Sylvain/ImGui";
+import { OverlayPayload } from "./OverlayPayload";
 
-export class MajorasMask implements ICore, Z64API.MM.IMMCore {
+export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Core{
     header = [ROM_REGIONS.NTSC_MM];
     @ModLoaderAPIInject()
     ModLoader: IModLoaderAPI = {} as IModLoaderAPI;
@@ -40,9 +41,6 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
     heap_start: number = 0;
     heap_size: number = 0;
     sceneLockout: boolean = false;
-
-    constructor() {
-    }
 
     @Preinit()
     preinit() {
@@ -84,6 +82,10 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
         this.stray = new Z64CORE.MM.Stray(this.ModLoader.emulator, this.save);
         this.skull = new Z64CORE.MM.Skull(this.ModLoader.emulator, this.save);
         this.actorManager = new Z64CORE.Z64.ActorManager();
+
+        this.ModLoader.payloadManager.registerPayloadType(
+            new OverlayPayload('.ovl', this.ModLoader, this)
+        );
     }
 
     @onTick()
@@ -184,6 +186,10 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore {
         if (this.rom_header !== undefined) {
             this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64.Z64_GAME);
         }
+    }
+
+    toggleMapSelectKeybind(): boolean {
+        return false;
     }
 
 }
