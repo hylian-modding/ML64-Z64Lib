@@ -7,8 +7,9 @@ import * as Z64CORE from './importsZ64';
 import { ROM_REGIONS, ROM_VERSIONS } from './Z64Lib';
 import { ModLoaderAPIInject } from 'modloader64_api/ModLoaderAPIInjector';
 import { Z64_GAME, Z64_GLOBAL_PTR, Z64_SAVE } from './Common/types/GameAliases';
-import { EventSystem } from './OoT/EventSystem';
+import { EventSystem } from './Common/CommandBuffer/EventSystem';
 import { OverlayPayload } from './OverlayPayload';
+import { IActorManager } from '@Z64Lib/API/Common/Z64API';
 
 export interface OOT_Offsets {
     state: number;
@@ -27,7 +28,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
     global!: Z64API.OoT.IGlobalContext;
     helper!: Z64API.OoT.IOotHelper;
     commandBuffer!: Z64CORE.Z64.CommandBuffer;
-    actorManager!: Z64CORE.Z64.ActorManager;
+    actorManager!: IActorManager;
     eventTicks: Map<string, Function> = new Map<string, Function>();
     // Client side variables
     isSaveLoaded = false;
@@ -165,7 +166,6 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
             this.link,
             this.ModLoader.emulator
         );
-        this.actorManager = new Z64CORE.Z64.ActorManager();
         this.ModLoader.payloadManager.registerPayloadType(
             new OverlayPayload('.ovl', this.ModLoader, this)
         );
@@ -177,6 +177,8 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
         }
         if (!this.helper.isTitleScreen()) {
             if (this.commandBuffer !== undefined) this.commandBuffer.onTick();
+            //@ts-ignore
+            if (this.actorManager !== undefined) this.actorManager.onTick();
             this.eventTicks.forEach((value: Function, key: string) => {
                 value();
             });

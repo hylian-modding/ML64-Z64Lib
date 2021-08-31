@@ -4,7 +4,6 @@ export { viewStruct } from './viewStruct'
 export { KeyManager } from './KeyManager'
 export { DungeonItemContainer, DungeonItemManager } from './DungeonItemManager'
 export { CommandBuffer } from './CommandBuffer/CommandBuffer'
-export { ActorManager } from './ActorManager'
 export {
     Z64_GAME, Z64_GLOBAL_PTR, Z64_PLAYER, Z64_SAVE, Z64_IS_RANDOMIZER, Z64_ACTOR_ROTATION_OFFSET,
     Z64_ACTOR_ROTATION_SIZE,

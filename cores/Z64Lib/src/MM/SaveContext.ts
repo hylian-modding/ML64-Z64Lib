@@ -360,11 +360,11 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     }
 
     get heart_containers(): number {
-        return this.emulator.rdramRead16(0x801EF6A4);
+        return this.emulator.rdramRead16(0x801EF6A4) / 0x10;
     }
 
     set heart_containers(flag: number) {
-        this.emulator.rdramWrite16(0x801EF6A4, flag);
+        this.emulator.rdramWrite16(0x801EF6A4, flag * 0x10);
     }
 
     get rupees(): number {

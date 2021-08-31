@@ -8,8 +8,9 @@ import * as Z64CORE from './importsZ64';
 import { ROM_REGIONS } from "./Z64Lib";
 import { number_ref } from "modloader64_api/Sylvain/ImGui";
 import { OverlayPayload } from "./OverlayPayload";
+import { EventSystem } from "./Common/CommandBuffer/EventSystem";
 
-export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Core{
+export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Core {
     header = [ROM_REGIONS.NTSC_MM];
     @ModLoaderAPIInject()
     ModLoader: IModLoaderAPI = {} as IModLoaderAPI;
@@ -81,7 +82,6 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         this.photo = new Z64CORE.MM.Photo(this.ModLoader.emulator, this.save);
         this.stray = new Z64CORE.MM.Stray(this.ModLoader.emulator, this.save);
         this.skull = new Z64CORE.MM.Skull(this.ModLoader.emulator, this.save);
-        this.actorManager = new Z64CORE.Z64.ActorManager();
 
         this.ModLoader.payloadManager.registerPayloadType(
             new OverlayPayload('.ovl', this.ModLoader, this)
@@ -97,6 +97,8 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         if (this.commandBuffer !== undefined) {
             this.commandBuffer.onTick();
         }
+        //@ts-ignore
+        if (this.actorManager !== undefined) this.actorManager.onTick();
 
         // Loading zone check
         if (this.helper.isLinkEnteringLoadingZone() && !this.touching_loading_zone) {
@@ -112,7 +114,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
             bus.emit(Z64API.MM.MMEvents.ON_SCENE_CHANGE, this.last_known_scene);
             this.touching_loading_zone = false;
             this.sceneLockout = true;
-            this.ModLoader.utils.setTimeoutFrames(()=>{
+            this.ModLoader.utils.setTimeoutFrames(() => {
                 this.sceneLockout = false;
             }, 20);
         }
@@ -185,6 +187,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
 
         if (this.rom_header !== undefined) {
             this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64.Z64_GAME);
+            this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
         }
     }
 

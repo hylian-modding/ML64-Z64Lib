@@ -82,6 +82,7 @@ export class zzstatic2 {
             case DisplayOpcodes.G_SETTIMG:
             case DisplayOpcodes.G_SETZIMG:
             case DisplayOpcodes.G_SETCIMG:
+            case DisplayOpcodes.G_MOVEWORD:
                 return true;
         }
         return false;
