@@ -2,7 +2,7 @@ import { ICore } from 'modloader64_api/IModLoaderAPI';
 import Vector3 from 'modloader64_api/math/Vector3';
 import { IPacketHeader } from 'modloader64_api/NetworkHandler';
 import * as Z64API from '../../API/imports';
-import { Wallet } from '../Common/Z64API';
+import { IZ64Core, Wallet } from '../Common/Z64API';
 import * as Z64CORE from '../imports';
 
 export const enum Scene {
@@ -478,7 +478,7 @@ export interface IMMHelper {
   Player_InBlockingCsMode(): boolean;
 }
 
-export interface IMMCore extends ICore {
+export interface IMMCore extends ICore, IZ64Core {
   link: Z64API.Z64.ILink;
   save: ISaveContext;
   helper: IMMHelper;
