@@ -1,8 +1,9 @@
+import { IGlobalContext, TransitionState } from "@Z64Lib/API/MM/MMAPI";
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
 import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../importsZ64';
 
-export class GlobalContext {
+export class GlobalContext implements IGlobalContext{
 
     ModLoader: IModLoaderAPI;
     viewStruct: Z64API.Z64.IViewStruct;
@@ -14,6 +15,10 @@ export class GlobalContext {
     constructor(ModLoader: IModLoaderAPI) {
         this.ModLoader = ModLoader;
         this.viewStruct = new Z64CORE.Z64.viewStruct(ModLoader);
+    }
+
+    get transitionState(): TransitionState{
+        return this.ModLoader.emulator.rdramReadPtr8(this.instance, 0x18875);
     }
 
     get scene(): number {

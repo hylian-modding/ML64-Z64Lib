@@ -420,7 +420,10 @@ export interface ISaveContext {
   permFlags: Buffer;
 }
 
-
+export const enum TransitionState{
+  FADING_OUT = 0x14,
+  FADING_IN = 0xEC
+}
 
 export interface IGlobalContext {
   scene: number;
@@ -435,6 +438,7 @@ export interface IGlobalContext {
   getSaveDataForCurrentScene(): Buffer;
   writeSaveDataForCurrentScene(buf: Buffer): void;
   viewStruct: IViewStruct;
+  transitionState: TransitionState;
 }
 
 export interface IInventory extends IInventoryFields, Z64API.MM.IInventoryCounts {

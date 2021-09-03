@@ -9,6 +9,7 @@ import { ROM_REGIONS } from "./Z64Lib";
 import { number_ref } from "modloader64_api/Sylvain/ImGui";
 import { OverlayPayload } from "./OverlayPayload";
 import { EventSystem } from "./Common/CommandBuffer/EventSystem";
+import { TransitionState } from "@Z64Lib/API/MM/MMAPI";
 
 export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Core {
     header = [ROM_REGIONS.NTSC_MM];
@@ -107,7 +108,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         }
         // Scene change check
         if (
-            this.global.scene_framecount === 1 &&
+            this.global.transitionState === TransitionState.FADING_IN &&
             !this.sceneLockout
         ) {
             this.last_known_scene = this.global.scene;
