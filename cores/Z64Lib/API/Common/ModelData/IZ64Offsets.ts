@@ -167,19 +167,19 @@ export interface IZ64Offsets {
     DL_FPS_RARM_BOW: number;
     DL_FPS_RARM_HOOKSHOT: number;
     DL_ZORA_GUITAR: number;
-    DL_UNK47: number;
-    DL_UNK48: number;
-    DL_UNK49: number;
-    DL_UNK50: number;
-    DL_UNK51: number;
-    DL_UNK52: number;
-    DL_UNK53: number;
-    DL_UNK54: number;
-    DL_UNK55: number;
-    DL_UNK56: number;
-    DL_UNK57: number;
-    DL_UNK58: number;
-    DL_UNK59: number;
+    DL_SHIELD_MIRROR_FACE: number;
+    DL_SHIELD_MIRROR_COMBINED: number;
+    DL_DEKU_MASK_SCREAM: number;
+    DL_GORON_MASK_SCREAM: number;
+    DL_ZORA_MASK_SCREAM: number;
+    DL_DEITY_MASK_SCREAM: number;
+    DL_DEKU_MASK_GI: number;
+    DL_GORON_MASK_GI: number;
+    DL_ZORA_MASK_GI: number;
+    DL_DEITY_MASK_GI: number;
+    DL_GORON_ROLL_1: number;
+    DL_GORON_ROLL_2: number;
+    DL_CENTER_FLOWER_PROPELLER_OPEN: number;
     DL_UNK60: number;
     DL_UNK61: number;
     DL_UNK62: number;
@@ -441,19 +441,19 @@ export const Z64Offsets: IZ64Offsets = {
     "DL_FPS_RARM_BOW": 21808,
     "DL_FPS_RARM_HOOKSHOT": 21816,
     "DL_ZORA_GUITAR": 21824,
-    "DL_UNK47": 21832,
-    "DL_UNK48": 21840,
-    "DL_UNK49": 21848,
-    "DL_UNK50": 21856,
-    "DL_UNK51": 21864,
-    "DL_UNK52": 21872,
-    "DL_UNK53": 21880,
-    "DL_UNK54": 21888,
-    "DL_UNK55": 21896,
-    "DL_UNK56": 21904,
-    "DL_UNK57": 21912,
-    "DL_UNK58": 21920,
-    "DL_UNK59": 21928,
+    "DL_SHIELD_MIRROR_FACE": 21832, 
+    "DL_SHIELD_MIRROR_COMBINED": 21840,
+    "DL_DEKU_MASK_SCREAM": 21848,
+    "DL_GORON_MASK_SCREAM": 21856,
+    "DL_ZORA_MASK_SCREAM": 21864,
+    "DL_DEITY_MASK_SCREAM": 21872,
+    "DL_DEKU_MASK_GI": 21880,
+    "DL_GORON_MASK_GI": 21888,
+    "DL_ZORA_MASK_GI": 21896,
+    "DL_DEITY_MASK_GI": 21904,
+    "DL_GORON_ROLL_1": 21912,
+    "DL_GORON_ROLL_2": 21920,
+    "DL_CENTER_FLOWER_PROPELLER_OPEN": 21928,
     "DL_UNK60": 21936,
     "DL_UNK61": 21944,
     "DL_UNK62": 21952,
