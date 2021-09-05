@@ -305,9 +305,9 @@ export class MMManifest implements IManifest {
         _code.Lo32(Z64Offsets.DL_DEKU_GUARD);
 
         _code.GoTo(0x81902); // Deku Flower Closed
-        _code.Hi32(Z64Offsets.DL_PETAL_PROPELLER_CLOSED);
+        _code.Hi32(Z64Offsets.DL_CENTER_FLOWER_PROPELLER_CLOSED);
         _code.GoTo(0x81906); // Deku Flower Closed
-        _code.Lo32(Z64Offsets.DL_PETAL_PROPELLER_CLOSED);
+        _code.Lo32(Z64Offsets.DL_CENTER_FLOWER_PROPELLER_CLOSED);
 
         _code.GoTo(0x818DA); // Deku Flower Open
         _code.Hi32(Z64Offsets.DL_CENTER_FLOWER_PROPELLER_OPEN);

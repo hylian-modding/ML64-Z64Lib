@@ -180,7 +180,7 @@ export interface IZ64Offsets {
     DL_GORON_ROLL_1: number;
     DL_GORON_ROLL_2: number;
     DL_CENTER_FLOWER_PROPELLER_OPEN: number;
-    DL_UNK60: number;
+    DL_CENTER_FLOWER_PROPELLER_CLOSED: number;
     DL_UNK61: number;
     DL_UNK62: number;
     DL_UNK63: number;
@@ -454,7 +454,7 @@ export const Z64Offsets: IZ64Offsets = {
     "DL_GORON_ROLL_1": 21912,
     "DL_GORON_ROLL_2": 21920,
     "DL_CENTER_FLOWER_PROPELLER_OPEN": 21928,
-    "DL_UNK60": 21936,
+    "DL_CENTER_FLOWER_PROPELLER_CLOSED": 21936,
     "DL_UNK61": 21944,
     "DL_UNK62": 21952,
     "DL_UNK63": 21960,
