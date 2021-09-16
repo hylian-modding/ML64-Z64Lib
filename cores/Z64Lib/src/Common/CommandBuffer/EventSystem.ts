@@ -15,7 +15,7 @@ export class EventSystem implements IActorManager {
     constructor(ModLoader: IModLoaderAPI, cmd_pointer: number) {
         this.ModLoader = ModLoader;
         this.cmd_pointer = cmd_pointer;
-        for (let i = 0; i < 12; i++) {
+        for (let i = 0; i < 13; i++) {
             this.actors.set(i, []);
         }
     }
