@@ -23,7 +23,7 @@ export class OotHelper extends JSONTemplate implements Z64API.OoT.IOotHelper {
       this.emu = memory;
   }
   isTitleScreen(): boolean {
-      return this.save.checksum === 0;
+      return (this.save.index == 0xFF || this.save.index == 0xFEDC);
   }
   isSceneNumberValid(): boolean {
       return this.global.scene <= 0xFF;

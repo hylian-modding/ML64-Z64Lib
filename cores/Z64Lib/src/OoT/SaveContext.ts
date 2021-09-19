@@ -41,6 +41,7 @@ export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext
     private scarecrowsSong_addr_2: number = 0x80102A9C;
     private double_defense_addr_1: number = this.instance + 0x00cf;
     private double_defense_addr_2: number = this.instance + 0x3d;
+    private index_addr: number = 0x1354;
 
     // Further abstractions
     swords: Z64CORE.Z64.SwordsEquipment;
@@ -299,5 +300,9 @@ export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext
 
     get bButton(): number {
         return this.emulator.rdramRead8(this.instance + 0x68);
+    }
+
+    get index(): number {
+        return this.emulator.rdramRead32(this.instance + this.index_addr);
     }
 }

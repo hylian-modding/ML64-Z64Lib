@@ -335,6 +335,7 @@ export interface ISaveContext {
   scarecrowsSong: Buffer;
   double_defense: number;
   bButton: number;
+  index: number;
 }
 
 export interface IGlobalContext {
