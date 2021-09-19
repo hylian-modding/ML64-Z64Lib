@@ -11,10 +11,14 @@ import Vector3 from 'modloader64_api/math/Vector3';
 export class OvlPayloadResult implements Z64API.Z64.IOvlPayloadResult {
     slot: number;
     core: Z64API.Z64.IZ64Core;
+    size: number;
+    pointer: number;
 
-    constructor(core: Z64API.Z64.IZ64Core, slot: number) {
+    constructor(core: Z64API.Z64.IZ64Core, slot: number, pointer: number, size: number) {
         this.slot = slot;
         this.core = core;
+        this.pointer = pointer;
+        this.size = size;
     }
 
     spawnActorRXYZ(params: number, rotX: number, rotY: number, rotZ: number, pos: Vector3, address?: number): Promise<Z64API.IActor> {
@@ -122,6 +126,6 @@ export class OverlayPayload extends PayloadType {
                 }
             });
         }, 20);
-        return new OvlPayloadResult(this.core, slot);
+        return new OvlPayloadResult(this.core, slot, final, buf.byteLength);
     }
 }
