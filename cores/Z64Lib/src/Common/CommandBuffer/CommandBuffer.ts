@@ -242,7 +242,7 @@ export class CommandBuffer implements ICommandBuffer {
         this.ModLoader.emulator.rdramWriteF32(offset + 8 + 0x1c, a5);
     }
 
-    runWarp(entranceIndex: number, cutsceneIndex: number, callback?: Function, age?: number): Promise<boolean> {
+    runWarp(entranceIndex: number, cutsceneIndex: number, age?: number, transition?: number): Promise<boolean> {
         let count = this.ModLoader.emulator.rdramRead16(this.cmdbuf);
         let offset = this.cmdbuf + COMMAND_OFFSET + COMMAND_SIZEOF * count;
 
@@ -258,8 +258,13 @@ export class CommandBuffer implements ICommandBuffer {
             this.ModLoader.emulator.rdramWrite32(offset + 8 + 8, age);
         }
 
+        if (transition === undefined){
+            this.ModLoader.emulator.rdramWrite32(offset + 8 + 0xC, 0xFFFFFFFF);
+        }else{
+            this.ModLoader.emulator.rdramWrite32(offset + 8 + 0xC, transition);
+        }
+
         return new Promise((accept, reject) => {
-            if (callback !== undefined) callback()
             accept(true)
         });
     }
