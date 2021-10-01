@@ -386,8 +386,8 @@ export interface ISaveContext {
   razor_hits: number;
   double_defense: number;
   owl_statues: number;
-  map_visited: number;
-  map_visible: number;
+  map_visited: Buffer;
+  map_visible: Buffer;
   minimap_flags: Buffer;
   rupees: number;
   bank: number;

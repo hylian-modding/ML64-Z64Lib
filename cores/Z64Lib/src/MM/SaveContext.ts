@@ -26,6 +26,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         'cutscene_number',
         'world_time',
         'world_night_flag',
+        'minimap_flags',
         'map_visible',
         'map_visited',
         'player_name',
@@ -161,20 +162,20 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         this.emulator.rdramWrite16(0x801EF6B6, flag);
     }
 
-    get map_visible(): number {
-        return this.emulator.rdramRead32(0x801F05D0);
+    get map_visible(): Buffer {
+        return this.emulator.rdramReadBuffer(0x801F05D0, 0x4);
     }
 
-    set map_visible(flag: number) {
-        this.emulator.rdramWrite32(0x801F05D0, flag);
+    set map_visible(flag: Buffer) {
+        this.emulator.rdramWriteBuffer(0x801F05D0, flag);
     }
 
-    get map_visited(): number {
-        return this.emulator.rdramRead32(0x801F05CC);
+    get map_visited(): Buffer {
+        return this.emulator.rdramReadBuffer(0x801F05CC, 0x4);
     }
 
-    set map_visited(flag: number) {
-        this.emulator.rdramWrite32(0x801F05CC, flag);
+    set map_visited(flag: Buffer) {
+        this.emulator.rdramWriteBuffer(0x801F05CC, flag);
     }
 
     get tunic_boots(): number {
@@ -217,11 +218,11 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         this.emulator.rdramWriteBuffer(0x801EF710, flag);
     }
 
-    get updrades(): number {
+    get upgrades(): number {
         return this.emulator.rdramRead32(0x801EF728);
     }
 
-    set updrades(flag: number) {
+    set upgrades(flag: number) {
         this.emulator.rdramWrite32(0x801EF728, flag);
     }
 
