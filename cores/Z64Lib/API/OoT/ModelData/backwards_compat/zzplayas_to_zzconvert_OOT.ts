@@ -4,7 +4,7 @@ import path from 'path';
 import { TRANSLATION_MAP_ADULT, LUT_MAP_ADULT, MANIFEST_MAP_ADULT } from './adult_map';
 import { LUT_MAP_CHILD, MANIFEST_MAP_CHILD, TRANSLATION_MAP_CHILD } from './child_map';
 
-export class zzplayas_to_zzconvert {
+export class zzplayas_to_zzconvert_OOT {
 
     convert_adult(buf: Buffer): Buffer {
         let out: SmartBuffer = new SmartBuffer();

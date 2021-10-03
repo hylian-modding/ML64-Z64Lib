@@ -47,10 +47,12 @@ export class EventSystem implements IActorManager {
                     console.log("Actor was init: " + JSON.stringify(actor));
                     break;
                 }
-                case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWN:
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWNENTRY:
+                    break;
+                case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWN:
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWNTRANSITION: {
                     try{
+                        console.log(id);
                         let actorPointer = event.readUInt32BE(0x4);
                         let actor = this.createIActorFromPointer(actorPointer);
                         this.actors.get(actor.actorType)!.push(actor);
@@ -62,10 +64,11 @@ export class EventSystem implements IActorManager {
                 }
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.DESTROY: {
                     let actorPointer = event.readUInt32BE(0x4);
-                    this.actors.forEach((actors: IActor[]) => {
+                    this.actors.forEach((actors: IActor[], key: ActorCategory) => {
                         for (let i = 0; i < actors.length; i++) {
                             if (actors[i].pointer === actorPointer) {
                                 bus.emit(Z64.OotEvents.ON_ACTOR_DESPAWN, actors[i]);
+                                actors.splice(i, 1);
                                 break;
                             }
                         }
