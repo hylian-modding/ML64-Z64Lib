@@ -17,4 +17,17 @@ gulp.task('build', function () {
     return gulp.src('./src/**/*.ts')
 });
 
+gulp.task('remove_nightly_flag', function(){
+    try {
+        let meta = JSON.parse(fs.readFileSync("./cores/Z64Lib/package.json").toString());
+        meta.date = "";
+        meta.commit = "";
+        meta.version = meta.version.split("-")[0];
+        fs.writeFileSync("./cores/Z64Lib/package.json", JSON.stringify(meta, null, 2));
+    } catch (err: any) {
+        console.log(err.stack);
+    }
+    return gulp.src('./src/**/*.ts')
+});
+
 gulp.task('default', gulp.series(['build']));
