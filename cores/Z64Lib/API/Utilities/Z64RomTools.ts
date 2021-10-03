@@ -50,6 +50,10 @@ export class Z64RomTools {
     }
   }
 
+  static getRomHeap(){
+    return heap;
+  }
+
   getCodeFile(rom: Buffer): Buffer {
     if (!HAS_MOVED_CODE_FILE) {
       let code: Buffer = this.decompressDMAFileFromRom(rom, this.Code_DMA);
