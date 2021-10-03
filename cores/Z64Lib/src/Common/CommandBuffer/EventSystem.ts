@@ -52,7 +52,6 @@ export class EventSystem implements IActorManager {
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWN:
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWNTRANSITION: {
                     try{
-                        console.log(id);
                         let actorPointer = event.readUInt32BE(0x4);
                         let actor = this.createIActorFromPointer(actorPointer);
                         this.actors.get(actor.actorType)!.push(actor);

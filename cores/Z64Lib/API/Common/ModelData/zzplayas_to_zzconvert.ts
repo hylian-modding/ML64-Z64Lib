@@ -1,5 +1,5 @@
-import { zzplayas_to_zzconvert_MM } from "@Z64Lib/API/MM/ModelData/backwards_compat/zzplayas_to_zzconvert_MM";
-import { zzplayas_to_zzconvert_OOT } from "@Z64Lib/API/OoT/ModelData/backwards_compat/zzplayas_to_zzconvert_OOT";
+import { zzplayas_to_zzconvert_MM } from "../../MM/ModelData/backwards_compat/zzplayas_to_zzconvert_MM";
+import { zzplayas_to_zzconvert_OOT } from "../../OoT/ModelData/backwards_compat/zzplayas_to_zzconvert_OOT";
 
 export class zzplayas_to_zzconvert{
 
