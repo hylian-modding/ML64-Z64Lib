@@ -17,6 +17,19 @@ gulp.task('build', function () {
     return gulp.src('./src/**/*.ts')
 });
 
+gulp.task('generate_update_file', function(){
+    try {
+        let meta = JSON.parse(fs.readFileSync("./cores/Z64Lib/package.json").toString());
+        fs.writeFileSync("./dist/update.json", JSON.stringify({
+            version: meta.version,
+            url: "https://repo.modloader64.com/mods/Z64Lib/dev/Z64Lib.pak"
+        }, null, 2));
+    } catch (err: any) {
+        console.log(err.stack);
+    }
+    return gulp.src('./src/**/*.ts')
+});
+
 gulp.task('remove_nightly_flag', function(){
     try {
         let meta = JSON.parse(fs.readFileSync("./cores/Z64Lib/package.json").toString());
