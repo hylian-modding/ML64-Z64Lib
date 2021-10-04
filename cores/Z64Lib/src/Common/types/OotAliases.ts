@@ -1,4 +1,4 @@
-import { IInventoryCounts, IInventoryFields, ISaveContext } from "../../../API/OOT/OOTAPI";
+import { IInventoryCounts, IInventoryFields, ISaveContext } from "../../../API/OoT/OOTAPI";
 import { Z64LibSupportedGames } from "../../../API/Utilities/Z64LibSupportedGames";
 
 export type IOOTSaveContext = ISaveContext;

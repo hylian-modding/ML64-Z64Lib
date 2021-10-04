@@ -1,4 +1,4 @@
-import Vector3 from "modloader64_api/Math/Vector3";
+import Vector3 from "modloader64_api/math/Vector3";
 import { IActor } from "./IActor";
 
 export const enum Command {
