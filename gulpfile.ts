@@ -4,6 +4,7 @@ import child_process from 'child_process';
 
 gulp.task('build', function () {
     try {
+        fs.copyFileSync("./_tsconfig.json", "./tsconfig.json");
         let meta = JSON.parse(fs.readFileSync("./cores/Z64Lib/package.json").toString());
         meta.date = new Date().toUTCString();
         meta.commit = child_process.execSync("git rev-parse --short HEAD").toString().replace("\n", "");
