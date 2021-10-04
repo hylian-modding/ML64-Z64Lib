@@ -22,9 +22,26 @@ export class zzplayas_to_zzconvert_MM {
             }
             return cur;
         };
+        let findDF = ()=>{
+            for (let i = 0; i < buf.byteLength; i+=8){
+                let p1 = buf.readUInt32BE(i);
+                let p2 = buf.readUInt32BE(i + 0x4);
+                if (p1 === 0xDF000000 && p2 === 0){
+                    return i;
+                }
+            }
+            return -1;
+        };
         TRANSLATION_MAP_HUMAN.forEach((manifest: string, lut: string) => {
             let lut_offset = LUT_MAP_HUMAN.get(lut)!;
             let manifest_offset = MANIFEST_MAP_HUMAN.get(manifest)! + start;
+            if (lut_offset === undefined){
+                n.writeUInt32BE(findDF(), manifest_offset);
+                return;
+            }
+            if (Number.isNaN(manifest_offset)){
+                return;
+            }
             if (buf.readUInt8(lut_offset) === 0xDE) {
                 n.writeUInt32BE(unwrap(buf, lut_offset), manifest_offset);
                 //console.log(unwrap(buf, lut_offset).toString(16) + " to " + manifest);

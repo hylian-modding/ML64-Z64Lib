@@ -49,7 +49,6 @@ export class OOTManifest implements IManifest {
         let files = [120, 401, 238, 34, 356, 184, 346];
         for (let i = 0; i < files.length; i++) {
             let r = tools.relocateFileToExtendedRom(rom, files[i], tools.decompressDMAFileFromRom(rom, files[i]), 0, true);
-            console.log(`${i} -> ${r.toString(16)}`);
         }
 
         let _code = new ManifestBuffer(code);

@@ -28,7 +28,6 @@ function findSubBuffer(bufferToSearch: Buffer, subBuffer: Buffer): number {
     for (let i = 0; i < range; i += 8) {
         if (bufferToSearch.slice(i, i + subBuffer.byteLength).compare(subBuffer) === 0) {
             result = i;
-            // console.log("FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK")
             break;
         }
     }
@@ -336,8 +335,6 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
 
         removeDupes(texPairs, oldTex2Undupe);
         removeDupes(vertPairs, oldVert2Undupe);
-
-        // console.log("FUCK2");
 
         oldTex2Undupe.forEach((extOffs, parentOff) => {
             extOffs.forEach((extOff) => {
