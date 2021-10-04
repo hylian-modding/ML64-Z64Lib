@@ -11,6 +11,7 @@ import { setupEventHandlers } from 'modloader64_api/EventHandler';
 import { setupLifecycle, setupLifecycle_IPlugin } from 'modloader64_api/PluginLifecycle';
 import { setupMLInjects } from 'modloader64_api/ModLoaderAPIInjector';
 import { IZ64Main } from '../API/Common/IZ64Main';
+import { OldCoresBackwardsCompat } from './Common/compat/BackwardsCompat';
 
 export enum ROM_VERSIONS {
     N0 = 0x00,
@@ -47,6 +48,7 @@ export default class Z64Lib implements ICore, IZ64Main, IExtendedCore {
     }
 
     postconstructor(): void {
+        new OldCoresBackwardsCompat().inject();
         switch (this.rom_header.id) {
             case (ROM_REGIONS.NTSC_OOT):
                 this.OOT = new OcarinaofTime();
