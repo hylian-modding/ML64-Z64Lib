@@ -1,5 +1,5 @@
 import IMemory from 'modloader64_api/IMemory';
-import * as Z64API from '../../API/Imports';
+import * as Z64API from '../../API/imports';
 import { Z64_DUNGEON_ITEM_ADDR, Z64_SAVE } from './types/GameAliases';
 
 export class DungeonItemManager implements Z64API.IDungeonItemManager {

@@ -1,5 +1,5 @@
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
-import Vector3 from "modloader64_api/Math/Vector3";
+import Vector3 from "modloader64_api/math/Vector3";
 import { Heap } from "modloader64_api/heap";
 import IMemory from "modloader64_api/IMemory";
 import { SmartBuffer } from "smart-buffer";

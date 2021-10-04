@@ -1,7 +1,7 @@
 export { GlobalContext } from './OoT/GlobalContext'
 export { Inventory } from './OoT/Inventory'
 export { SaveContext } from './OoT/SaveContext'
-export { OotHelper } from './OoT/OoTHelper'
+export { OotHelper } from './OoT/OotHelper'
 export { BootsEquipment } from './OoT/BootsEquipment'
 export { TunicsEquipment } from './OoT/TunicsEquipment'
 export * from './OoT/imports'
