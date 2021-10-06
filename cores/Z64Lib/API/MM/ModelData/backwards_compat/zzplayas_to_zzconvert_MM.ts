@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { TRANSLATION_MAP_HUMAN, LUT_MAP_HUMAN, MANIFEST_MAP_HUMAN } from './human_map';
 
-export class zzplayas_to_zzconvert {
+export class zzplayas_to_zzconvert_MM {
 
     convert_human(buf: Buffer): Buffer {
         let out: SmartBuffer = new SmartBuffer();

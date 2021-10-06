@@ -468,7 +468,7 @@ export class CommandBuffer_Factory {
         //let Actor_InitCave_malloc = alloc(inject.Actor_InitCave);
         let Actor_SpawnEntryCave_malloc = alloc(inject.Actor_SpawnEntryCave);
         //let Actor_SpawnWithParentAndCutsceneCave_malloc = //@BUG This causes a redbar, I think I missed something up
-        //let Actor_SpawnCave_malloc = alloc(inject.Actor_SpawnCave);
+        let Actor_SpawnCave_malloc = alloc(inject.Actor_SpawnCave);
         let Actor_SpawnTransitionActorCave_malloc = alloc(inject.Actor_SpawnTransitionActorCave);
         let Actor_UpdateCave_malloc = alloc(inject.Actor_UpdateCave);
 
@@ -517,10 +517,10 @@ export class CommandBuffer_Factory {
             //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnEntryCave2")!, JAL_ENCODE(Actor_SpawnEntryCave_malloc));
         }
 
-        //smartCave.clear()
-        //smartCave.writeUInt32BE(J_ENCODE(Actor_SpawnCave_malloc));
-        //smartCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
-        //emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnCave")!, smartCave.toBuffer());
+        smartCave.clear();
+        smartCave.writeUInt32BE(J_ENCODE(Actor_SpawnCave_malloc));
+        smartCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
+        emu.rdramWriteBuffer(inject.VERSIONS.get(revision)!.get("Actor_SpawnCave")!, smartCave.toBuffer());
 
         this.cmd_pointer = heap.malloc(0x10);
         this.cmdbuf = heap.malloc(COMMANDBUFFER_SIZEOF);
@@ -534,7 +534,7 @@ export class CommandBuffer_Factory {
         this.ReplaceAddress(Actor_SpawnEntryCave_malloc, inject.Actor_SpawnEntryCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         // if mm
         //if (1 && inject.Actor_SpawnWithParentAndCutsceneCave !== undefined && Actor_SpawnWithParentAndCutsceneCave_malloc) this.ReplaceAddress(Actor_SpawnWithParentAndCutsceneCave_malloc, inject.Actor_SpawnWithParentAndCutsceneCave.byteLength, emu, 0x12345678, this.cmd_pointer);
-        //this.ReplaceAddress(Actor_SpawnCave_malloc, inject.Actor_SpawnCave.byteLength, emu, 0x12345678, this.cmd_pointer);
+        this.ReplaceAddress(Actor_SpawnCave_malloc, inject.Actor_SpawnCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnTransitionActorCave_malloc, inject.Actor_SpawnTransitionActorCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_UpdateCave_malloc, inject.Actor_UpdateCave.byteLength, emu, 0x12345678, this.cmd_pointer);
 
