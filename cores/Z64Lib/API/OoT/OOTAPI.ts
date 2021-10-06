@@ -495,6 +495,179 @@ export const enum InventorySlots {
   CHILD_TRADE_ITEM,
 }
 
+export const enum MessageBoxTypes {
+  NORMAL,
+  WOODEN,
+  NARRATION,
+  OCARINA,
+  NONE_WHITE_TXT,
+  NONE_BLACK_TXT
+};
+
+export const enum MessageBoxPositions {
+  DYNAMIC,
+  TOP,
+  CENTER,
+  BOTTOM
+};
+
+export const enum TextStates {
+  NONE,
+  DONE_HAS_NEXT,
+  CLOSING,
+  DONE_FADING,
+  CHOICE,
+  EVENT,
+  DONE,
+  DEMO_DONE,
+  OCARINA_CORRECT,
+  OCARINA_ERROR,
+  AWAITING_NEXT
+};
+
+export const enum MessageModes {
+  NONE,
+  TEXT_MOVE,
+  TEXT_OPEN,
+  TEXT_WAIT,
+  TEXT_READ,
+  TEXT_REST,
+  TEXT_DISPLAYING,
+  UNK_07,
+  UNK_08,
+  UNK_09,
+  UNK_0A,
+  UNK_0B,
+  UNK_0C,
+  UNK_0D,
+  UNK_0E,
+  UNK_0F,
+  UNK_10,
+  UNK_11,
+  UNK_12,
+  UNK_13,
+  UNK_14,
+  UNK_15,
+  UNK_16,
+  UNK_17,
+  UNK_18,
+  UNK_19,
+  OCARINA_DONE_PLAYING,
+  UNK_1B,
+  UNK_1C,
+  UNK_1D,
+  UNK_1E,
+  OCARINA_ERROR_WAIT,
+  UNK_20,
+  SCARECROW_RECORDING_START,
+  SCARECROW_RECORDING_ONGOING,
+  UNK_23,
+  UNK_24,
+  UNK_25,
+  UNK_26,
+  UNK_27,
+  UNK_28,
+  UNK_29,
+  UNK_2A,
+  UNK_2B,
+  UNK_2C,
+  UNK_2D,
+  UNK_2E,
+  UNK_2F,
+  UNK_30,
+  UNK_31,
+  UNK_32,
+  UNK_33,
+  TEXT_AWAIT_NEXT,
+  TEXT_DONE,
+  TEXT_CLOSING,
+  UNK_37
+};
+
+export const enum MessageSelectionModes {
+  _0 = 0x00,
+  TWO_CHOICE = 0x10,
+  THREE_CHOICE = 0x20,
+  HAS_NEXT_TEXTID = 0x30,
+  PERSISTENT = 0x40,
+  EVENT = 0x50,
+  FADING = 0x60
+};
+
+export interface IFontContext {
+  Ptr: number;
+  MessageOffsetPtr: number;
+  MessageLengthPtr: number;
+  FontTextureBuffer: any;
+  IconBuffer: any;
+  FontBuffer: any;
+  readonly MessageBufferPtr: number;
+  MessageBuffer: any;
+}
+
+export interface IMessageOcarinaInfo {
+  Ptr: number;
+  Button: number;
+  Status: number;
+  Location: number;
+}
+
+export interface IMessageContext {
+  Ptr: number;
+  readonly Font: IFontContext;
+  MessageBoxSegmentPtr: number;
+  TextureSegmentPtr: number;
+  OcarinaInfoPtr: number;
+  readonly OcarinaInfo: IMessageOcarinaInfo;
+  MessageID: number;
+  SelectedMessageID: number;
+  MessageBoxProperties: number;
+  MessageBoxType: MessageBoxTypes;
+  MessageBoxPosition: MessageBoxPositions;
+  MessageDataPtr: number;
+  MessageMode: number;
+  MessageBufferRead: any;
+  ReadIndex: number;
+  LoadIndex: number;
+  LoadEndIndex: number;
+  ReadEndIndex: number;
+  FastForwardMessageTimer: number;
+  CharacterXPosition: number;
+  CharacterYPosition: number;
+  CharacterColor: any;
+  SelectionMode: number;
+  MessageChoiceIndex: number;
+  ItemDisplayFlag: number;
+  StateTimer: number;
+  MessageSpeed: number;
+  MessageSpeedOriginal: number;
+  OcarinaLastPlayedSong: number;
+  OcarinaMode: number;
+  OcarinaAction: number;
+  OcarinaCheckIndex: number;
+  OcarinaSunSongFlag: number;
+  MessageBoxNumber: number;
+  MessageBoxPrimitiveColorIndex: number;
+  MessageBoxShadowColor: number;
+  MessageBoxShift: number;
+  MessageBoxAnimation: number;
+  MessageBoxType2: MessageBoxTypes;
+  MessageBoxColor: any;
+  MessageBoxCurrentAlpha: number;
+  TalkingActorPtr: number;
+  DisableWarpSongsBool: number;
+  SunSongChoice: number;
+  LastOcarinaNoteIndex: number;
+}
+
+export interface IMessageEntry {
+  MessageID: number;
+  MessageBoxType: MessageBoxTypes;
+  MessageBoxPosition: MessageBoxPositions;
+  MessageString: string;
+  ChoiceCallback?: (choiceIndex: number)=>void;
+}
+
 export interface IScarecrowSongNote {
   note: Z64API.Z64.SongNotes;
   duration: number;
