@@ -10,6 +10,7 @@ import { Z64_GAME, Z64_GLOBAL_PTR, Z64_SAVE } from './Common/types/GameAliases';
 import { EventSystem } from './Common/CommandBuffer/EventSystem';
 import { OverlayPayload } from './OverlayPayload';
 import { IActorManager } from '@Z64Lib/API/Common/Z64API';
+import MessageContext from './OoT/MessageContext';
 
 export interface OOT_Offsets {
     state: number;
@@ -29,6 +30,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
     helper!: Z64API.OoT.IOotHelper;
     commandBuffer!: Z64CORE.Z64.CommandBuffer;
     actorManager!: IActorManager;
+    msgCtx!: Z64API.OoT.IMessageContext;
     eventTicks: Map<string, Function> = new Map<string, Function>();
     // Client side variables
     isSaveLoaded = false;
@@ -224,6 +226,8 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
     onHeapReady(evt: any) {
         this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
         this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
+        let MessageContextPtr = this.ModLoader.emulator.rdramRead32(Z64_GLOBAL_PTR) + 0x0020D8;
+        this.msgCtx = new MessageContext(this, this.ModLoader, MessageContextPtr);
     }
 
     mapSelectCode(): void {

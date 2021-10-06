@@ -403,6 +403,7 @@ export interface IOOTCore extends ICore {
   save: ISaveContext;
   helper: IOotHelper;
   global: IGlobalContext;
+  msgCtx: IMessageContext;
   commandBuffer: Z64API.ICommandBuffer;
   actorManager: IActorManager;
   toggleMapSelectKeybind(): boolean;
@@ -613,6 +614,13 @@ export interface IMessageOcarinaInfo {
 }
 
 export interface IMessageContext {
+  Message_GetState(msgCtx: IMessageContext): number;
+  Message_GetTableEntry(MessageID: number): number;
+  Message_ModifyTableEntry(CustomMessage: IMessageEntry): void;
+  Message_Spawn(MessageCtx: IMessageContext, Message: IMessageEntry): void;
+}
+
+export interface IMessageContext {
   Ptr: number;
   readonly Font: IFontContext;
   MessageBoxSegmentPtr: number;
@@ -665,7 +673,7 @@ export interface IMessageEntry {
   MessageBoxType: MessageBoxTypes;
   MessageBoxPosition: MessageBoxPositions;
   MessageString: string;
-  ChoiceCallback?: (choiceIndex: number)=>void;
+  ChoiceCallback?: (choiceIndex: number) => void;
 }
 
 export interface IScarecrowSongNote {
