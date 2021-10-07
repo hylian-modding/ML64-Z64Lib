@@ -425,13 +425,16 @@ export class MMManifest implements IManifest {
             m.GoTo(lo);
             m.Lo32(p);
         }
-
+        
+        
         hilo(_player, 0x1917E, 0x19182, Z64Offsets.DL_INIT_FIRE);
         hilo(_player, 0x191AE, 0x191B2, Z64Offsets.DL_FIRE_ROLL);
         hilo(_player, 0x18EEE, 0x18EF2, Z64Offsets.DL_CURLED);
         hilo(_player, 0x18F8A, 0x18F8E, Z64Offsets.DL_SPIKES);
 
         hilo(_code, 0x81A4A, 0x81A4E, Z64Offsets.DL_FIRE_PUNCH);
+        _code.GoTo(0x11A324);
+        _code.Write32(Z64Offsets.DL_FIRE_PUNCH);
 
         _code.GoTo(0x83932);
         _code.Hi32(Z64Offsets.DL_DRUM_STRAP);
