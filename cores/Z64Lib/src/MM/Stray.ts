@@ -4,7 +4,7 @@ import * as Z64CORE from '../importsZ64';
 import IMemory from "modloader64_api/IMemory";
 import { Flag, FlagManager } from "modloader64_api/FlagManager";
 
-export class Stray implements Z64API.MM.IStray {
+export class Stray extends JSONTemplate implements Z64API.MM.IStray {
     private emulator: IMemory;
     private strayFlags: FlagManager;
     private woodfall_fairies = 0x801EF744; //0x1
@@ -12,8 +12,14 @@ export class Stray implements Z64API.MM.IStray {
     private bay_fairies = 0x801EF746; //0x1
     private stone_fairies = 0x801EF747; //0x1
     private strayClockTownAddr = 0x801F0570;
-
-    constructor(emulator: IMemory, save: Z64API.MM.ISaveContext) {
+    jsonFields: string[] = [
+        'strayWoodfall',
+        'straySnowhead',
+        'strayBay',
+        'strayStone'
+    ];
+    constructor(emulator: IMemory) {
+        super();
         this.emulator = emulator;
         this.strayFlags = new FlagManager(emulator, this.strayClockTownAddr);
     }

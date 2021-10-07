@@ -3,12 +3,16 @@ import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../importsZ64';
 import IMemory from "modloader64_api/IMemory";
 
-export class Skull implements Z64API.MM.ISkull {
+export class Skull extends JSONTemplate implements Z64API.MM.ISkull {
     private emulator: IMemory;
     swamp_skulltula = 0x801F0530; //0x2
     bay_skulltula = 0x801F0532; //0x2
-
-    constructor(emulator: IMemory, save: Z64API.MM.ISaveContext) {
+    jsonFields: string[] = [
+        'swampSkulltula',
+        'baySkulltula'
+    ];
+    constructor(emulator: IMemory) {
+        super();
         this.emulator = emulator;
     }
 

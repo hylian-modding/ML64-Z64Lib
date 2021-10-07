@@ -228,7 +228,6 @@ export interface IPhoto {
   pictograph_spec: number;
   pictograph_quality: number;
   pictograph_unk: number;
-  pictograph_used: boolean;
 }
 
 export interface IStray {

@@ -80,10 +80,6 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
             this.link,
             this.ModLoader.emulator
         );
-        this.photo = new Z64CORE.MM.Photo(this.ModLoader.emulator, this.save);
-        this.stray = new Z64CORE.MM.Stray(this.ModLoader.emulator, this.save);
-        this.skull = new Z64CORE.MM.Skull(this.ModLoader.emulator, this.save);
-
         this.ModLoader.payloadManager.registerPayloadType(
             new OverlayPayload('.ovl', this.ModLoader, this)
         );

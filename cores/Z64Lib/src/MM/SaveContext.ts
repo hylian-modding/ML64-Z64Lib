@@ -47,7 +47,12 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         'intro_flag',
         'updrades',
         'spider_house_mask_order',
-        'bomber_code'
+        'bomber_code',
+        'permFlags',
+        'photo',
+        'skull',
+        'stray',
+        'pictoboxUsed'
     ];
 
     constructor(emu: IMemory, log: ILogger, core: Z64API.MM.IMMCore) {
@@ -61,9 +66,9 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         this.owlStatues = new Z64CORE.MM.OwlStatues(emu);
         this.keyManager = new Z64CORE.Z64.KeyManager(emu);
         this.dungeonItemManager = new Z64CORE.Z64.DungeonItemManager(emu);
-        this.photo = new Z64CORE.MM.Photo(emu, this);
-        this.stray = new Z64CORE.MM.Stray(emu, this);
-        this.skull = new Z64CORE.MM.Skull(emu, this);
+        this.photo = new Z64CORE.MM.Photo(emu);
+        this.stray = new Z64CORE.MM.Stray(emu);
+        this.skull = new Z64CORE.MM.Skull(emu);
     }
 
     get checksum(): number {
