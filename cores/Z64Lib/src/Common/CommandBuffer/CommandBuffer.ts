@@ -467,13 +467,13 @@ export class CommandBuffer_Factory {
          */
         let CommandBuffer_Update_malloc = alloc(inject.commandbuffer);
         let Actor_SpawnWithAddress_malloc = alloc(inject.Actor_SpawnWithAddress);
-        let Actor_DestroyCave_malloc = alloc(inject.Actor_DestroyCave);
+        //let Actor_DestroyCave_malloc = alloc(inject.Actor_DestroyCave);
         //let Actor_InitCave_malloc = alloc(inject.Actor_InitCave);
         let Actor_SpawnEntryCave_malloc = alloc(inject.Actor_SpawnEntryCave);
         //let Actor_SpawnWithParentAndCutsceneCave_malloc = //@BUG This causes a redbar, I think I missed something up
         //let Actor_SpawnCave_malloc = alloc(inject.Actor_SpawnCave);
         //let Actor_SpawnTransitionActorCave_malloc = alloc(inject.Actor_SpawnTransitionActorCave);
-        let Actor_UpdateCave_malloc = alloc(inject.Actor_UpdateCave);
+        //let Actor_UpdateCave_malloc = alloc(inject.Actor_UpdateCave);
 
         // if MM
         if (1 && inject.Actor_SpawnWithParentAndCutsceneCave !== undefined) {
@@ -491,10 +491,10 @@ export class CommandBuffer_Factory {
             }
         }
 
-        emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_DestroyCave")!, JAL_ENCODE(Actor_DestroyCave_malloc));
+        //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_DestroyCave")!, JAL_ENCODE(Actor_DestroyCave_malloc));
         emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnEntryCave")!, JAL_ENCODE(Actor_SpawnEntryCave_malloc));
         //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_InitCave")!, JAL_ENCODE(Actor_InitCave_malloc)); // @BUG This is never reached because we overwrite Actor_Spawn!
-        emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_UpdateCave")!, JAL_ENCODE(Actor_UpdateCave_malloc));
+        //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_UpdateCave")!, JAL_ENCODE(Actor_UpdateCave_malloc));
         emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("CommandBuffer_Update")!, JAL_ENCODE(CommandBuffer_Update_malloc));
 
         let smartCave = new SmartBuffer()
@@ -532,14 +532,14 @@ export class CommandBuffer_Factory {
 
         this.ReplaceAddress(CommandBuffer_Update_malloc, inject.commandbuffer.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnWithAddress_malloc, inject.Actor_SpawnWithAddress.byteLength, emu, 0x12345678, this.cmd_pointer);
-        this.ReplaceAddress(Actor_DestroyCave_malloc, inject.Actor_DestroyCave.byteLength, emu, 0x12345678, this.cmd_pointer);
+        //this.ReplaceAddress(Actor_DestroyCave_malloc, inject.Actor_DestroyCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         //this.ReplaceAddress(Actor_InitCave_malloc, inject.Actor_InitCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnEntryCave_malloc, inject.Actor_SpawnEntryCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         // if mm
         //if (1 && inject.Actor_SpawnWithParentAndCutsceneCave !== undefined && Actor_SpawnWithParentAndCutsceneCave_malloc) this.ReplaceAddress(Actor_SpawnWithParentAndCutsceneCave_malloc, inject.Actor_SpawnWithParentAndCutsceneCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         //this.ReplaceAddress(Actor_SpawnCave_malloc, inject.Actor_SpawnCave.byteLength, emu, 0x12345678, this.cmd_pointer);
         //this.ReplaceAddress(Actor_SpawnTransitionActorCave_malloc, inject.Actor_SpawnTransitionActorCave.byteLength, emu, 0x12345678, this.cmd_pointer);
-        this.ReplaceAddress(Actor_UpdateCave_malloc, inject.Actor_UpdateCave.byteLength, emu, 0x12345678, this.cmd_pointer);
+        //this.ReplaceAddress(Actor_UpdateCave_malloc, inject.Actor_UpdateCave.byteLength, emu, 0x12345678, this.cmd_pointer);
 
         let alloc_pointers = (values: number[]) => {
             let p = heap.malloc(values.length * 4);
