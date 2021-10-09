@@ -129,8 +129,8 @@ export class OOTManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_RFIST_HOOKSHOT);           //    Right Fist + Hookshot / Longshot (Low Poly)
         _code.Write32(Z64Offsets.DL_LFIST_HAMMER);             //    Left Fist + Megaton Hammer (High Poly)
         _code.Write32(Z64Offsets.DL_LFIST_HAMMER);             //    Left Fist + Megaton Hammer (Low Poly)
-        _code.Write32(Z64Offsets.DL_DF);                    //    Left Fist + Boomerang (High Poly)
-        _code.Write32(Z64Offsets.DL_DF);                    //    Left Fist + Boomerang (Low Poly)
+        _code.Write32(Z64Offsets.DL_LFIST_BOOMERANG);                    //    Left Fist + Boomerang (High Poly)
+        _code.Write32(Z64Offsets.DL_LFIST_BOOMERANG);                    //    Left Fist + Boomerang (Low Poly)
         _code.Write32(Z64Offsets.DL_LHAND_BOTTLE);             //    Outstretched Left Hand for Holding Bottles (High Poly)
         _code.Write32(Z64Offsets.DL_LHAND_BOTTLE);             //    Outstretched Left Hand for Holding Bottles (Low Poly)
         _code.Write32(Z64Offsets.DL_FPS_LFOREARM);             //    FPS Left Forearm
