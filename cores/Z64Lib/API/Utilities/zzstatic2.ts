@@ -60,6 +60,7 @@ export class zzstatic2 {
     pointerList: Array<number> = [];
     displayListStarts: Set<number> = new Set();
     temp: Buffer = Buffer.alloc(4);
+    recurseSet: Set<number> = new Set();
 
     isValidOpCode(op: number) {
         return DisplayOpcodes[op] !== undefined;
@@ -96,7 +97,7 @@ export class zzstatic2 {
         return buf.readUInt32BE(offset) & 0x00FFFFFF;
     }
 
-    findAllDisplayLists(buf: Buffer){
+    findAllDisplayLists(buf: Buffer) {
         for (let i = 0; i < buf.byteLength; i += 8) {
             let cmd = this.readCommand(buf, i);
             if (this.isOpCodeEnd(cmd.id) && buf.readUInt32BE(i) === 0xDF000000 && buf.readUInt32BE(i + 0x4) === 0) {
@@ -114,15 +115,24 @@ export class zzstatic2 {
         return this.displayListStarts;
     }
 
-    scanList(buf: Buffer, start: number){
+    scanList(buf: Buffer, start: number) {
         let cur = start;
         let cmd = this.readCommand(buf, cur);
-        while (cmd.id !== DisplayOpcodes.G_ENDDL){
+        let recurse: Set<number> = new Set();
+        while (cmd.id !== DisplayOpcodes.G_ENDDL) {
             cmd = this.readCommand(buf, cur);
-            if (this.doesOpCodeHavePointer(cmd.id)){
+            if (this.doesOpCodeHavePointer(cmd.id)) {
                 this.pointerSet.add(cur + 0x4);
+                if (buf.readUInt32BE(cur) === 0xDE000000 && buf.readUInt8(cur + 4) === 0x06) {
+                    recurse.add(buf.readUInt32BE(cur + 0x4) & 0x00FFFFFF);
+                }
             }
-            cur+=0x8;
+            cur += 0x8;
+        }
+        let r = Array.from(recurse);
+        while (r.length > 0) {
+            let r1 = r.shift()!;
+            this.scanList(buf, r1);
         }
     }
 
@@ -141,7 +151,7 @@ export class zzstatic2 {
             cur += 8;
             count--;
         }
-        if (buf.readUInt32BE(start + 0x17) > 0){
+        if (buf.readUInt32BE(start + 0x17) > 0) {
             this.pointerSet.add(start + 0x17);
         }
         let skelsec = this.readPointer(buf, start + 0x1C);
@@ -160,12 +170,14 @@ export class zzstatic2 {
                         this.temp.writeUInt32BE(d1);
                         if (this.temp.readUInt8(0) === 0x06) {
                             this.pointerSet.add(bone);
+                            this.scanList(buf, d1 & 0x00FFFFFF);
                         }
                         bone += 4;
                         let d2 = buf.readUInt32BE(bone);
                         this.temp.writeUInt32BE(d2);
                         if (this.temp.readUInt8(0) === 0x06) {
                             this.pointerSet.add(bone);
+                            this.scanList(buf, d2 & 0x00FFFFFF);
                         }
                     }
                 }
