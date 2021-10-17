@@ -114,9 +114,21 @@ export class zzstatic2 {
         return this.displayListStarts;
     }
 
+    scanList(buf: Buffer, start: number){
+        let cur = start;
+        let cmd = this.readCommand(buf, cur);
+        while (cmd.id !== DisplayOpcodes.G_ENDDL){
+            cmd = this.readCommand(buf, cur);
+            if (this.doesOpCodeHavePointer(cmd.id)){
+                this.pointerSet.add(cur + 0x4);
+            }
+            cur+=0x8;
+        }
+    }
+
     repoint(buf: Buffer, base: number) {
         this.pointerSet.clear();
-        this.findAllDisplayLists(buf);
+        //this.findAllDisplayLists(buf);
         let start = buf.indexOf(Buffer.from("MODLOADER64"));
         let count = buf.readUInt32BE(start + 0xC);
         let cur = start + 0x20;
@@ -124,6 +136,7 @@ export class zzstatic2 {
             let cmd = this.readCommand(buf, cur);
             if (this.doesOpCodeHavePointer(cmd.id)) {
                 this.pointerSet.add(cur + 4);
+                this.scanList(buf, buf.readUInt32BE(cur + 4) & 0x00FFFFFF);
             }
             cur += 8;
             count--;
