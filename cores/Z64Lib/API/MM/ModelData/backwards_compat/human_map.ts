@@ -102,7 +102,7 @@ MANIFEST_MAP_HUMAN.set("Mask.Goron", 0x152);
 MANIFEST_MAP_HUMAN.set("Mask.Zora", 0x160);
 MANIFEST_MAP_HUMAN.set("Ocarina.2", 0x196);
 MANIFEST_MAP_HUMAN.set("Shield.2", 0x71);
-MANIFEST_MAP_HUMAN.set("Shield.3", 0xA0);
+MANIFEST_MAP_HUMAN.set("Shield.3", 0xA1);
 MANIFEST_MAP_HUMAN.set("Limb 1", 0x1A1);
 MANIFEST_MAP_HUMAN.set("Limb 3", 0x1AC);
 MANIFEST_MAP_HUMAN.set("Limb 4", 0x1B7);
