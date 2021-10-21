@@ -74,9 +74,16 @@ export class zzstatic2 {
         return false;
     }
 
-    doesOpCodeHavePointer(op: DisplayOpcodes) {
+    isOpCodeNOP(op: DisplayOpcodes) {
         switch (op) {
             case DisplayOpcodes.G_NOOP:
+                return true;
+        }
+        return false;
+    }
+
+    doesOpCodeHavePointer(op: DisplayOpcodes) {
+        switch (op) {
             case DisplayOpcodes.G_VTX:
             case DisplayOpcodes.G_BRANCH_Z:
             case DisplayOpcodes.G_MTX:
@@ -148,6 +155,8 @@ export class zzstatic2 {
             if (this.doesOpCodeHavePointer(cmd.id)) {
                 this.pointerSet.add(cur + 4);
                 this.scanList(buf, buf.readUInt32BE(cur + 4) & 0x00FFFFFF);
+            } else if (this.isOpCodeNOP(cmd.id)) {
+                this.pointerSet.add(cur + 0x4);
             }
             cur += 8;
             count--;
