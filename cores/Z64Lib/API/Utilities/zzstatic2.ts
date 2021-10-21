@@ -76,6 +76,7 @@ export class zzstatic2 {
 
     doesOpCodeHavePointer(op: DisplayOpcodes) {
         switch (op) {
+            case DisplayOpcodes.G_NOOP:
             case DisplayOpcodes.G_VTX:
             case DisplayOpcodes.G_BRANCH_Z:
             case DisplayOpcodes.G_MTX:

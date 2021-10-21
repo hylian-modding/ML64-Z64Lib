@@ -16,25 +16,16 @@ export interface IOptimized{
     oldOffs2NewOffs: Map<number, number>;
 }
 
-function findSubBuffer(bufferToSearch: Buffer, subBuffer: Buffer): number {
-
-    let result = -1;
-
-    if (bufferToSearch.byteLength < subBuffer.byteLength)
-        return result;
-
-    let range = bufferToSearch.byteLength - subBuffer.byteLength + 1;
-
-    for (let i = 0; i < range; i += 8) {
-        if (bufferToSearch.slice(i, i + subBuffer.byteLength).compare(subBuffer) === 0) {
-            result = i;
-            break;
-        }
-    }
-
-    return result;
+export interface IOptimizeExtended extends IOptimized{
+    textureOffsets: Map<number, number>;
+    textureLengths: Map<number, number>;
+    vertOffsets: Map<number, number>;
+    vertLengths: Map<number, number>;
+    mtxOffsets: Map<number, number>;
+    mtxLength: Map<number, number>;
 }
 
+// hacky as hell, but it works
 function removeDupes(a: { offset: number, data: Buffer }[], m: Map<number, IOffsetExtended[]>) {
     for (let i = 0; i < a.length; i++) {
 
@@ -96,12 +87,11 @@ function removeDupes(a: { offset: number, data: Buffer }[], m: Map<number, IOffs
                 m.set(bigger.offset, finala);
 
             }
-
         }
     }
 }
 
-export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: number = 0, segment = 0x06, removeDupData = false): IOptimized{
+export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: number = 0, segment = 0x06, removeDupData = false): IOptimized {
 
     let DLoffsets = new Set(displayListOffsets);
 
@@ -336,6 +326,8 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
         removeDupes(texPairs, oldTex2Undupe);
         removeDupes(vertPairs, oldVert2Undupe);
 
+        // console.log("FUCK2");
+
         oldTex2Undupe.forEach((extOffs, parentOff) => {
             extOffs.forEach((extOff) => {
                 textures.delete(extOff.primaryOffset);
@@ -355,12 +347,14 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
     let optimizedZobj = new SmartBuffer();
 
     let oldTex2New = new Map<number, number>();
+    let texLengths = new Map<number, number>();
 
     textures.forEach((tex, originalOffset) => {
 
         let newOffset = optimizedZobj.length;
 
         oldTex2New.set(originalOffset, newOffset);
+        texLengths.set(originalOffset, tex.byteLength);
 
         // console.log("Tex: 0x" + originalOffset.toString(16) + " -> 0x" + newOffset.toString(16));
 
@@ -369,11 +363,13 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
     });
 
     let oldVer2New = new Map<number, number>();
+    let vertLength = new Map<number, number>();
     vertices.forEach((tex, originalOffset) => {
 
         let newOffset = optimizedZobj.length;
 
         oldVer2New.set(originalOffset, newOffset);
+        vertLength.set(originalOffset, tex.byteLength);
 
         optimizedZobj.writeBuffer(tex);
 
@@ -402,17 +398,16 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
     }
 
     let oldMtx2New = new Map<number, number>();
+    let mtxLength= new Map<number, number>();
 
     matrices.forEach((mtx, originalOffset) => {
         let newOffset = optimizedZobj.length;
 
         oldMtx2New.set(originalOffset, newOffset);
+        mtxLength.set(originalOffset, mtx.byteLength);
 
         optimizedZobj.writeBuffer(mtx);
     });
-
-    // byte alignment via 0 padding
-    optimizedZobj.writeBuffer(Buffer.alloc(optimizedZobj.length % 0x10, 0));
 
     // repoint the display lists
     // sort to make sure that the display lists called by DE are already in the zobj
@@ -423,11 +418,7 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
     });
 
     while (displayLists.length !== 0) {
-        let currentData = displayLists.pop();
-
-        if (!currentData) {
-            throw new Error("Something went wrong when relocating display lists!");
-        }
+        let currentData = displayLists.pop()!;
 
         if (currentData.dependencies.size !== 0) {
             throw new Error("Non-relocated display list referenced.");
@@ -504,11 +495,18 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
             dat.dependencies.delete(currentData!.offset);
         });
 
-        // re-sort
-        displayLists.sort((a, b) => {   // need to re-sort in case last element no longer has 0 dependencies while others do
-            return (a.dependencies.size - b.dependencies.size) * -1;    // sort in descending order
-        });
+        // if last element no longer has 0 dependencies, must resort
+        if (displayLists.length > 0){
+            if (displayLists[displayLists.length - 1].dependencies.size !== 0) {
+                displayLists.sort((a, b) => {
+                    return (a.dependencies.size - b.dependencies.size) * -1;    // sort in descending order
+                });
+            }
+        }
     }
+
+    // byte alignment via 0 padding
+    optimizedZobj.writeBuffer(Buffer.alloc(optimizedZobj.length % 0x10, 0));
 
     oldDL2New.forEach((newOff, oldOff) => {
         oldDL2New.set(oldOff, newOff + rebase);
@@ -516,6 +514,12 @@ export function optimize(zobj: Buffer, displayListOffsets: number[], rebase: num
 
     return {
         zobj: optimizedZobj.toBuffer(),
-        oldOffs2NewOffs: oldDL2New
-    }
+        oldOffs2NewOffs: oldDL2New,
+        textureOffsets: oldTex2New,
+        textureLengths: texLengths,
+        vertOffsets: oldVer2New,
+        vertLengths: vertLength,
+        mtxOffsets: oldMtx2New,
+        mtxLength
+    } as IOptimized;
 }

@@ -258,9 +258,9 @@ export class CommandBuffer implements ICommandBuffer {
             this.ModLoader.emulator.rdramWrite32(offset + 8 + 8, age);
         }
 
-        if (transition === undefined){
+        if (transition === undefined) {
             this.ModLoader.emulator.rdramWrite32(offset + 8 + 0xC, 0xFFFFFFFF);
-        }else{
+        } else {
             this.ModLoader.emulator.rdramWrite32(offset + 8 + 0xC, transition);
         }
 
@@ -502,9 +502,7 @@ export class CommandBuffer_Factory {
         // if oot
         if (Z64_GAME === Z64LibSupportedGames.OCARINA_OF_TIME) {
             //emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("Actor_SpawnTransitionActorCave")!, JAL_ENCODE(Actor_SpawnTransitionActorCave_malloc));
-            emu.rdramWrite32(inject.VERSIONS.get(revision)!.get("CommandBuffer_Update")!, JAL_ENCODE(CommandBuffer_Update_malloc));
-        }
-        else {
+        } else {
             smartCave.clear()
             //smartCave.writeUInt32BE(J_ENCODE(Actor_SpawnTransitionActorCave_malloc));
             //smartCave.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
@@ -528,7 +526,6 @@ export class CommandBuffer_Factory {
         this.cmd_pointer = heap.malloc(0x10);
         this.cmdbuf = heap.malloc(COMMANDBUFFER_SIZEOF);
         emu.rdramWrite32(this.cmd_pointer, this.cmdbuf);
-        console.log(`Command buffer: ${this.cmdbuf.toString(16)}`);
 
         this.ReplaceAddress(CommandBuffer_Update_malloc, inject.commandbuffer.byteLength, emu, 0x12345678, this.cmd_pointer);
         this.ReplaceAddress(Actor_SpawnWithAddress_malloc, inject.Actor_SpawnWithAddress.byteLength, emu, 0x12345678, this.cmd_pointer);

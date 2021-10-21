@@ -205,7 +205,7 @@ export class OOTManifest implements IManifest {
         _hook.Lo32(Z64Offsets.DL_HOOKSHOT_CHAIN);
 
         _hook.GoTo(0xBA8);               //    Hookshot / Longshot Object File
-        _hook.Write16(0x0014);
+        _hook.Write16(0x0001);
 
         // ovl_Effect_Ss_Stick
         _stick.GoTo(0x32C);                //    Broken Piece of Giant's Knife
