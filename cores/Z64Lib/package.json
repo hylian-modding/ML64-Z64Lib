@@ -1,19 +1,19 @@
 {
   "name": "Z64Lib",
-  "version": "2.1.1-nightly@402b751",
+  "version": "2.1.1-nightly@bfb70f0",
   "description": "",
   "main": "Z64LibEntryPoint.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "date": "Thu, 07 Oct 2021 07:46:55 GMT",
-  "commit": "402b751",
+  "date": "Wed, 27 Oct 2021 09:11:29 GMT",
+  "commit": "bfb70f0",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "updateUrl": "https://repo.modloader64.com/mods/Z64Lib/update/update.json",
   "devUrl": "https://repo.modloader64.com/mods/Z64Lib/dev/update.json",
   "dependencies": {
-    "optimize_zobj": "https://github.com/Neirn/optimize_zobj"
+    "mips-assembler": "^2.0.1"
   }
 }

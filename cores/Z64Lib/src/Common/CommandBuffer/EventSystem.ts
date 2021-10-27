@@ -1,4 +1,4 @@
-import { IActorManager } from "@Z64Lib/API/Common/Z64API";
+import { IActorManager, IZ64Core } from "@Z64Lib/API/Common/Z64API";
 import { ActorCategory, IActor, Z64 } from "@Z64Lib/API/imports";
 import * as Z64CORE from "@Z64Lib/src/importsZ64";
 import { bus } from "modloader64_api/EventHandler";
@@ -7,21 +7,23 @@ import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
 export class EventSystem implements IActorManager {
 
     ModLoader: IModLoaderAPI;
+    core: IZ64Core;
     cmd_pointer: number;
     actors: Map<ActorCategory, IActor[]> = new Map();
     allActors: Map<number, IActor> = new Map();
     objects: Map<number, number> = new Map();
 
-    constructor(ModLoader: IModLoaderAPI, cmd_pointer: number) {
+    constructor(ModLoader: IModLoaderAPI, core: IZ64Core ,cmd_pointer: number) {
         this.ModLoader = ModLoader;
         this.cmd_pointer = cmd_pointer;
         for (let i = 0; i < 13; i++) {
             this.actors.set(i, []);
         }
+        this.core = core;
     }
 
     createIActorFromPointer(pointer: number): IActor {
-        return new Z64CORE.Z64.ActorBase(this.ModLoader.emulator, pointer);
+        return new Z64CORE.Z64.ActorBase(this.ModLoader, this.core.global.scene, pointer);
     }
 
     getActors(category: ActorCategory): IActor[] {
@@ -29,7 +31,6 @@ export class EventSystem implements IActorManager {
     }
 
     onTick() {
-        //console.log(this.ModLoader.emulator.rdramRead32(0x806C0000).toString(16));
         let count = this.ModLoader.emulator.rdramRead16(this.cmd_pointer + 0x2);
         if (count === 0) return;
         for (let i = 0; i < count; i++) {
@@ -44,7 +45,6 @@ export class EventSystem implements IActorManager {
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.INIT: {
                     let actorPointer = event.readUInt32BE(0x4);
                     let actor = this.createIActorFromPointer(actorPointer);
-                    console.log("Actor was init: " + JSON.stringify(actor));
                     break;
                 }
                 case Z64CORE.Z64.CommandBuffer_CommandEventType.SPAWNENTRY:
@@ -66,6 +66,7 @@ export class EventSystem implements IActorManager {
                     this.actors.forEach((actors: IActor[], key: ActorCategory) => {
                         for (let i = 0; i < actors.length; i++) {
                             if (actors[i].pointer === actorPointer) {
+                                actors[i].exists = false;
                                 bus.emit(Z64.OotEvents.ON_ACTOR_DESPAWN, actors[i]);
                                 actors.splice(i, 1);
                                 break;

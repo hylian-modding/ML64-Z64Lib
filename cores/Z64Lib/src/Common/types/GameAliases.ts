@@ -21,6 +21,7 @@ export let Z64_PLAYER_STATE2: number;
 export let Z64_PLAYER_RAWANIM: number;
 export let Z64_PAUSED: number;
 export let Z64_DMAROM: number;
+export let Z64_COMMAND_BUFFER: number;
 
 export let Z64_EQUIP_ADDR: number;
 
@@ -102,4 +103,8 @@ export function setupMM() {
 
 export function markAsRandomizer() {
     Z64_IS_RANDOMIZER = true;
+}
+
+export function setCommandBufferAddr(pointer: number){
+    Z64_COMMAND_BUFFER = pointer;
 }

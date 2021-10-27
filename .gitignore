@@ -6,3 +6,10 @@ modloader64-config.json
 src/Z64LibTests/
 dirty/
 vanilla/
+*.o
+*.elf
+overlays/CommandBuffer/bin
+overlays/CommandBuffer/bin_mm
+overlays/CommandBuffer/bin_oot
+.vscode
+*.ld

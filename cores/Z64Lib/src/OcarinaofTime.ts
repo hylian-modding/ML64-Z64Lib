@@ -177,10 +177,10 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
         if (this.map_select_enabled) {
             this.mapSelectCode();
         }
+        if (this.commandBuffer !== undefined) this.commandBuffer.onTick();
+        //@ts-ignore
+        if (this.actorManager !== undefined) this.actorManager.onTick();
         if (!this.helper.isTitleScreen()) {
-            if (this.commandBuffer !== undefined) this.commandBuffer.onTick();
-            //@ts-ignore
-            if (this.actorManager !== undefined) this.actorManager.onTick();
             this.eventTicks.forEach((value: Function, key: string) => {
                 value();
             });
@@ -194,10 +194,10 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
 
     @EventHandler(EventsClient.ON_INJECT_FINISHED)
     onInject(evt: any) {
-        if (this.ModLoader.config.data["OcarinaofTime"]["skipN64Logo"]) {
+/*         if (this.ModLoader.config.data["OcarinaofTime"]["skipN64Logo"]) {
             this.ModLoader.logger.info("Skipping N64 logo screen...");
             this.ModLoader.emulator.rdramWritePtr8(Z64_GLOBAL_PTR, 0x1E1, 0x1);
-        }
+        } */
     }
 
     @EventHandler(EventsClient.ON_HEAP_SETUP)
@@ -224,8 +224,8 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
 
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
-        this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
+        this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME, this);
+        this.actorManager = new EventSystem(this.ModLoader, this, this.commandBuffer.cmdbuf);
         let MessageContextPtr = this.ModLoader.emulator.rdramRead32(Z64_GLOBAL_PTR) + 0x0020D8;
         this.msgCtx = new MessageContext(this, this.ModLoader, MessageContextPtr);
     }

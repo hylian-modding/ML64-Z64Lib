@@ -1,0 +1,37 @@
+#ifndef COMMANDRETURN_H
+#define COMMANDRETURN_H
+
+#include <inttypes.h>
+#include "command.h"
+
+typedef struct {
+    /* 0x00 */ struct Actor* actor;
+} CommandReturnData_ActorSpawn; /* sizeof = 0x04 */
+
+typedef struct {
+    /* 0x00 */ uint32_t value;
+} CommandReturnData_ArbitraryFunction; /* sizeof = 0x04 */
+
+typedef struct {
+    uint32_t result;
+} CommandReturnData_MallocFree;
+
+typedef struct {
+    int32_t index;
+} CommandReturnData_ObjectLoad;
+
+typedef union {
+    CommandReturnData_ActorSpawn actorSpawn;
+    CommandReturnData_ArbitraryFunction arbFn;
+    CommandReturnData_MallocFree mallocFree;
+    CommandReturnData_ObjectLoad objLoad;
+} CommandReturnData; /* sizeof = 0x04 */
+
+typedef struct {
+    /* 0x00 */ uint32_t type;
+    /* 0x04 */ uint32_t uuid;
+    /* 0x08 */ CommandReturnData data;
+} CommandReturn; /* sizeof = 0x0C */
+
+#endif
+

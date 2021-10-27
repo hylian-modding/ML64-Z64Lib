@@ -183,8 +183,8 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         //this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
 
         if (this.rom_header !== undefined) {
-            this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64.Z64_GAME);
-            this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
+            this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64.Z64_GAME, this);
+            this.actorManager = new EventSystem(this.ModLoader, this, this.commandBuffer.cmdbuf);
         }
     }
 

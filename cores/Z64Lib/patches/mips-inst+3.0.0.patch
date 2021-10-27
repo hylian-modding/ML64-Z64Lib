@@ -1,0 +1,3458 @@
+diff --git a/node_modules/mips-inst/dist/js/bitstrings.js b/node_modules/mips-inst/dist/js/bitstrings.js
+index 23cecb6..d8fd2f1 100644
+--- a/node_modules/mips-inst/dist/js/bitstrings.js
++++ b/node_modules/mips-inst/dist/js/bitstrings.js
+@@ -1,38 +1,41 @@
+-export function isBinaryLiteral(str) {
+-  return str[0] === "0" || str[0] === "1"; // Checking first char is enough for now
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.padBitString = exports.makeBitMask = exports.makeBitMaskFromString = exports.compareBits = exports.isBinaryLiteral = void 0;
++function isBinaryLiteral(str) {
++    return str[0] === "0" || str[0] === "1"; // Checking first char is enough for now
+ }
+-
+-export function compareBits(number, bitString, bitOffset) {
+-  let shifted = (number >>> bitOffset) & makeBitMask(bitString.length);
+-  let mask = makeBitMaskFromString(bitString);
+-  return shifted === mask;
++exports.isBinaryLiteral = isBinaryLiteral;
++function compareBits(number, bitString, bitOffset) {
++    var shifted = (number >>> bitOffset) & makeBitMask(bitString.length);
++    var mask = makeBitMaskFromString(bitString);
++    return shifted === mask;
+ }
+-
+-export function makeBitMaskFromString(bitString) {
+-  let mask = 0;
+-  for (var i = 0; i < bitString.length; i++) {
+-    let bit = bitString[i] === "1" ? 1 : 0;
+-    mask <<= 1;
+-    mask = mask | bit;
+-  }
+-  return mask;
++exports.compareBits = compareBits;
++function makeBitMaskFromString(bitString) {
++    var mask = 0;
++    for (var i = 0; i < bitString.length; i++) {
++        var bit = bitString[i] === "1" ? 1 : 0;
++        mask <<= 1;
++        mask = mask | bit;
++    }
++    return mask;
+ }
+-
+-export function makeBitMask(len) {
+-  if (len <= 0)
+-    throw new Error(`makeBitMask cannot make mask of length ${len}`);
+-
+-  let mask = 1;
+-  while (--len) {
+-    mask <<= 1;
+-    mask = mask | 1;
+-  }
+-  return mask;
++exports.makeBitMaskFromString = makeBitMaskFromString;
++function makeBitMask(len) {
++    if (len <= 0)
++        throw new Error("makeBitMask cannot make mask of length " + len);
++    var mask = 1;
++    while (--len) {
++        mask <<= 1;
++        mask = mask | 1;
++    }
++    return mask;
+ }
+-
+-export function padBitString(str, minLen) {
+-  while (str.length < minLen) {
+-    str = "0" + str;
+-  }
+-  return str;
++exports.makeBitMask = makeBitMask;
++function padBitString(str, minLen) {
++    while (str.length < minLen) {
++        str = "0" + str;
++    }
++    return str;
+ }
++exports.padBitString = padBitString;
+diff --git a/node_modules/mips-inst/dist/js/immediates.js b/node_modules/mips-inst/dist/js/immediates.js
+index 53bd477..0ca2238 100644
+--- a/node_modules/mips-inst/dist/js/immediates.js
++++ b/node_modules/mips-inst/dist/js/immediates.js
+@@ -1,74 +1,67 @@
+-export function parseImmediate(immArr, maxBits, signed, shift) {
+-  let [neg, base, num] = immArr;
+-  base = base.toLowerCase();
+-
+-  let value;
+-  if (base === "b")
+-    value = parseInt(num, 2);
+-  else if (base === "o")
+-    value = parseInt(num, 8);
+-  else if (base === "x")
+-    value = parseInt(num, 16);
+-  else
+-    value = parseInt(num, 10);
+-
+-  if (isNaN(value)) {
+-    return value; // Let the caller decide what to do with NaN.
+-  }
+-
+-  if (shift) {
+-    value >>>= shift;
+-  }
+-
+-  if (maxBits === 16) {
+-    if (signed) {
+-      value = makeInt16(value);
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.getImmFormatDetails = exports.makeInt16 = exports.formatImmediate = exports.parseImmediate = void 0;
++function parseImmediate(immArr, maxBits, signed, shift) {
++    var neg = immArr[0], base = immArr[1], num = immArr[2];
++    base = base.toLowerCase();
++    var value;
++    if (base === "b")
++        value = parseInt(num, 2);
++    else if (base === "o")
++        value = parseInt(num, 8);
++    else if (base === "x")
++        value = parseInt(num, 16);
++    else
++        value = parseInt(num, 10);
++    if (isNaN(value)) {
++        return value; // Let the caller decide what to do with NaN.
+     }
+-  }
+-
+-  if (neg)
+-    value = -value;
+-
+-  return value;
++    if (shift) {
++        value >>>= shift;
++    }
++    if (maxBits === 16) {
++        if (signed) {
++            value = makeInt16(value);
++        }
++    }
++    if (neg)
++        value = -value;
++    return value;
+ }
+-
+-export function formatImmediate(value, maxBits) {
+-  if (maxBits === 16) {
+-    value = (new Uint16Array([value]))[0];
+-  }
+-
+-  return value;
++exports.parseImmediate = parseImmediate;
++function formatImmediate(value, maxBits) {
++    if (maxBits === 16) {
++        value = (new Uint16Array([value]))[0];
++    }
++    return value;
+ }
+-
+-export function makeInt16(value) {
+-  return (new Int16Array([value]))[0];
++exports.formatImmediate = formatImmediate;
++function makeInt16(value) {
++    return (new Int16Array([value]))[0];
+ }
+-
+-export function getImmFormatDetails(formatVal) {
+-  // Remove optional indicator
+-  if (formatVal[formatVal.length - 1] === "?")
+-    formatVal = formatVal.substring(0, formatVal.length - 1);
+-
+-  if (formatVal.indexOf("int") === -1) {
+-    if (formatVal.substr(0, 2) === "cc") {
+-      return {
+-        signed: false,
+-        bits: 4,
+-        shift: false,
+-      };
++exports.makeInt16 = makeInt16;
++function getImmFormatDetails(formatVal) {
++    // Remove optional indicator
++    if (formatVal[formatVal.length - 1] === "?")
++        formatVal = formatVal.substring(0, formatVal.length - 1);
++    if (formatVal.indexOf("int") === -1) {
++        if (formatVal.substr(0, 2) === "cc") {
++            return {
++                signed: false,
++                bits: 4,
++                shift: false,
++            };
++        }
++        return null; // Not an immediate
+     }
+-
+-    return null; // Not an immediate
+-  }
+-
+-  let shift = 0;
+-  const shiftIndex = formatVal.indexOf("shift");
+-  if (shiftIndex > 0)
+-    shift = formatVal.substr(shiftIndex).match(/\d+/g);
+-
+-  return {
+-    signed: formatVal[0] !== "u",
+-    bits: parseInt(formatVal.match(/\d+/g)),
+-    shift: shift,
+-  };
++    var shift = 0;
++    var shiftIndex = formatVal.indexOf("shift");
++    if (shiftIndex > 0)
++        shift = formatVal.substr(shiftIndex).match(/\d+/g);
++    return {
++        signed: formatVal[0] !== "u",
++        bits: parseInt(formatVal.match(/\d+/g)),
++        shift: shift,
++    };
+ }
++exports.getImmFormatDetails = getImmFormatDetails;
+diff --git a/node_modules/mips-inst/dist/js/index.js b/node_modules/mips-inst/dist/js/index.js
+index f37a05c..9a7ce60 100644
+--- a/node_modules/mips-inst/dist/js/index.js
++++ b/node_modules/mips-inst/dist/js/index.js
+@@ -1,3 +1,7 @@
+-export { parse } from "./parse";
+-
+-export { print } from "./print";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.print = exports.parse = void 0;
++var parse_1 = require("./parse");
++Object.defineProperty(exports, "parse", { enumerable: true, get: function () { return parse_1.parse; } });
++var print_1 = require("./print");
++Object.defineProperty(exports, "print", { enumerable: true, get: function () { return print_1.print; } });
+diff --git a/node_modules/mips-inst/dist/js/opcodes.js b/node_modules/mips-inst/dist/js/opcodes.js
+index dbe097b..55f2c59 100644
+--- a/node_modules/mips-inst/dist/js/opcodes.js
++++ b/node_modules/mips-inst/dist/js/opcodes.js
+@@ -1,891 +1,875 @@
+-import { getFmtBits, getFmt3Bits } from "./regs";
+-import { isBinaryLiteral, compareBits, padBitString } from "./bitstrings";
+-import { getImmFormatDetails } from "./immediates";
+-
+-const rs = "rs";
+-const rt = "rt";
+-const rd = "rd";
+-const fs = "fs";
+-const ft = "ft";
+-const fd = "fd";
+-const fr = "fr";
+-const sa = "uint5";
+-const uint5 = "uint5";
+-const uint10 = "uint10";
+-const int16 = "int16";
+-const uint16 = "uint16";
+-const uint20 = "uint20";
+-const uint26 = "uint26";
+-const uint26shift2 = "uint26shift2";
+-const cc = "cc";
+-const cond = "cond";
+-const fmt = "fmt";
+-const fmt3 = "fmt3";
+-
+-export function getOpcodeDetails(opcode) {
+-  return opcodeDetails[opcode.toLowerCase()];
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.findMatch = exports.getValueBitLength = exports.getOpcodeDetails = void 0;
++var regs_1 = require("./regs");
++var bitstrings_1 = require("./bitstrings");
++var immediates_1 = require("./immediates");
++var rs = "rs";
++var rt = "rt";
++var rd = "rd";
++var fs = "fs";
++var ft = "ft";
++var fd = "fd";
++var fr = "fr";
++var sa = "uint5";
++var uint5 = "uint5";
++var uint10 = "uint10";
++var int16 = "int16";
++var uint16 = "uint16";
++var uint20 = "uint20";
++var uint26 = "uint26";
++var uint26shift2 = "uint26shift2";
++var cc = "cc";
++var cond = "cond";
++var fmt = "fmt";
++var fmt3 = "fmt3";
++function getOpcodeDetails(opcode) {
++    return opcodeDetails[opcode.toLowerCase()];
+ }
+-
+-const _valueBitLengths = new Map();
+-
+-export function getValueBitLength(str) {
+-  if (_valueBitLengths.has(str)) {
+-    return _valueBitLengths.get(str);
+-  }
+-
+-  const calculated = computeValueBitLength(str);
+-  _valueBitLengths.set(str, calculated);
+-  return calculated;
++exports.getOpcodeDetails = getOpcodeDetails;
++var _valueBitLengths = new Map();
++function getValueBitLength(str) {
++    if (_valueBitLengths.has(str)) {
++        return _valueBitLengths.get(str);
++    }
++    var calculated = computeValueBitLength(str);
++    _valueBitLengths.set(str, calculated);
++    return calculated;
+ }
+-
++exports.getValueBitLength = getValueBitLength;
+ function computeValueBitLength(str) {
+-  if (isBinaryLiteral(str))
+-    return str.length;
+-
+-  str = str.replace("?", "");
+-  switch (str) {
+-    case "cc":
+-    case "fmt3":
+-      return 3;
+-
+-    case "cond":
+-      return 4;
+-
+-    case "rs":
+-    case "rt":
+-    case "rd":
+-    case "fs":
+-    case "ft":
+-    case "fd":
+-    case "fr":
+-    case "sa":
+-    case "fmt":
+-      return 5;
+-  }
+-
+-  const immDetails = getImmFormatDetails(str);
+-  if (immDetails) {
+-    return immDetails.bits;
+-  }
+-
+-  throw new Error(`Unrecongized format value: ${str}`);
++    if ((0, bitstrings_1.isBinaryLiteral)(str))
++        return str.length;
++    str = str.replace("?", "");
++    switch (str) {
++        case "cc":
++        case "fmt3":
++            return 3;
++        case "cond":
++            return 4;
++        case "rs":
++        case "rt":
++        case "rd":
++        case "fs":
++        case "ft":
++        case "fd":
++        case "fr":
++        case "sa":
++        case "fmt":
++            return 5;
++    }
++    var immDetails = (0, immediates_1.getImmFormatDetails)(str);
++    if (immDetails) {
++        return immDetails.bits;
++    }
++    throw new Error("Unrecongized format value: " + str);
+ }
+-
+ // returns name
+-export function findMatch(inst) {
+-  let bestMatch = "";
+-  let bestMatchScore = 0;
+-  for (let opName in opcodeDetails) {
+-    const format = opcodeDetails[opName].format;
+-    const fmts = opcodeDetails[opName].fmts;
+-    const score = formatMatches(inst, format, fmts);
+-    if (score > bestMatchScore) {
+-      bestMatch = opName;
+-      bestMatchScore = score;
++function findMatch(inst) {
++    var bestMatch = "";
++    var bestMatchScore = 0;
++    for (var opName in opcodeDetails) {
++        var format = opcodeDetails[opName].format;
++        var fmts = opcodeDetails[opName].fmts;
++        var score = formatMatches(inst, format, fmts);
++        if (score > bestMatchScore) {
++            bestMatch = opName;
++            bestMatchScore = score;
++        }
+     }
+-  }
+-
+-  return bestMatch;
++    return bestMatch;
+ }
+-
++exports.findMatch = findMatch;
+ // Returns number of literal bits matched, if the overall format matches.
+ function formatMatches(number, format, fmts) {
+-  let score = 0;
+-  let tempScore;
+-  let bitOffset = 0;
+-  for (let i = format.length - 1; i >= 0; i--) {
+-    let bitLength;
+-    let piece = format[i];
+-    if (Array.isArray(piece)) {
+-      let matchedOne = false;
+-      for (let j = 0; j < piece.length; j++) {
+-        tempScore = checkPiece(piece[j], number, bitOffset, fmts);
+-        if (tempScore >= 0) {
+-          matchedOne = true;
+-          score += tempScore;
+-          bitLength = getValueBitLength(piece[j]);
+-          break; // j
++    var score = 0;
++    var tempScore;
++    var bitOffset = 0;
++    for (var i = format.length - 1; i >= 0; i--) {
++        var bitLength = void 0;
++        var piece = format[i];
++        if (Array.isArray(piece)) {
++            var matchedOne = false;
++            for (var j = 0; j < piece.length; j++) {
++                tempScore = checkPiece(piece[j], number, bitOffset, fmts);
++                if (tempScore >= 0) {
++                    matchedOne = true;
++                    score += tempScore;
++                    bitLength = getValueBitLength(piece[j]);
++                    break; // j
++                }
++            }
++            if (!matchedOne)
++                return 0;
+         }
+-      }
+-      if (!matchedOne)
+-        return 0;
+-    }
+-    else {
+-      tempScore = checkPiece(piece, number, bitOffset, fmts);
+-      if (tempScore >= 0) {
+-        score += tempScore;
+-        bitLength = getValueBitLength(piece);
+-      }
+-      else {
+-        return 0;
+-      }
++        else {
++            tempScore = checkPiece(piece, number, bitOffset, fmts);
++            if (tempScore >= 0) {
++                score += tempScore;
++                bitLength = getValueBitLength(piece);
++            }
++            else {
++                return 0;
++            }
++        }
++        bitOffset += bitLength;
+     }
+-
+-    bitOffset += bitLength;
+-  }
+-
+-  return score;
++    return score;
+ }
+-
+ function checkPiece(piece, number, bitOffset, fmts) {
+-  if (!isBinaryLiteral(piece)) {
+-    if (piece === fmt) {
+-      for (let i = 0; i < fmts.length; i++) {
+-        let fmtBitString = padBitString(getFmtBits(fmts[i]).toString(2), 5);
+-        if (compareBits(number, fmtBitString, bitOffset))
+-          return fmtBitString.length;
+-      }
+-      return -1;
+-    }
+-
+-    if (piece === fmt3) {
+-      for (let i = 0; i < fmts.length; i++) {
+-        let fmtBitString = padBitString(getFmt3Bits(fmts[i]).toString(2), 3);
+-        if (compareBits(number, fmtBitString, bitOffset))
+-          return fmtBitString.length;
+-      }
+-      return -1;
++    if (!(0, bitstrings_1.isBinaryLiteral)(piece)) {
++        if (piece === fmt) {
++            for (var i = 0; i < fmts.length; i++) {
++                var fmtBitString = (0, bitstrings_1.padBitString)((0, regs_1.getFmtBits)(fmts[i]).toString(2), 5);
++                if ((0, bitstrings_1.compareBits)(number, fmtBitString, bitOffset))
++                    return fmtBitString.length;
++            }
++            return -1;
++        }
++        if (piece === fmt3) {
++            for (var i = 0; i < fmts.length; i++) {
++                var fmtBitString = (0, bitstrings_1.padBitString)((0, regs_1.getFmt3Bits)(fmts[i]).toString(2), 3);
++                if ((0, bitstrings_1.compareBits)(number, fmtBitString, bitOffset))
++                    return fmtBitString.length;
++            }
++            return -1;
++        }
++        return 0; // non-literal contributes nothing
+     }
+-
+-    return 0; // non-literal contributes nothing
+-  }
+-
+-  if (compareBits(number, piece, bitOffset))
+-    return piece.length;
+-
+-  return -1;
++    if ((0, bitstrings_1.compareBits)(number, piece, bitOffset))
++        return piece.length;
++    return -1;
+ }
+-
+-const opcodeDetails = {
+-  "abs.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "000101"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  add: {
+-    format: ["000000", rs, rt, rd, "00000100000"],
+-    display: [rd, rs, rt],
+-  },
+-  "add.fmt": {
+-    format: ["010001", fmt, ft, fs, fd, "000000"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, ft],
+-  },
+-  addi: {
+-    format: ["001000", rs, rt, int16],
+-    display: [rt, rs, int16],
+-  },
+-  addiu: {
+-    format: ["001001", rs, rt, uint16],
+-    display: [rt, rs, uint16],
+-  },
+-  addu: {
+-    format: ["000000", rs, rt, rd, "00000100001"],
+-    display: [rd, rs, rt],
+-  },
+-  and: {
+-    format: ["000000", rs, rt, rd, "00000100100"],
+-    display: [rd, rs, rt],
+-  },
+-  andi: {
+-    format: ["001100", rs, rt, uint16],
+-    display: [rt, rs, uint16],
+-  },
+-  bc1f: {
+-    format: ["010001", "01000", [cc, "000"], "00", int16], // TODO shifting?
+-    display: ["cc?", int16], // offset
+-  },
+-  bc1fl: {
+-    format: ["010001", "01000", [cc, "000"], "10", int16],
+-    display: ["cc?", int16], // offset
+-  },
+-  bc1t: {
+-    format: ["010001", "01000", [cc, "000"], "01", int16],
+-    display: ["cc?", int16], // offset
+-  },
+-  bc1tl: {
+-    format: ["010001", "01000", [cc, "000"], "11", int16],
+-    display: ["cc?", int16], // offset
+-  },
+-  beq: {
+-    format: ["000100", rs, rt, uint16],
+-    display: [rs, rt, uint16], // offset
+-  },
+-  beql: {
+-    format: ["010100", rs, rt, uint16],
+-    display: [rs, rt, uint16], // offset
+-  },
+-  bgez: {
+-    format: ["000001", rs, "00001", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bgezal: {
+-    format: ["000001", rs, "10001", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bgezall: {
+-    format: ["000001", rs, "10011", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bgezl: {
+-    format: ["000001", rs, "00011", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bgtz: {
+-    format: ["000111", rs, "00000", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bgtzl: {
+-    format: ["010111", rs, "00000", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  blez: {
+-    format: ["000110", rs, "00000", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  blezl: {
+-    format: ["010110", rs, "00000", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bltz: {
+-    format: ["000001", rs, "00000", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bltzal: {
+-    format: ["000001", rs, "10000", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bltzall: {
+-    format: ["000001", rs, "10010", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bltzl: {
+-    format: ["000001", rs, "00010", uint16],
+-    display: [rs, uint16], // offset
+-  },
+-  bne: {
+-    format: ["000101", rs, rt, uint16],
+-    display: [rs, rt, uint16], // offset
+-  },
+-  bnel: {
+-    format: ["010101", rs, rt, uint16],
+-    display: [rs, rt, uint16], // offset
+-  },
+-  break: {
+-    format: ["000000", [uint20, "00000000000000000000"], "001101"],
+-    display: ["uint20?"],
+-  },
+-  "c.cond.fmt": {
+-    format: ["010001", fmt, ft, fs, [cc, "000"], "00", "11", cond],
+-    fmts: ["S", "D"],
+-    display: ["cc?", fs, ft],
+-  },
+-  "ceil.l.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001010"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "ceil.w.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001110"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  cfc1: {
+-    format: ["010001", "00010", rt, fs, "00000000000"],
+-    display: [rt, fs],
+-  },
+-  ctc1: {
+-    format: ["010001", "00110", rt, fs, "00000000000"],
+-    display: [rt, fs],
+-  },
+-  cop0: {
+-    format: ["010000", uint26],
+-    display: [uint26], // cop_fun
+-  },
+-  cop1: {
+-    format: ["010001", uint26],
+-    display: [uint26], // cop_fun
+-  },
+-  cop2: {
+-    format: ["010010", uint26],
+-    display: [uint26], // cop_fun
+-  },
+-  cop3: {
+-    format: ["010011", uint26],
+-    display: [uint26], // cop_fun
+-  },
+-  "cvt.d.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "100001"],
+-    fmts: ["S", "W", "L"],
+-    display: [fd, fs],
+-  },
+-  "cvt.l.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "100101"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "cvt.s.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "100000"],
+-    fmts: ["D", "W", "L"],
+-    display: [fd, fs],
+-  },
+-  "cvt.w.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "100100"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  dadd: {
+-    format: ["000000", rs, rt, rd, "00000101100"],
+-    display: [rd, rs, rt],
+-  },
+-  daddi: {
+-    format: ["011000", rs, rt, int16],
+-    display: [rt, rs, int16],
+-  },
+-  daddiu: {
+-    format: ["011001", rs, rt, uint16],
+-    display: [rt, rs, uint16],
+-  },
+-  daddu: {
+-    format: ["000000", rs, rt, rd, "00000101101"],
+-    display: [rd, rs, rt],
+-  },
+-  ddiv: {
+-    format: ["000000", rs, rt, "0000000000011110"],
+-    display: [rs, rt],
+-  },
+-  ddivu: {
+-    format: ["000000", rs, rt, "0000000000011111"],
+-    display: [rs, rt],
+-  },
+-  div: {
+-    format: ["000000", rs, rt, "0000000000011010"],
+-    display: [rs, rt],
+-  },
+-  "div.fmt": {
+-    format: ["010001", fmt, ft, fs, fd, "000011"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, ft],
+-  },
+-  divu: {
+-    format: ["000000", rs, rt, "0000000000011011"],
+-    display: [rs, rt],
+-  },
+-  dmfc1: {
+-    format: ["010001", "00001", rt, fs, "00000000000"],
+-    display: [rt, fs],
+-  },
+-  dmult: {
+-    format: ["000000", rs, rt, "0000000000011100"],
+-    display: [rs, rt],
+-  },
+-  dmultu: {
+-    format: ["000000", rs, rt, "0000000000011101"],
+-    display: [rs, rt],
+-  },
+-  dmtc1: {
+-    format: ["010001", "00101", rt, fs, "00000000000"],
+-    display: [rt, fs],
+-  },
+-  dsll: {
+-    format: ["00000000000", rt, rd, sa, "111000"],
+-    display: [rd, rt, sa],
+-  },
+-  dsll32: {
+-    format: ["00000000000", rt, rd, sa, "111100"],
+-    display: [rd, rt, sa],
+-  },
+-  dsllv: {
+-    format: ["000000", rs, rt, rd, "00000010100"],
+-    display: [rd, rt, rs],
+-  },
+-  dsra: {
+-    format: ["00000000000", rt, rd, sa, "111011"],
+-    display: [rd, rt, sa],
+-  },
+-  dsra32: {
+-    format: ["00000000000", rt, rd, sa, "111111"],
+-    display: [rd, rt, sa],
+-  },
+-  dsrav: {
+-    format: ["000000", rs, rt, rd, "00000010111"],
+-    display: [rd, rt, rs],
+-  },
+-  dsrl: {
+-    format: ["00000000000", rt, rd, sa, "111010"],
+-    display: [rd, rt, sa],
+-  },
+-  dsrl32: {
+-    format: ["00000000000", rt, rd, sa, "111110"],
+-    display: [rd, rt, sa],
+-  },
+-  dsrlv: {
+-    format: ["000000", rs, rt, rd, "00000010110"],
+-    display: [rd, rt, rs],
+-  },
+-  dsub: {
+-    format: ["000000", rs, rt, rd, "00000101110"],
+-    display: [rd, rs, rt],
+-  },
+-  dsubu: {
+-    format: ["000000", rs, rt, rd, "00000101111"],
+-    display: [rd, rs, rt],
+-  },
+-  "floor.l.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001011"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "floor.w.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001111"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  j: {
+-    format: ["000010", uint26shift2],
+-    display: [uint26shift2],
+-  },
+-  jal: {
+-    format: ["000011", uint26shift2],
+-    display: [uint26shift2],
+-  },
+-  jalr: {
+-    format: ["000000", rs, "00000", [rd, "11111"], "00000", "001001"],
+-    display: ["rd?", rs],
+-  },
+-  jr: {
+-    format: ["000000", rs, "000000000000000", "001000"],
+-    display: [rs],
+-  },
+-  lb: {
+-    format: ["100000", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lbu: {
+-    format: ["100100", rs, rt, uint16],
+-    display: [rt, uint16, "(", rs, ")"], // offset
+-  },
+-  ld: {
+-    format: ["110111", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  ldc1: {
+-    format: ["110101", rs, ft, int16],
+-    display: [ft, int16, "(", rs, ")"], // offset
+-  },
+-  ldc2: {
+-    format: ["110110", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  ldl: {
+-    format: ["011010", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  ldr: {
+-    format: ["011011", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  ldxc1: {
+-    format: ["010011", rs, rt, "00000", fd, "000001"],
+-    display: [fd, rt, "(", rs, ")"], // offset
+-  },
+-  lh: {
+-    format: ["100001", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lhu: {
+-    format: ["100101", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  ll: {
+-    format: ["110000", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lld: {
+-    format: ["110100", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lui: {
+-    format: ["001111", "00000", rt, uint16],
+-    display: [rt, uint16],
+-  },
+-  lw: {
+-    format: ["100011", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lwc1: {
+-    format: ["110001", rs, ft, int16],
+-    display: [ft, int16, "(", rs, ")"], // offset
+-  },
+-  lwc2: {
+-    format: ["110010", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lwc3: {
+-    format: ["110011" ,rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lwl: {
+-    format: ["100010", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lwr: {
+-    format: ["100110", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lwu: {
+-    format: ["100111", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  lwxc1: {
+-    format: ["010011", rs, rt, "00000", fd, "000000"],
+-    display: [fd, rt, "(", rs, ")"],
+-  },
+-  "madd.fmt": {
+-    format: ["010011", fr, ft, fs, fd, "100", fmt3],
+-    fmts: ["S", "D"],
+-    display: [fd, fr, fs, ft],
+-  },
+-  mfc1: {
+-    format: ["010001", "00000", rt, fs, "00000000000"],
+-    display: [rt, fs],
+-  },
+-  mfhi: {
+-    format: ["000000", "0000000000", rd, "00000", "010000"],
+-    display: [rd],
+-  },
+-  mflo: {
+-    format: ["000000", "0000000000", rd, "00000", "010010"],
+-    display: [rd],
+-  },
+-  "mov.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "000110"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  movf: {
+-    format: ["000000", rs, cc, "00", rd, "00000", "000001"],
+-    display: [rd, rs, cc],
+-  },
+-  "movf.fmt": {
+-    format: ["010001", fmt, cc, "00", fs, fd, "010001"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, cc],
+-  },
+-  movn: {
+-    format: ["000000", rs, rt, rd, "00000", "001011"],
+-    display: [rd, rs, rt],
+-  },
+-  "movn.fmt": {
+-    format: ["010001", fmt, rt, fs, fd, "010011"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, rt],
+-  },
+-  movt: {
+-    format: ["000000", rs, cc, "01", rd, "00000", "000001"],
+-    display: [rd, rs, cc],
+-  },
+-  "movt.fmt": {
+-    format: ["010001", fmt, cc, "01", fs, fd, "010001"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, cc],
+-  },
+-  movz: {
+-    format: ["000000", rs, rt, rd, "00000", "001010"],
+-    display: [rd, rs, rt],
+-  },
+-  "movz.fmt": {
+-    format: ["010001", fmt, rt, fs, fd, "010010"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, rt],
+-  },
+-  "msub.fmt": {
+-    format: ["010011", fr, ft, fs, fd, "101", fmt3],
+-    fmts: ["S", "D"],
+-    display: [fd, fr, fs, ft],
+-  },
+-  mtc1: {
+-    format: ["010001", "00100", rt, fs, "00000000000"],
+-    display: [rt, fs],
+-  },
+-  mthi: {
+-    format: ["000000", rs, "000000000000000", "010001"],
+-    display: [rs],
+-  },
+-  mtlo: {
+-    format: ["000000", rs, "000000000000000", "010011"],
+-    display: [rs],
+-  },
+-  "mul.fmt": {
+-    format: ["010001", fmt, ft, fs, fd, "000010"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, ft],
+-  },
+-  mult: {
+-    format: ["000000", rs, rt, "0000000000", "011000"],
+-    display: [rs, rt],
+-  },
+-  multu: {
+-    format: ["000000", rs, rt, "0000000000", "011001"],
+-    display: [rs, rt],
+-  },
+-  "neg.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "000111"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "nmadd.fmt": {
+-    format: ["010011", fr, ft, fs, fd, "110", fmt3],
+-    fmts: ["S", "D"],
+-    display: [fd, fr, fs, ft],
+-  },
+-  "nmsub.fmt": {
+-    format: ["010011", fr, ft, fs, fd, "111", fmt3],
+-    fmts: ["S", "D"],
+-    display: [fd, fr, fs, ft],
+-  },
+-  nop: {
+-    format: ["00000000000000000000000000000000"],
+-    display: [],
+-  },
+-  nor: {
+-    format: ["000000", rs, rt, rd, "00000", "100111"],
+-    display: [rd, rs, rt],
+-  },
+-  or: {
+-    format: ["000000", rs, rt, rd, "00000", "100101"],
+-    display: [rd, rs, rt],
+-  },
+-  ori: {
+-    format: ["001101", rs, rt, uint16],
+-    display: [rt, rs, uint16],
+-  },
+-  pref: {
+-    format: ["110011", rs, uint5, int16],
+-    display: [uint5, int16, "(", rs, ")"], // hint, offset, base
+-  },
+-  prefx: {
+-    format: ["010011", rs, rt, uint5, "00000", "001111"],
+-    display: [uint5, rt, "(", rs, ")"], // hint, index, base
+-  },
+-  "recip.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "010101"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "round.l.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001000"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "round.w.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001100"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "rsqrt.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "010110"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  sb: {
+-    format: ["101000", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sc: {
+-    format: ["111000", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  scd: {
+-    format: ["111100", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sd: {
+-    format: ["111111", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sdc1: {
+-    format: ["111101", rs, ft, int16],
+-    display: [ft, int16, "(", rs, ")"], // offset
+-  },
+-  sdc2: {
+-    format: ["111110", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sdl: {
+-    format: ["101100", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sdr: {
+-    format: ["101101", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sdxc1: {
+-    format: ["010011", rs, uint5, fs, "00000", "001001"],
+-    display: [fs, uint5, "(", rs, ")"],
+-  },
+-  sh: {
+-    format: ["101001", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"], // offset
+-  },
+-  sll: {
+-    format: ["000000", "00000", rt, rd, sa, "000000"],
+-    display: [rd, rt, sa],
+-  },
+-  sllv: {
+-    format: ["000000", rs, rt, rd, "00000", "000100"],
+-    display: [rd, rt, rs],
+-  },
+-  slt: {
+-    format: ["000000", rs, rt, rd, "00000", "101010"],
+-    display: [rd, rs, rt],
+-  },
+-  slti: {
+-    format: ["001010", rs, rt, int16],
+-    display: [rt, rs, int16],
+-  },
+-  sltiu: {
+-    format: ["001011", rs, rt, uint16],
+-    display: [rt, rs, uint16],
+-  },
+-  sltu: {
+-    format: ["000000", rs, rt, rd, "00000", "101011"],
+-    display: [rd, rs, rt],
+-  },
+-  "sqrt.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "000100"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  sra: {
+-    format: ["000000", "00000", rt, rd, sa, "000011"],
+-    display: [rd, rt, sa],
+-  },
+-  srav: {
+-    format: ["000000", rs, rt, rd, "00000", "000111"],
+-    display: [rd, rt, rs],
+-  },
+-  srl: {
+-    format: ["000000", "00000", rt, rd, sa, "000010"],
+-    display: [rd, rt, sa],
+-  },
+-  srlv: {
+-    format: ["000000", rs, rt, rd, "00000", "000110"],
+-    display: [rd, rt, rs],
+-  },
+-  sub: {
+-    format: ["000000", rs, rt, rd, "00000", "100010"],
+-    display: [rd, rs, rt],
+-  },
+-  "sub.fmt": {
+-    format: ["010001", fmt, ft, fs, fd, "000001"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs, ft],
+-  },
+-  subu: {
+-    format: ["000000", rs, rt, rd, "00000", "100011"],
+-    display: [rd, rs, rt],
+-  },
+-  sw: {
+-    format: ["101011", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"],
+-  },
+-  swc1: {
+-    format: ["111001", rs, ft, int16],
+-    display: [ft, int16, "(", rs, ")"],
+-  },
+-  swc2: {
+-    format: ["111010", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"],
+-  },
+-  swc3: {
+-    format: ["111011", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"],
+-  },
+-  swl: {
+-    format: ["101010", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"],
+-  },
+-  swr: {
+-    format: ["101110", rs, rt, int16],
+-    display: [rt, int16, "(", rs, ")"],
+-  },
+-  swxc1: {
+-    format: ["010011", rs, uint5, fs, "00000", "001000"],
+-    display: [fs, uint5, "(", rs, ")"],
+-  },
+-  sync: {
+-    format: ["000000", "000000000000000", "00000", "001111"],
+-    display: [],
+-  },
+-  syscall: {
+-    format: ["000000", [uint20, "00000000000000000000"], "001100"],
+-    display: [],
+-  },
+-  teq: {
+-    format: ["000000", rs, rt, uint10, "110100"],
+-    display: [rs, rt],
+-  },
+-  teqi: {
+-    format: ["000001", rs, "01100", int16],
+-    display: [rs, int16],
+-  },
+-  tge: {
+-    format: ["000000", rs, rt, uint10, "110000"],
+-    display: [rs, rt],
+-  },
+-  tgei: {
+-    format: ["000001", rs, "01000", int16],
+-    display: [rs, int16],
+-  },
+-  tgeiu: {
+-    format: ["000001", rs, "01001", uint16],
+-    display: [rs, uint16],
+-  },
+-  tgeu: {
+-    format: ["000000", rs, rt, uint10, "110001"],
+-    display: [rs, rt],
+-  },
+-  tlt: {
+-    format: ["000000", rs, rt, uint10, "110010"],
+-    display: [rs, rt],
+-  },
+-  tlti: {
+-    format: ["000001", rs, "01010", int16],
+-    display: [rs, int16],
+-  },
+-  tltiu: {
+-    format: ["000001", rs, "01011", uint16],
+-    display: [rs, uint16],
+-  },
+-  tltu: {
+-    format: ["000000", rs, rt, uint10, "110011"],
+-    display: [rs, rt],
+-  },
+-  tne: {
+-    format: ["000000", rs, rt, uint10, "110110"],
+-    display: [rs, rt],
+-  },
+-  tnei: {
+-    format: ["000001", rs, "01110", int16],
+-    display: [rs, int16],
+-  },
+-  "trunc.l.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001001"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  "trunc.w.fmt": {
+-    format: ["010001", fmt, "00000", fs, fd, "001101"],
+-    fmts: ["S", "D"],
+-    display: [fd, fs],
+-  },
+-  xor: {
+-    format: ["000000", rs, rt, rd, "00000", "100110"],
+-    display: [rd, rs, rt],
+-  },
+-  xori: {
+-    format: ["001110", rs, rt, uint16],
+-    display: [rt, rs, uint16],
+-  },
++var opcodeDetails = {
++    "abs.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "000101"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    add: {
++        format: ["000000", rs, rt, rd, "00000100000"],
++        display: [rd, rs, rt],
++    },
++    "add.fmt": {
++        format: ["010001", fmt, ft, fs, fd, "000000"],
++        fmts: ["S", "D"],
++        display: [fd, fs, ft],
++    },
++    addi: {
++        format: ["001000", rs, rt, int16],
++        display: [rt, rs, int16],
++    },
++    addiu: {
++        format: ["001001", rs, rt, uint16],
++        display: [rt, rs, uint16],
++    },
++    addu: {
++        format: ["000000", rs, rt, rd, "00000100001"],
++        display: [rd, rs, rt],
++    },
++    and: {
++        format: ["000000", rs, rt, rd, "00000100100"],
++        display: [rd, rs, rt],
++    },
++    andi: {
++        format: ["001100", rs, rt, uint16],
++        display: [rt, rs, uint16],
++    },
++    bc1f: {
++        format: ["010001", "01000", [cc, "000"], "00", int16],
++        display: ["cc?", int16], // offset
++    },
++    bc1fl: {
++        format: ["010001", "01000", [cc, "000"], "10", int16],
++        display: ["cc?", int16], // offset
++    },
++    bc1t: {
++        format: ["010001", "01000", [cc, "000"], "01", int16],
++        display: ["cc?", int16], // offset
++    },
++    bc1tl: {
++        format: ["010001", "01000", [cc, "000"], "11", int16],
++        display: ["cc?", int16], // offset
++    },
++    beq: {
++        format: ["000100", rs, rt, uint16],
++        display: [rs, rt, uint16], // offset
++    },
++    beql: {
++        format: ["010100", rs, rt, uint16],
++        display: [rs, rt, uint16], // offset
++    },
++    bgez: {
++        format: ["000001", rs, "00001", uint16],
++        display: [rs, uint16], // offset
++    },
++    bgezal: {
++        format: ["000001", rs, "10001", uint16],
++        display: [rs, uint16], // offset
++    },
++    bgezall: {
++        format: ["000001", rs, "10011", uint16],
++        display: [rs, uint16], // offset
++    },
++    bgezl: {
++        format: ["000001", rs, "00011", uint16],
++        display: [rs, uint16], // offset
++    },
++    bgtz: {
++        format: ["000111", rs, "00000", uint16],
++        display: [rs, uint16], // offset
++    },
++    bgtzl: {
++        format: ["010111", rs, "00000", uint16],
++        display: [rs, uint16], // offset
++    },
++    blez: {
++        format: ["000110", rs, "00000", uint16],
++        display: [rs, uint16], // offset
++    },
++    blezl: {
++        format: ["010110", rs, "00000", uint16],
++        display: [rs, uint16], // offset
++    },
++    bltz: {
++        format: ["000001", rs, "00000", uint16],
++        display: [rs, uint16], // offset
++    },
++    bltzal: {
++        format: ["000001", rs, "10000", uint16],
++        display: [rs, uint16], // offset
++    },
++    bltzall: {
++        format: ["000001", rs, "10010", uint16],
++        display: [rs, uint16], // offset
++    },
++    bltzl: {
++        format: ["000001", rs, "00010", uint16],
++        display: [rs, uint16], // offset
++    },
++    bne: {
++        format: ["000101", rs, rt, uint16],
++        display: [rs, rt, uint16], // offset
++    },
++    bnel: {
++        format: ["010101", rs, rt, uint16],
++        display: [rs, rt, uint16], // offset
++    },
++    break: {
++        format: ["000000", [uint20, "00000000000000000000"], "001101"],
++        display: ["uint20?"],
++    },
++    "c.cond.fmt": {
++        format: ["010001", fmt, ft, fs, [cc, "000"], "00", "11", cond],
++        fmts: ["S", "D"],
++        display: ["cc?", fs, ft],
++    },
++    "ceil.l.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001010"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "ceil.w.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001110"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    cfc1: {
++        format: ["010001", "00010", rt, fs, "00000000000"],
++        display: [rt, fs],
++    },
++    ctc1: {
++        format: ["010001", "00110", rt, fs, "00000000000"],
++        display: [rt, fs],
++    },
++    cop0: {
++        format: ["010000", uint26],
++        display: [uint26], // cop_fun
++    },
++    cop1: {
++        format: ["010001", uint26],
++        display: [uint26], // cop_fun
++    },
++    cop2: {
++        format: ["010010", uint26],
++        display: [uint26], // cop_fun
++    },
++    cop3: {
++        format: ["010011", uint26],
++        display: [uint26], // cop_fun
++    },
++    "cvt.d.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "100001"],
++        fmts: ["S", "W", "L"],
++        display: [fd, fs],
++    },
++    "cvt.l.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "100101"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "cvt.s.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "100000"],
++        fmts: ["D", "W", "L"],
++        display: [fd, fs],
++    },
++    "cvt.w.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "100100"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    dadd: {
++        format: ["000000", rs, rt, rd, "00000101100"],
++        display: [rd, rs, rt],
++    },
++    daddi: {
++        format: ["011000", rs, rt, int16],
++        display: [rt, rs, int16],
++    },
++    daddiu: {
++        format: ["011001", rs, rt, uint16],
++        display: [rt, rs, uint16],
++    },
++    daddu: {
++        format: ["000000", rs, rt, rd, "00000101101"],
++        display: [rd, rs, rt],
++    },
++    ddiv: {
++        format: ["000000", rs, rt, "0000000000011110"],
++        display: [rs, rt],
++    },
++    ddivu: {
++        format: ["000000", rs, rt, "0000000000011111"],
++        display: [rs, rt],
++    },
++    div: {
++        format: ["000000", rs, rt, "0000000000011010"],
++        display: [rs, rt],
++    },
++    "div.fmt": {
++        format: ["010001", fmt, ft, fs, fd, "000011"],
++        fmts: ["S", "D"],
++        display: [fd, fs, ft],
++    },
++    divu: {
++        format: ["000000", rs, rt, "0000000000011011"],
++        display: [rs, rt],
++    },
++    dmfc1: {
++        format: ["010001", "00001", rt, fs, "00000000000"],
++        display: [rt, fs],
++    },
++    dmult: {
++        format: ["000000", rs, rt, "0000000000011100"],
++        display: [rs, rt],
++    },
++    dmultu: {
++        format: ["000000", rs, rt, "0000000000011101"],
++        display: [rs, rt],
++    },
++    dmtc1: {
++        format: ["010001", "00101", rt, fs, "00000000000"],
++        display: [rt, fs],
++    },
++    dsll: {
++        format: ["00000000000", rt, rd, sa, "111000"],
++        display: [rd, rt, sa],
++    },
++    dsll32: {
++        format: ["00000000000", rt, rd, sa, "111100"],
++        display: [rd, rt, sa],
++    },
++    dsllv: {
++        format: ["000000", rs, rt, rd, "00000010100"],
++        display: [rd, rt, rs],
++    },
++    dsra: {
++        format: ["00000000000", rt, rd, sa, "111011"],
++        display: [rd, rt, sa],
++    },
++    dsra32: {
++        format: ["00000000000", rt, rd, sa, "111111"],
++        display: [rd, rt, sa],
++    },
++    dsrav: {
++        format: ["000000", rs, rt, rd, "00000010111"],
++        display: [rd, rt, rs],
++    },
++    dsrl: {
++        format: ["00000000000", rt, rd, sa, "111010"],
++        display: [rd, rt, sa],
++    },
++    dsrl32: {
++        format: ["00000000000", rt, rd, sa, "111110"],
++        display: [rd, rt, sa],
++    },
++    dsrlv: {
++        format: ["000000", rs, rt, rd, "00000010110"],
++        display: [rd, rt, rs],
++    },
++    dsub: {
++        format: ["000000", rs, rt, rd, "00000101110"],
++        display: [rd, rs, rt],
++    },
++    dsubu: {
++        format: ["000000", rs, rt, rd, "00000101111"],
++        display: [rd, rs, rt],
++    },
++    "floor.l.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001011"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "floor.w.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001111"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    j: {
++        format: ["000010", uint26shift2],
++        display: [uint26shift2],
++    },
++    jal: {
++        format: ["000011", uint26shift2],
++        display: [uint26shift2],
++    },
++    jalr: {
++        format: ["000000", rs, "00000", [rd, "11111"], "00000", "001001"],
++        display: ["rd?", rs],
++    },
++    jr: {
++        format: ["000000", rs, "000000000000000", "001000"],
++        display: [rs],
++    },
++    lb: {
++        format: ["100000", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lbu: {
++        format: ["100100", rs, rt, uint16],
++        display: [rt, uint16, "(", rs, ")"], // offset
++    },
++    ld: {
++        format: ["110111", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    ldc1: {
++        format: ["110101", rs, ft, int16],
++        display: [ft, int16, "(", rs, ")"], // offset
++    },
++    ldc2: {
++        format: ["110110", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    ldl: {
++        format: ["011010", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    ldr: {
++        format: ["011011", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    ldxc1: {
++        format: ["010011", rs, rt, "00000", fd, "000001"],
++        display: [fd, rt, "(", rs, ")"], // offset
++    },
++    lh: {
++        format: ["100001", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lhu: {
++        format: ["100101", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    ll: {
++        format: ["110000", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lld: {
++        format: ["110100", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lui: {
++        format: ["001111", "00000", rt, uint16],
++        display: [rt, uint16],
++    },
++    lw: {
++        format: ["100011", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lwc1: {
++        format: ["110001", rs, ft, int16],
++        display: [ft, int16, "(", rs, ")"], // offset
++    },
++    lwc2: {
++        format: ["110010", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lwc3: {
++        format: ["110011", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lwl: {
++        format: ["100010", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lwr: {
++        format: ["100110", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lwu: {
++        format: ["100111", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    lwxc1: {
++        format: ["010011", rs, rt, "00000", fd, "000000"],
++        display: [fd, rt, "(", rs, ")"],
++    },
++    "madd.fmt": {
++        format: ["010011", fr, ft, fs, fd, "100", fmt3],
++        fmts: ["S", "D"],
++        display: [fd, fr, fs, ft],
++    },
++    mfc1: {
++        format: ["010001", "00000", rt, fs, "00000000000"],
++        display: [rt, fs],
++    },
++    mfhi: {
++        format: ["000000", "0000000000", rd, "00000", "010000"],
++        display: [rd],
++    },
++    mflo: {
++        format: ["000000", "0000000000", rd, "00000", "010010"],
++        display: [rd],
++    },
++    "mov.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "000110"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    movf: {
++        format: ["000000", rs, cc, "00", rd, "00000", "000001"],
++        display: [rd, rs, cc],
++    },
++    "movf.fmt": {
++        format: ["010001", fmt, cc, "00", fs, fd, "010001"],
++        fmts: ["S", "D"],
++        display: [fd, fs, cc],
++    },
++    movn: {
++        format: ["000000", rs, rt, rd, "00000", "001011"],
++        display: [rd, rs, rt],
++    },
++    "movn.fmt": {
++        format: ["010001", fmt, rt, fs, fd, "010011"],
++        fmts: ["S", "D"],
++        display: [fd, fs, rt],
++    },
++    movt: {
++        format: ["000000", rs, cc, "01", rd, "00000", "000001"],
++        display: [rd, rs, cc],
++    },
++    "movt.fmt": {
++        format: ["010001", fmt, cc, "01", fs, fd, "010001"],
++        fmts: ["S", "D"],
++        display: [fd, fs, cc],
++    },
++    movz: {
++        format: ["000000", rs, rt, rd, "00000", "001010"],
++        display: [rd, rs, rt],
++    },
++    "movz.fmt": {
++        format: ["010001", fmt, rt, fs, fd, "010010"],
++        fmts: ["S", "D"],
++        display: [fd, fs, rt],
++    },
++    "msub.fmt": {
++        format: ["010011", fr, ft, fs, fd, "101", fmt3],
++        fmts: ["S", "D"],
++        display: [fd, fr, fs, ft],
++    },
++    mtc1: {
++        format: ["010001", "00100", rt, fs, "00000000000"],
++        display: [rt, fs],
++    },
++    mthi: {
++        format: ["000000", rs, "000000000000000", "010001"],
++        display: [rs],
++    },
++    mtlo: {
++        format: ["000000", rs, "000000000000000", "010011"],
++        display: [rs],
++    },
++    "mul.fmt": {
++        format: ["010001", fmt, ft, fs, fd, "000010"],
++        fmts: ["S", "D"],
++        display: [fd, fs, ft],
++    },
++    mult: {
++        format: ["000000", rs, rt, "0000000000", "011000"],
++        display: [rs, rt],
++    },
++    multu: {
++        format: ["000000", rs, rt, "0000000000", "011001"],
++        display: [rs, rt],
++    },
++    "neg.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "000111"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "nmadd.fmt": {
++        format: ["010011", fr, ft, fs, fd, "110", fmt3],
++        fmts: ["S", "D"],
++        display: [fd, fr, fs, ft],
++    },
++    "nmsub.fmt": {
++        format: ["010011", fr, ft, fs, fd, "111", fmt3],
++        fmts: ["S", "D"],
++        display: [fd, fr, fs, ft],
++    },
++    nop: {
++        format: ["00000000000000000000000000000000"],
++        display: [],
++    },
++    nor: {
++        format: ["000000", rs, rt, rd, "00000", "100111"],
++        display: [rd, rs, rt],
++    },
++    or: {
++        format: ["000000", rs, rt, rd, "00000", "100101"],
++        display: [rd, rs, rt],
++    },
++    ori: {
++        format: ["001101", rs, rt, uint16],
++        display: [rt, rs, uint16],
++    },
++    pref: {
++        format: ["110011", rs, uint5, int16],
++        display: [uint5, int16, "(", rs, ")"], // hint, offset, base
++    },
++    prefx: {
++        format: ["010011", rs, rt, uint5, "00000", "001111"],
++        display: [uint5, rt, "(", rs, ")"], // hint, index, base
++    },
++    "recip.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "010101"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "round.l.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001000"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "round.w.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001100"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "rsqrt.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "010110"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    sb: {
++        format: ["101000", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sc: {
++        format: ["111000", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    scd: {
++        format: ["111100", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sd: {
++        format: ["111111", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sdc1: {
++        format: ["111101", rs, ft, int16],
++        display: [ft, int16, "(", rs, ")"], // offset
++    },
++    sdc2: {
++        format: ["111110", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sdl: {
++        format: ["101100", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sdr: {
++        format: ["101101", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sdxc1: {
++        format: ["010011", rs, uint5, fs, "00000", "001001"],
++        display: [fs, uint5, "(", rs, ")"],
++    },
++    sh: {
++        format: ["101001", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"], // offset
++    },
++    sll: {
++        format: ["000000", "00000", rt, rd, sa, "000000"],
++        display: [rd, rt, sa],
++    },
++    sllv: {
++        format: ["000000", rs, rt, rd, "00000", "000100"],
++        display: [rd, rt, rs],
++    },
++    slt: {
++        format: ["000000", rs, rt, rd, "00000", "101010"],
++        display: [rd, rs, rt],
++    },
++    slti: {
++        format: ["001010", rs, rt, int16],
++        display: [rt, rs, int16],
++    },
++    sltiu: {
++        format: ["001011", rs, rt, uint16],
++        display: [rt, rs, uint16],
++    },
++    sltu: {
++        format: ["000000", rs, rt, rd, "00000", "101011"],
++        display: [rd, rs, rt],
++    },
++    "sqrt.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "000100"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    sra: {
++        format: ["000000", "00000", rt, rd, sa, "000011"],
++        display: [rd, rt, sa],
++    },
++    srav: {
++        format: ["000000", rs, rt, rd, "00000", "000111"],
++        display: [rd, rt, rs],
++    },
++    srl: {
++        format: ["000000", "00000", rt, rd, sa, "000010"],
++        display: [rd, rt, sa],
++    },
++    srlv: {
++        format: ["000000", rs, rt, rd, "00000", "000110"],
++        display: [rd, rt, rs],
++    },
++    sub: {
++        format: ["000000", rs, rt, rd, "00000", "100010"],
++        display: [rd, rs, rt],
++    },
++    "sub.fmt": {
++        format: ["010001", fmt, ft, fs, fd, "000001"],
++        fmts: ["S", "D"],
++        display: [fd, fs, ft],
++    },
++    subu: {
++        format: ["000000", rs, rt, rd, "00000", "100011"],
++        display: [rd, rs, rt],
++    },
++    sw: {
++        format: ["101011", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"],
++    },
++    swc1: {
++        format: ["111001", rs, ft, int16],
++        display: [ft, int16, "(", rs, ")"],
++    },
++    swc2: {
++        format: ["111010", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"],
++    },
++    swc3: {
++        format: ["111011", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"],
++    },
++    swl: {
++        format: ["101010", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"],
++    },
++    swr: {
++        format: ["101110", rs, rt, int16],
++        display: [rt, int16, "(", rs, ")"],
++    },
++    swxc1: {
++        format: ["010011", rs, uint5, fs, "00000", "001000"],
++        display: [fs, uint5, "(", rs, ")"],
++    },
++    sync: {
++        format: ["000000", "000000000000000", "00000", "001111"],
++        display: [],
++    },
++    syscall: {
++        format: ["000000", [uint20, "00000000000000000000"], "001100"],
++        display: [],
++    },
++    teq: {
++        format: ["000000", rs, rt, uint10, "110100"],
++        display: [rs, rt],
++    },
++    teqi: {
++        format: ["000001", rs, "01100", int16],
++        display: [rs, int16],
++    },
++    tge: {
++        format: ["000000", rs, rt, uint10, "110000"],
++        display: [rs, rt],
++    },
++    tgei: {
++        format: ["000001", rs, "01000", int16],
++        display: [rs, int16],
++    },
++    tgeiu: {
++        format: ["000001", rs, "01001", uint16],
++        display: [rs, uint16],
++    },
++    tgeu: {
++        format: ["000000", rs, rt, uint10, "110001"],
++        display: [rs, rt],
++    },
++    tlt: {
++        format: ["000000", rs, rt, uint10, "110010"],
++        display: [rs, rt],
++    },
++    tlti: {
++        format: ["000001", rs, "01010", int16],
++        display: [rs, int16],
++    },
++    tltiu: {
++        format: ["000001", rs, "01011", uint16],
++        display: [rs, uint16],
++    },
++    tltu: {
++        format: ["000000", rs, rt, uint10, "110011"],
++        display: [rs, rt],
++    },
++    tne: {
++        format: ["000000", rs, rt, uint10, "110110"],
++        display: [rs, rt],
++    },
++    tnei: {
++        format: ["000001", rs, "01110", int16],
++        display: [rs, int16],
++    },
++    "trunc.l.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001001"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    "trunc.w.fmt": {
++        format: ["010001", fmt, "00000", fs, fd, "001101"],
++        fmts: ["S", "D"],
++        display: [fd, fs],
++    },
++    xor: {
++        format: ["000000", rs, rt, rd, "00000", "100110"],
++        display: [rd, rs, rt],
++    },
++    xori: {
++        format: ["001110", rs, rt, uint16],
++        display: [rt, rs, uint16],
++    },
+ };
+diff --git a/node_modules/mips-inst/dist/js/parse.js b/node_modules/mips-inst/dist/js/parse.js
+index b605761..fcf009e 100644
+--- a/node_modules/mips-inst/dist/js/parse.js
++++ b/node_modules/mips-inst/dist/js/parse.js
+@@ -1,9 +1,30 @@
+-import { getOpcodeDetails, getValueBitLength } from "./opcodes";
+-import { parseImmediate, getImmFormatDetails } from "./immediates";
+-import { getRegBits, getFmtBits, getFmt3Bits, getCondBits } from "./regs";
+-import * as formats from "./regex";
+-import { isBinaryLiteral, makeBitMaskFromString, makeBitMask } from "./bitstrings";
+-
++"use strict";
++var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
++    if (k2 === undefined) k2 = k;
++    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
++}) : (function(o, m, k, k2) {
++    if (k2 === undefined) k2 = k;
++    o[k2] = m[k];
++}));
++var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
++    Object.defineProperty(o, "default", { enumerable: true, value: v });
++}) : function(o, v) {
++    o["default"] = v;
++});
++var __importStar = (this && this.__importStar) || function (mod) {
++    if (mod && mod.__esModule) return mod;
++    var result = {};
++    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
++    __setModuleDefault(result, mod);
++    return result;
++};
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.parse = void 0;
++var opcodes_1 = require("./opcodes");
++var immediates_1 = require("./immediates");
++var regs_1 = require("./regs");
++var formats = __importStar(require("./regex"));
++var bitstrings_1 = require("./bitstrings");
+ /**
+  * Parses a string MIPS instruction, returning numeric machine code.
+  *
+@@ -18,213 +39,178 @@ import { isBinaryLiteral, makeBitMaskFromString, makeBitMask } from "./bitstring
+  * If multiple values are given (array) then multiple values are returned.
+  * When the `intermediate` option is passed, the return type is an object.
+  */
+-export function parse(value, opts) {
+-  opts = _getFinalOpts(opts);
+-
+-  if (Array.isArray(value)) {
+-    return value.map(s => _parse(s, opts));
+-  }
+-  if (typeof value === "object") {
+-    return _parse(value, opts);
+-  }
+-  if (typeof value === "string") {
+-    const values = value.split(/\r?\n/).filter(v => !!(v.trim()));
+-    if (values.length === 1)
+-      return _parse(values[0], opts);
+-    else
+-      return values.map(s => _parse(s, opts));
+-  }
+-
+-  throw new Error("Unexpected input to parse. Pass a string or array of strings.");
++function parse(value, opts) {
++    opts = _getFinalOpts(opts);
++    if (Array.isArray(value)) {
++        return value.map(function (s) { return _parse(s, opts); });
++    }
++    if (typeof value === "object") {
++        return _parse(value, opts);
++    }
++    if (typeof value === "string") {
++        var values = value.split(/\r?\n/).filter(function (v) { return !!(v.trim()); });
++        if (values.length === 1)
++            return _parse(values[0], opts);
++        else
++            return values.map(function (s) { return _parse(s, opts); });
++    }
++    throw new Error("Unexpected input to parse. Pass a string or array of strings.");
+ }
+-
++exports.parse = parse;
+ function _getFinalOpts(givenOpts) {
+-  return Object.assign({
+-    intermediate: false,
+-  }, givenOpts);
++    return Object.assign({
++        intermediate: false,
++    }, givenOpts);
+ }
+-
+ function _parse(value, opts) {
+-  let opcode, opcodeObj, values;
+-  if (typeof value === "string") {
+-    opcode = formats.getOpcode(value);
+-    if (!opcode)
+-      throw new Error(`Could not parse opcode from ${value}`);
+-
+-    opcodeObj = getOpcodeDetails(opcode);
+-    if (!opcodeObj)
+-      throw new Error(`Opcode ${opcode} was not recognized`);
+-
+-    values = _parseValues(opcode, opcodeObj, value);
+-  }
+-  else if (typeof value === "object") {
+-    opcode = formats.getOpcode(value.op);
+-    if (!opcode)
+-      throw new Error("Object input to parse did not contain 'op'");
+-
+-    opcodeObj = getOpcodeDetails(opcode);
+-    if (!opcodeObj)
+-      throw new Error(`Opcode ${opcode} was not recognized`);
+-
+-    values = value;
+-  }
+-
+-  if (opts.intermediate)
+-    return values;
+-
+-  return bitsFromFormat(opcodeObj.format, values);
++    var opcode, opcodeObj, values;
++    if (typeof value === "string") {
++        opcode = formats.getOpcode(value);
++        if (!opcode)
++            throw new Error("Could not parse opcode from " + value);
++        opcodeObj = (0, opcodes_1.getOpcodeDetails)(opcode);
++        if (!opcodeObj)
++            throw new Error("Opcode " + opcode + " was not recognized");
++        values = _parseValues(opcode, opcodeObj, value);
++    }
++    else if (typeof value === "object") {
++        opcode = formats.getOpcode(value.op);
++        if (!opcode)
++            throw new Error("Object input to parse did not contain 'op'");
++        opcodeObj = (0, opcodes_1.getOpcodeDetails)(opcode);
++        if (!opcodeObj)
++            throw new Error("Opcode " + opcode + " was not recognized");
++        values = value;
++    }
++    if (opts.intermediate)
++        return values;
++    return bitsFromFormat(opcodeObj.format, values);
+ }
+-
+ function _parseValues(opcode, opcodeObj, value) {
+-  let regex = formats.makeRegexForOpcode(opcode, opcodeObj);
+-  let match = regex.exec(value);
+-  if (!match)
+-    throw new Error(`Could not parse instruction: ${value}`);
+-
+-  let values = {
+-    op: opcode
+-  };
+-
+-  if (opcode.indexOf(".fmt") !== -1 || opcode.indexOf(".cond") !== -1) {
+-    determineOpcodeValues(match[1], opcode, opcodeObj.fmts, opcodeObj.format, values);
+-  }
+-
+-  const display = opcodeObj.display;
+-  let matchIndex = 2; // 0 is whole match, 1 is opcode - skip both
+-  for (let i = 0; i < display.length; i++, matchIndex++) {
+-    const parsedVal = match[matchIndex];
+-    let displayEntry = display[i];
+-
+-    const optional = displayEntry.endsWith("?");
+-    if (optional) {
+-      displayEntry = displayEntry.replace("?", "");
++    var regex = formats.makeRegexForOpcode(opcode, opcodeObj);
++    var match = regex.exec(value);
++    if (!match)
++        throw new Error("Could not parse instruction: " + value);
++    var values = {
++        op: opcode
++    };
++    if (opcode.indexOf(".fmt") !== -1 || opcode.indexOf(".cond") !== -1) {
++        determineOpcodeValues(match[1], opcode, opcodeObj.fmts, opcodeObj.format, values);
+     }
+-
+-    switch (displayEntry) {
+-      case "(":
+-      case ")":
+-        matchIndex--; // Eh
+-        continue;
+-
+-      case "rs":
+-      case "rd":
+-      case "rt": {
+-        const tryReg = getRegBits(parsedVal);
+-        if (tryReg === undefined) {
+-          if (optional)
+-            continue;
+-
+-          throw new Error(`Unrecognized ${displayEntry} register ${parsedVal}`);
++    var display = opcodeObj.display;
++    var matchIndex = 2; // 0 is whole match, 1 is opcode - skip both
++    for (var i = 0; i < display.length; i++, matchIndex++) {
++        var parsedVal = match[matchIndex];
++        var displayEntry = display[i];
++        var optional = displayEntry.endsWith("?");
++        if (optional) {
++            displayEntry = displayEntry.replace("?", "");
+         }
+-        values[displayEntry] = tryReg;
+-        continue;
+-      }
+-
+-      case "fs":
+-      case "ft":
+-      case "fd":
+-      case "fr":
+-        values[displayEntry] = parseInt(parsedVal);
+-        if (isNaN(values[displayEntry]))
+-          throw new Error(`Unrecognized ${displayEntry} register ${parsedVal}`);
+-        continue;
+-    }
+-
+-    const immDetails = getImmFormatDetails(displayEntry);
+-    if (immDetails) {
+-      let value;
+-      const immPieces = [match[matchIndex], match[matchIndex + 1], match[matchIndex + 2]];
+-
+-      if (!optional || immPieces[2]) {
+-        value = parseImmediate(immPieces, immDetails.bits, immDetails.signed, immDetails.shift);
+-        if (isNaN(value)) {
+-          throw new Error(`Could not parse immediate ${immPieces.join("")}`);
++        switch (displayEntry) {
++            case "(":
++            case ")":
++                matchIndex--; // Eh
++                continue;
++            case "rs":
++            case "rd":
++            case "rt": {
++                var tryReg = (0, regs_1.getRegBits)(parsedVal);
++                if (tryReg === undefined) {
++                    if (optional)
++                        continue;
++                    throw new Error("Unrecognized " + displayEntry + " register " + parsedVal);
++                }
++                values[displayEntry] = tryReg;
++                continue;
++            }
++            case "fs":
++            case "ft":
++            case "fd":
++            case "fr":
++                values[displayEntry] = parseInt(parsedVal);
++                if (isNaN(values[displayEntry]))
++                    throw new Error("Unrecognized " + displayEntry + " register " + parsedVal);
++                continue;
+         }
+-        values[displayEntry] = value;
+-      }
+-
+-      matchIndex += 2;
+-
+-      continue;
++        var immDetails = (0, immediates_1.getImmFormatDetails)(displayEntry);
++        if (immDetails) {
++            var value_1 = void 0;
++            var immPieces = [match[matchIndex], match[matchIndex + 1], match[matchIndex + 2]];
++            if (!optional || immPieces[2]) {
++                value_1 = (0, immediates_1.parseImmediate)(immPieces, immDetails.bits, immDetails.signed, immDetails.shift);
++                if (isNaN(value_1)) {
++                    throw new Error("Could not parse immediate " + immPieces.join(""));
++                }
++                values[displayEntry] = value_1;
++            }
++            matchIndex += 2;
++            continue;
++        }
++        throw new Error("Unrecognized opcode display entry " + displayEntry);
+     }
+-
+-    throw new Error(`Unrecognized opcode display entry ${displayEntry}`);
+-  }
+-
+-  return values;
++    return values;
+ }
+-
+ function bitsFromFormat(format, values) {
+-  let output = 0;
+-  let bitOffset = 0;
+-  for (let i = 0; i < format.length; i++) {
+-    let writeResult;
+-    let piece = format[i];
+-    let bitLength = getValueBitLength(Array.isArray(piece) ? piece[0] : piece);
+-    output = (output << bitLength) >>> 0;
+-    if (Array.isArray(piece)) {
+-      for (let j = 0; j < piece.length; j++) {
+-        writeResult = writeBitsForPiece(piece[j], output, values);
+-        if (writeResult.wrote) {
+-          output = writeResult.output;
+-          break; // j
++    var output = 0;
++    var bitOffset = 0;
++    for (var i = 0; i < format.length; i++) {
++        var writeResult = void 0;
++        var piece = format[i];
++        var bitLength = (0, opcodes_1.getValueBitLength)(Array.isArray(piece) ? piece[0] : piece);
++        output = (output << bitLength) >>> 0;
++        if (Array.isArray(piece)) {
++            for (var j = 0; j < piece.length; j++) {
++                writeResult = writeBitsForPiece(piece[j], output, values);
++                if (writeResult.wrote) {
++                    output = writeResult.output;
++                    break; // j
++                }
++            }
+         }
+-      }
+-    }
+-    else {
+-      writeResult = writeBitsForPiece(piece, output, values);
+-      if (writeResult.wrote) {
+-        output = writeResult.output;
+-      }
++        else {
++            writeResult = writeBitsForPiece(piece, output, values);
++            if (writeResult.wrote) {
++                output = writeResult.output;
++            }
++        }
++        bitOffset += bitLength;
+     }
+-
+-    bitOffset += bitLength;
+-  }
+-
+-  if (bitOffset != 32)
+-    throw new Error("Incorrect number of bits written for format " + format);
+-
+-  return output;
++    if (bitOffset != 32)
++        throw new Error("Incorrect number of bits written for format " + format);
++    return output;
+ }
+-
+ function writeBitsForPiece(piece, output, values) {
+-  let wrote = false;
+-  if (isBinaryLiteral(piece)) {
+-    output |= makeBitMaskFromString(piece);
+-    wrote = true;
+-  }
+-  else if (values[piece] !== undefined) {
+-    let value = values[piece] & makeBitMask(getValueBitLength(piece));
+-    wrote = true;
+-    output |= value;
+-  }
+-
+-  return {
+-    wrote: wrote,
+-    output: output >>> 0,
+-  };
++    var wrote = false;
++    if ((0, bitstrings_1.isBinaryLiteral)(piece)) {
++        output |= (0, bitstrings_1.makeBitMaskFromString)(piece);
++        wrote = true;
++    }
++    else if (values[piece] !== undefined) {
++        var value = values[piece] & (0, bitstrings_1.makeBitMask)((0, opcodes_1.getValueBitLength)(piece));
++        wrote = true;
++        output |= value;
++    }
++    return {
++        wrote: wrote,
++        output: output >>> 0,
++    };
+ }
+-
+ function determineOpcodeValues(givenOpcode, genericOpcode, allowedFormats, format, values) {
+-  const givenPieces = givenOpcode.split(".");
+-  const genericPieces = genericOpcode.split(".");
+-  if (givenPieces.length !== genericPieces.length)
+-    throw new Error(`Given opcode ${givenOpcode} does not have all pieces (${genericOpcode})`);
+-
+-  for (let i = 0; i < genericPieces.length; i++) {
+-    const genericPiece = genericPieces[i];
+-
+-    if (genericPiece === "fmt" || genericPiece === "ftm3") {
+-      if (allowedFormats.indexOf(givenPieces[i].toUpperCase()) === -1)
+-        throw new Error(`Format ${givenPieces[i]} is not allowed for ${genericPiece}. Allowed values are ${allowedFormats}`);
+-
+-      if (genericPiece === "fmt")
+-        values["fmt"] = getFmtBits(givenPieces[i]);
+-      else if (genericPiece === "fmt3")
+-        values["fmt3"] = getFmt3Bits(givenPieces[i]);
++    var givenPieces = givenOpcode.split(".");
++    var genericPieces = genericOpcode.split(".");
++    if (givenPieces.length !== genericPieces.length)
++        throw new Error("Given opcode " + givenOpcode + " does not have all pieces (" + genericOpcode + ")");
++    for (var i = 0; i < genericPieces.length; i++) {
++        var genericPiece = genericPieces[i];
++        if (genericPiece === "fmt" || genericPiece === "ftm3") {
++            if (allowedFormats.indexOf(givenPieces[i].toUpperCase()) === -1)
++                throw new Error("Format " + givenPieces[i] + " is not allowed for " + genericPiece + ". Allowed values are " + allowedFormats);
++            if (genericPiece === "fmt")
++                values["fmt"] = (0, regs_1.getFmtBits)(givenPieces[i]);
++            else if (genericPiece === "fmt3")
++                values["fmt3"] = (0, regs_1.getFmt3Bits)(givenPieces[i]);
++        }
++        if (genericPiece === "cond")
++            values["cond"] = (0, regs_1.getCondBits)(givenPieces[i]);
+     }
+-
+-    if (genericPiece === "cond")
+-      values["cond"] = getCondBits(givenPieces[i]);
+-  }
+ }
+diff --git a/node_modules/mips-inst/dist/js/print.js b/node_modules/mips-inst/dist/js/print.js
+index 8737c2e..f137fd0 100644
+--- a/node_modules/mips-inst/dist/js/print.js
++++ b/node_modules/mips-inst/dist/js/print.js
+@@ -1,8 +1,10 @@
+-import { findMatch, getOpcodeDetails, getValueBitLength } from "./opcodes";
+-import { getRegName, getFloatRegName, getFmtName, getFmt3Name, getCondName } from "./regs";
+-import { makeInt16, getImmFormatDetails } from "./immediates";
+-import { isBinaryLiteral, makeBitMask, padBitString } from "./bitstrings";
+-
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.print = void 0;
++var opcodes_1 = require("./opcodes");
++var regs_1 = require("./regs");
++var immediates_1 = require("./immediates");
++var bitstrings_1 = require("./bitstrings");
+ /**
+  * Prints a string representation of a MIPS instruction.
+  *
+@@ -21,247 +23,205 @@ import { isBinaryLiteral, makeBitMask, padBitString } from "./bitstrings";
+  * If multiple values are given (array) then multiple values are returned.
+  * When the `intermediate` option is passed, the return type is an object.
+  */
+-export function print(inst, opts) {
+-  opts = _getFinalOpts(opts);
+-
+-  if (Array.isArray(inst))
+-    return inst.map(i => _print(i, opts));
+-
+-  const isArrayBuffer = inst instanceof ArrayBuffer;
+-  if (isArrayBuffer || inst instanceof DataView) {
+-    const dataView = isArrayBuffer ? new DataView(inst) : inst;
+-    const result = [];
+-    for (let i = 0; i < dataView.byteLength; i += 4) {
+-      result.push(_print(dataView.getUint32(i), opts));
++function print(inst, opts) {
++    opts = _getFinalOpts(opts);
++    if (Array.isArray(inst))
++        return inst.map(function (i) { return _print(i, opts); });
++    var isArrayBuffer = inst instanceof ArrayBuffer;
++    if (isArrayBuffer || inst instanceof DataView) {
++        var dataView = isArrayBuffer ? new DataView(inst) : inst;
++        var result = [];
++        for (var i = 0; i < dataView.byteLength; i += 4) {
++            result.push(_print(dataView.getUint32(i), opts));
++        }
++        return result;
+     }
+-    return result;
+-  }
+-
+-  const inputType = typeof inst;
+-  if (inputType === "number" || inputType === "object")
+-    return _print(inst, opts);
+-
+-  throw new Error("Unexpected input to print.");
++    var inputType = typeof inst;
++    if (inputType === "number" || inputType === "object")
++        return _print(inst, opts);
++    throw new Error("Unexpected input to print.");
+ }
+-
++exports.print = print;
+ function _getFinalOpts(givenOpts) {
+-  return Object.assign({
+-    casing: "toUpperCase",
+-    commas: false,
+-    include$: false,
+-    intermediate: false,
+-    numBase: 16
+-  }, givenOpts);
++    return Object.assign({
++        casing: "toUpperCase",
++        commas: false,
++        include$: false,
++        intermediate: false,
++        numBase: 16
++    }, givenOpts);
+ }
+-
+ function _print(inst, opts) {
+-  let opcodeObj, opName, values;
+-  if (typeof inst === "number") {
+-    opName = findMatch(inst);
+-    if (!opName)
+-      throw new Error("Unrecognized instruction");
+-
+-    opcodeObj = getOpcodeDetails(opName);
+-
+-    values = _extractValues(inst, opcodeObj.format);
+-    values.op = opName;
+-  }
+-  else if (typeof inst === "object") {
+-    if (!inst.op)
+-      throw new Error("Instruction object did not contain op");
+-
+-    opcodeObj = getOpcodeDetails(inst.op);
+-
+-    values = inst;
+-  }
+-  else
+-    throw new Error(`Unexpected value ${inst}`);
+-
+-  if (!opcodeObj)
+-    throw new Error("Invalid opcode");
+-
+-  if (opts.intermediate)
+-    return values;
+-
+-  return _printValues(values, opcodeObj, opts);
+-}
+-
+-function _printValues(values, opcodeObj, opts) {
+-  let result = _formatOpcode(values, opts);
+-
+-  function _getRegName(displayEntry) {
+-    switch (displayEntry) {
+-      case "rs":
+-      case "rt":
+-      case "rd":
+-        return getRegName(values[displayEntry]);
+-
+-      case "fs":
+-      case "ft":
+-      case "fd":
+-        return getFloatRegName(values[displayEntry]);
+-    }
+-  }
+-
+-  const display = opcodeObj.display;
+-  for (let i = 0; i < display.length; i++) {
+-    let displayEntry = display[i];
+-
+-    if (displayEntry.endsWith("?")) {
+-      displayEntry = displayEntry.replace("?", "");
+-      if (values[displayEntry] === undefined)
+-        continue; // Optional value, not set.
+-    }
+-
+-    let value = values[displayEntry];
+-    if (value === undefined && displayEntry !== "(" && displayEntry !== ")") {
+-      throw new Error(`Expected ${displayEntry} value, got undefined`);
++    var opcodeObj, opName, values;
++    if (typeof inst === "number") {
++        opName = (0, opcodes_1.findMatch)(inst);
++        if (!opName)
++            throw new Error("Unrecognized instruction");
++        opcodeObj = (0, opcodes_1.getOpcodeDetails)(opName);
++        values = _extractValues(inst, opcodeObj.format);
++        values.op = opName;
+     }
+-
+-    let addComma = opts.commas;
+-
+-    switch (displayEntry) {
+-      case "rs":
+-      case "rt":
+-      case "rd":
+-      case "fs":
+-      case "ft":
+-      case "fd":
+-        if (!result.endsWith("("))
+-          result += " ";
+-        result += _formatReg(_getRegName(displayEntry), opts);
+-        break;
+-
+-      case "(":
+-      case ")":
+-        addComma = false;
+-        if (result.endsWith(","))
+-          result = result.slice(0, -1); // Lop off comma, since we are involved in a parenthesis open/close
+-
+-        result += displayEntry;
+-        break;
++    else if (typeof inst === "object") {
++        if (!inst.op)
++            throw new Error("Instruction object did not contain op");
++        opcodeObj = (0, opcodes_1.getOpcodeDetails)(inst.op);
++        values = inst;
+     }
+-
+-    const immDetails = getImmFormatDetails(displayEntry);
+-    if (immDetails) {
+-      if (!result.endsWith("("))
+-        result += " ";
+-
+-      if (immDetails.signed && immDetails.bits === 16) {
+-        value = makeInt16(value);
+-      }
+-      if (immDetails.shift) {
+-        value = value << immDetails.shift;
+-      }
+-
+-      result += _formatNumber(value, opts);
++    else
++        throw new Error("Unexpected value " + inst);
++    if (!opcodeObj)
++        throw new Error("Invalid opcode");
++    if (opts.intermediate)
++        return values;
++    return _printValues(values, opcodeObj, opts);
++}
++function _printValues(values, opcodeObj, opts) {
++    var result = _formatOpcode(values, opts);
++    function _getRegName(displayEntry) {
++        switch (displayEntry) {
++            case "rs":
++            case "rt":
++            case "rd":
++                return (0, regs_1.getRegName)(values[displayEntry]);
++            case "fs":
++            case "ft":
++            case "fd":
++                return (0, regs_1.getFloatRegName)(values[displayEntry]);
++        }
+     }
+-
+-    if (addComma && (i !== display.length - 1) && !result.endsWith(",")) {
+-      result += ",";
++    var display = opcodeObj.display;
++    for (var i = 0; i < display.length; i++) {
++        var displayEntry = display[i];
++        if (displayEntry.endsWith("?")) {
++            displayEntry = displayEntry.replace("?", "");
++            if (values[displayEntry] === undefined)
++                continue; // Optional value, not set.
++        }
++        var value = values[displayEntry];
++        if (value === undefined && displayEntry !== "(" && displayEntry !== ")") {
++            throw new Error("Expected " + displayEntry + " value, got undefined");
++        }
++        var addComma = opts.commas;
++        switch (displayEntry) {
++            case "rs":
++            case "rt":
++            case "rd":
++            case "fs":
++            case "ft":
++            case "fd":
++                if (!result.endsWith("("))
++                    result += " ";
++                result += _formatReg(_getRegName(displayEntry), opts);
++                break;
++            case "(":
++            case ")":
++                addComma = false;
++                if (result.endsWith(","))
++                    result = result.slice(0, -1); // Lop off comma, since we are involved in a parenthesis open/close
++                result += displayEntry;
++                break;
++        }
++        var immDetails = (0, immediates_1.getImmFormatDetails)(displayEntry);
++        if (immDetails) {
++            if (!result.endsWith("("))
++                result += " ";
++            if (immDetails.signed && immDetails.bits === 16) {
++                value = (0, immediates_1.makeInt16)(value);
++            }
++            if (immDetails.shift) {
++                value = value << immDetails.shift;
++            }
++            result += _formatNumber(value, opts);
++        }
++        if (addComma && (i !== display.length - 1) && !result.endsWith(",")) {
++            result += ",";
++        }
+     }
+-  }
+-
+-  return result.trim();
++    return result.trim();
+ }
+-
+ function _extractValues(inst, format) {
+-  let values = {};
+-  for (let i = format.length - 1; i >= 0; i--) {
+-    let value, bitLength;
+-    let piece = format[i];
+-    if (Array.isArray(piece)) {
+-      for (let j = piece.length - 1; j >= 0; j--) {
+-        bitLength = getValueBitLength(piece[j]);
+-        value = inst & makeBitMask(bitLength);
+-
+-        if (isBinaryLiteral(piece[j])) {
+-          if (piece[j] === padBitString(value.toString(2), bitLength)) {
+-            piece = piece[j];
+-            break;
+-          }
++    var values = {};
++    for (var i = format.length - 1; i >= 0; i--) {
++        var value = void 0, bitLength = void 0;
++        var piece = format[i];
++        if (Array.isArray(piece)) {
++            for (var j = piece.length - 1; j >= 0; j--) {
++                bitLength = (0, opcodes_1.getValueBitLength)(piece[j]);
++                value = inst & (0, bitstrings_1.makeBitMask)(bitLength);
++                if ((0, bitstrings_1.isBinaryLiteral)(piece[j])) {
++                    if (piece[j] === (0, bitstrings_1.padBitString)(value.toString(2), bitLength)) {
++                        piece = piece[j];
++                        break;
++                    }
++                }
++                else {
++                    piece = piece[j];
++                    break;
++                }
++            }
+         }
+         else {
+-          piece = piece[j];
+-          break;
++            bitLength = (0, opcodes_1.getValueBitLength)(piece);
++            value = inst & (0, bitstrings_1.makeBitMask)(bitLength);
+         }
+-      }
+-    }
+-    else {
+-      bitLength = getValueBitLength(piece);
+-      value = inst & makeBitMask(bitLength);
+-    }
+-
+-    if (isBinaryLiteral(piece)) {
+-      inst >>>= bitLength;
+-      continue;
++        if ((0, bitstrings_1.isBinaryLiteral)(piece)) {
++            inst >>>= bitLength;
++            continue;
++        }
++        values[piece] = value;
++        inst >>>= bitLength;
+     }
+-
+-    values[piece] = value;
+-
+-    inst >>>= bitLength;
+-  }
+-
+-  return values;
++    return values;
+ }
+-
+ function _formatNumber(num, opts) {
+-  if (num === 0)
+-    return num.toString(opts.numBase);
+-
+-  let value = "";
+-  if (num < 0)
+-    value += "-";
+-
+-  if (opts.numBase === 16)
+-    value += "0x";
+-  else if (opts.numBase === 8)
+-    value += "0o";
+-  else if (opts.numBase === 2)
+-    value += "0b";
+-
+-  value += _applyCasing(Math.abs(num).toString(opts.numBase), opts.casing);
+-  return value;
++    if (num === 0)
++        return num.toString(opts.numBase);
++    var value = "";
++    if (num < 0)
++        value += "-";
++    if (opts.numBase === 16)
++        value += "0x";
++    else if (opts.numBase === 8)
++        value += "0o";
++    else if (opts.numBase === 2)
++        value += "0b";
++    value += _applyCasing(Math.abs(num).toString(opts.numBase), opts.casing);
++    return value;
+ }
+-
+ function _formatReg(regStr, opts) {
+-  let value = "";
+-  if (opts.include$)
+-    value += "$";
+-  value += _applyCasing(regStr, opts.casing);
+-  return value;
++    var value = "";
++    if (opts.include$)
++        value += "$";
++    value += _applyCasing(regStr, opts.casing);
++    return value;
+ }
+-
+ function _formatOpcode(values, opts) {
+-  const pieces = values.op.split(".");
+-  for (let i = 0; i < pieces.length; i++) {
+-    if (pieces[i] === "fmt") {
+-      if (values.hasOwnProperty("fmt3"))
+-        pieces[i] = getFmt3Name(values["fmt3"]);
+-      else if (values.hasOwnProperty("fmt"))
+-        pieces[i] = getFmtName(values["fmt"]);
+-      else
+-        throw new Error("Format value not available");
+-    }
+-    else if (pieces[i] === "cond") {
+-      if (values.hasOwnProperty("cond"))
+-        pieces[i] = getCondName(values["cond"]);
+-      else
+-        throw new Error("Condition value not available");
++    var pieces = values.op.split(".");
++    for (var i = 0; i < pieces.length; i++) {
++        if (pieces[i] === "fmt") {
++            if (values.hasOwnProperty("fmt3"))
++                pieces[i] = (0, regs_1.getFmt3Name)(values["fmt3"]);
++            else if (values.hasOwnProperty("fmt"))
++                pieces[i] = (0, regs_1.getFmtName)(values["fmt"]);
++            else
++                throw new Error("Format value not available");
++        }
++        else if (pieces[i] === "cond") {
++            if (values.hasOwnProperty("cond"))
++                pieces[i] = (0, regs_1.getCondName)(values["cond"]);
++            else
++                throw new Error("Condition value not available");
++        }
+     }
+-  }
+-  let opcode = pieces.join(".");
+-
+-  return _applyCasing(opcode, opts.casing);
++    var opcode = pieces.join(".");
++    return _applyCasing(opcode, opts.casing);
+ }
+-
+ function _applyCasing(value, casing) {
+-  switch (casing) {
+-    case "toLowerCase":
+-      return value.toLowerCase();
+-
+-    case "toUpperCase":
+-    default:
+-      return value.toUpperCase();
+-  }
++    switch (casing) {
++        case "toLowerCase":
++            return value.toLowerCase();
++        case "toUpperCase":
++        default:
++            return value.toUpperCase();
++    }
+ }
+diff --git a/node_modules/mips-inst/dist/js/regex.js b/node_modules/mips-inst/dist/js/regex.js
+index 84d501a..162870f 100644
+--- a/node_modules/mips-inst/dist/js/regex.js
++++ b/node_modules/mips-inst/dist/js/regex.js
+@@ -1,144 +1,122 @@
+-import { isFmtString, isCondString } from "./regs";
+-import { getImmFormatDetails } from "./immediates";
+-
+-const opRegex = "([A-Za-z0-3.]+)";
+-const immRegex = "(-)?0?([xbo]?)([A-Fa-f0-9]+)";
+-const regRegex = "\\$?(\\w+)";
+-const floatRegRegex = "\\$?[Ff]([0-9]+)";
+-
+-const opcodeRegex = new RegExp("^\\s*" + opRegex);
+-
+-const _regexCache = Object.create(null);
+-
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.isFloatReg = exports.isReg = exports.makeRegexForOpcode = exports.getOpcode = void 0;
++var regs_1 = require("./regs");
++var immediates_1 = require("./immediates");
++var opRegex = "([A-Za-z0-3.]+)";
++var immRegex = "(-)?0?([xbo]?)([A-Fa-f0-9]+)";
++var regRegex = "\\$?(\\w+)";
++var floatRegRegex = "\\$?[Ff]([0-9]+)";
++var opcodeRegex = new RegExp("^\\s*" + opRegex);
++var _regexCache = Object.create(null);
+ // Gets the op string from a given entire instruction.
+ // This is a general form (.fmt rather than .S, .D, etc.)
+-export function getOpcode(str) {
+-  const match = opcodeRegex.exec(str);
+-  if (match) {
+-    const pieces = match[1].split("."); // Could be .fmt, .cond.fmt, etc
+-    if (pieces.length === 1)
+-      return pieces[0].toLowerCase();
+-
+-    // Loop from the end, as the end has the .fmt for tricky things like .D.W
+-    let result = "";
+-    let foundFmt = false;
+-    let foundCond = false;
+-    for (let i = pieces.length - 1; i > 0; i--) {
+-      let piece = pieces[i];
+-      if (!foundFmt) {
+-        if (piece === "fmt" || isFmtString(piece)) {
+-          foundFmt = true;
+-          piece = "fmt";
++function getOpcode(str) {
++    var match = opcodeRegex.exec(str);
++    if (match) {
++        var pieces = match[1].split("."); // Could be .fmt, .cond.fmt, etc
++        if (pieces.length === 1)
++            return pieces[0].toLowerCase();
++        // Loop from the end, as the end has the .fmt for tricky things like .D.W
++        var result = "";
++        var foundFmt = false;
++        var foundCond = false;
++        for (var i = pieces.length - 1; i > 0; i--) {
++            var piece = pieces[i];
++            if (!foundFmt) {
++                if (piece === "fmt" || (0, regs_1.isFmtString)(piece)) {
++                    foundFmt = true;
++                    piece = "fmt";
++                }
++            }
++            if (!foundCond) {
++                if ((0, regs_1.isCondString)(piece)) {
++                    foundCond = true;
++                    piece = "cond";
++                }
++            }
++            result = "." + piece + result;
+         }
+-      }
+-
+-      if (!foundCond) {
+-        if (isCondString(piece)) {
+-          foundCond = true;
+-          piece = "cond";
+-        }
+-      }
+-
+-      result = "." + piece + result;
++        return (pieces[0] + result).toLowerCase();
+     }
+-
+-    return (pieces[0] + result).toLowerCase();
+-  }
+-  return null;
++    return null;
+ }
+-
+-export function makeRegexForOpcode(opcode, opcodeObj) {
+-  if (_regexCache[opcode]) {
+-    return _regexCache[opcode];
+-  }
+-
+-  const parts = [opRegex];
+-  const display = opcodeObj.display;
+-  for (let i = 0; i < display.length; i++) {
+-    const part = display[i];
+-    const optional = part.endsWith("?");
+-
+-    let regexPart = "";
+-    if (optional)
+-      regexPart += "(?:[,\\s]+";
+-
+-    if (display[i + 1] === "(") {
+-      if (optional)
+-        throw new Error("Not prepared to generate optional regex with parenthesis");
+-
+-      if (display[i + 3] !== ")")
+-        throw new Error("Not prepared to generate regex for multiple values in parenthesis"); // Or no closing paren
+-
+-      regexPart += makeParenthesisRegex(getRegexForPart(part), getRegexForPart(display[i + 2]));
+-      i = i + 3;
++exports.getOpcode = getOpcode;
++function makeRegexForOpcode(opcode, opcodeObj) {
++    if (_regexCache[opcode]) {
++        return _regexCache[opcode];
+     }
+-    else {
+-      regexPart += getRegexForPart(part);
++    var parts = [opRegex];
++    var display = opcodeObj.display;
++    for (var i = 0; i < display.length; i++) {
++        var part = display[i];
++        var optional = part.endsWith("?");
++        var regexPart = "";
++        if (optional)
++            regexPart += "(?:[,\\s]+";
++        if (display[i + 1] === "(") {
++            if (optional)
++                throw new Error("Not prepared to generate optional regex with parenthesis");
++            if (display[i + 3] !== ")")
++                throw new Error("Not prepared to generate regex for multiple values in parenthesis"); // Or no closing paren
++            regexPart += makeParenthesisRegex(getRegexForPart(part), getRegexForPart(display[i + 2]));
++            i = i + 3;
++        }
++        else {
++            regexPart += getRegexForPart(part);
++        }
++        if (optional)
++            regexPart += ")?";
++        parts.push(regexPart);
+     }
+-
+-    if (optional)
+-      regexPart += ")?";
+-
+-    parts.push(regexPart);
+-  }
+-
+-  let regexStr =
+-    "^\\s*" +
+-    parts.reduce((str, next, index) => {
+-      if (index === 0 || partIsOptional(next))
+-        return str + next;
+-
+-      return str + "[,\\s]+" + next;
+-    }, "") +
+-    "\\s*$";
+-
+-  const regex = new RegExp(regexStr);
+-  _regexCache[opcode] = regex;
+-  return regex;
++    var regexStr = "^\\s*" +
++        parts.reduce(function (str, next, index) {
++            if (index === 0 || partIsOptional(next))
++                return str + next;
++            return str + "[,\\s]+" + next;
++        }, "") +
++        "\\s*$";
++    var regex = new RegExp(regexStr);
++    _regexCache[opcode] = regex;
++    return regex;
+ }
+-
++exports.makeRegexForOpcode = makeRegexForOpcode;
+ function getRegexForPart(part) {
+-  if (isReg(part))
+-    return regRegex;
+-  if (isFloatReg(part))
+-    return floatRegRegex;
+-
+-  if (getImmFormatDetails(part))
+-    return immRegex;
+-
+-  throw new Error(`Unrecognized display entry ${part}`);
++    if (isReg(part))
++        return regRegex;
++    if (isFloatReg(part))
++        return floatRegRegex;
++    if ((0, immediates_1.getImmFormatDetails)(part))
++        return immRegex;
++    throw new Error("Unrecognized display entry " + part);
+ }
+-
+ function makeParenthesisRegex(regex1, regex2) {
+-  return regex1 + "\\s*" + "\\(?" + regex2 + "\\)?";
++    return regex1 + "\\s*" + "\\(?" + regex2 + "\\)?";
+ }
+-
+ function partIsOptional(partStr) {
+-  return partStr.startsWith("(?:");
++    return partStr.startsWith("(?:");
+ }
+-
+-export function isReg(entry) {
+-  if (!entry)
++function isReg(entry) {
++    if (!entry)
++        return false;
++    switch (entry.substr(0, 2)) {
++        case "rs":
++        case "rt":
++        case "rd":
++            return true;
++    }
+     return false;
+-
+-  switch (entry.substr(0, 2)) {
+-    case "rs":
+-    case "rt":
+-    case "rd":
+-      return true;
+-  }
+-  return false;
+ }
+-
+-export function isFloatReg(entry) {
+-  if (!entry)
++exports.isReg = isReg;
++function isFloatReg(entry) {
++    if (!entry)
++        return false;
++    switch (entry.substr(0, 2)) {
++        case "fs":
++        case "ft":
++        case "fd":
++            return true;
++    }
+     return false;
+-
+-  switch (entry.substr(0, 2)) {
+-    case "fs":
+-    case "ft":
+-    case "fd":
+-      return true;
+-  }
+-  return false;
+ }
++exports.isFloatReg = isFloatReg;
+diff --git a/node_modules/mips-inst/dist/js/regs.js b/node_modules/mips-inst/dist/js/regs.js
+index 27c137e..e6d6201 100644
+--- a/node_modules/mips-inst/dist/js/regs.js
++++ b/node_modules/mips-inst/dist/js/regs.js
+@@ -1,133 +1,132 @@
+-const regs = {
+-  r0: 0,
+-  zero: 0,
+-  at: 1,
+-  v0: 2,
+-  v1: 3,
+-  a0: 4,
+-  a1: 5,
+-  a2: 6,
+-  a3: 7,
+-  t0: 8,
+-  t1: 9,
+-  t2: 10,
+-  t3: 11,
+-  t4: 12,
+-  t5: 13,
+-  t6: 14,
+-  t7: 15,
+-  s0: 16,
+-  s1: 17,
+-  s2: 18,
+-  s3: 19,
+-  s4: 20,
+-  s5: 21,
+-  s6: 22,
+-  s7: 23,
+-  t8: 24,
+-  t9: 25,
+-  k0: 26,
+-  k1: 27,
+-  gp: 28,
+-  sp: 29,
+-  fp: 30,
+-  ra: 31
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.isCondString = exports.getCondName = exports.getCondBits = exports.isFmtString = exports.getFmt3Name = exports.getFmt3Bits = exports.getFmtName = exports.getFmtBits = exports.getFloatRegName = exports.getRegName = exports.getRegBits = void 0;
++var regs = {
++    r0: 0,
++    zero: 0,
++    at: 1,
++    v0: 2,
++    v1: 3,
++    a0: 4,
++    a1: 5,
++    a2: 6,
++    a3: 7,
++    t0: 8,
++    t1: 9,
++    t2: 10,
++    t3: 11,
++    t4: 12,
++    t5: 13,
++    t6: 14,
++    t7: 15,
++    s0: 16,
++    s1: 17,
++    s2: 18,
++    s3: 19,
++    s4: 20,
++    s5: 21,
++    s6: 22,
++    s7: 23,
++    t8: 24,
++    t9: 25,
++    k0: 26,
++    k1: 27,
++    gp: 28,
++    sp: 29,
++    fp: 30,
++    ra: 31
+ };
+-
+-export function getRegBits(reg) {
+-  if (!reg)
+-    return undefined;
+-  return regs[reg.toLowerCase()];
++function getRegBits(reg) {
++    if (!reg)
++        return undefined;
++    return regs[reg.toLowerCase()];
+ }
+-
+-export function getRegName(bits) {
+-  for (let name in regs) {
+-    if (regs[name] === bits)
+-      return name;
+-  }
+-  return "";
++exports.getRegBits = getRegBits;
++function getRegName(bits) {
++    for (var name_1 in regs) {
++        if (regs[name_1] === bits)
++            return name_1;
++    }
++    return "";
+ }
+-
+-export function getFloatRegName(bits) {
+-  if (typeof bits !== "number")
+-    throw new Error("getFloatRegName encountered non-number");
+-
+-  return "F" + bits;
++exports.getRegName = getRegName;
++function getFloatRegName(bits) {
++    if (typeof bits !== "number")
++        throw new Error("getFloatRegName encountered non-number");
++    return "F" + bits;
+ }
+-
+-const fmts = {
+-  S: 16,
+-  D: 17,
+-  W: 20,
+-  L: 21,
++exports.getFloatRegName = getFloatRegName;
++var fmts = {
++    S: 16,
++    D: 17,
++    W: 20,
++    L: 21,
+ };
+-
+-export function getFmtBits(fmtStr) {
+-  return fmts[fmtStr.toUpperCase()];
++function getFmtBits(fmtStr) {
++    return fmts[fmtStr.toUpperCase()];
+ }
+-
+-export function getFmtName(bits) {
+-  for (let name in fmts) {
+-    if (fmts[name] === bits)
+-      return name;
+-  }
+-  return "";
++exports.getFmtBits = getFmtBits;
++function getFmtName(bits) {
++    for (var name_2 in fmts) {
++        if (fmts[name_2] === bits)
++            return name_2;
++    }
++    return "";
+ }
+-
+-const fmt3s = {
+-  S: 0,
+-  D: 1,
+-  W: 4,
+-  L: 5,
++exports.getFmtName = getFmtName;
++var fmt3s = {
++    S: 0,
++    D: 1,
++    W: 4,
++    L: 5,
+ };
+-
+-export function getFmt3Bits(fmtStr) {
+-  return fmt3s[fmtStr.toUpperCase()];
++function getFmt3Bits(fmtStr) {
++    return fmt3s[fmtStr.toUpperCase()];
+ }
+-
+-export function getFmt3Name(bits) {
+-  for (let name in fmt3s) {
+-    if (fmt3s[name] === bits)
+-      return name;
+-  }
+-  return "";
++exports.getFmt3Bits = getFmt3Bits;
++function getFmt3Name(bits) {
++    for (var name_3 in fmt3s) {
++        if (fmt3s[name_3] === bits)
++            return name_3;
++    }
++    return "";
+ }
+-
+-export function isFmtString(fmtStr) {
+-  return fmts.hasOwnProperty(fmtStr.toUpperCase()) || fmt3s.hasOwnProperty(fmtStr.toUpperCase());
++exports.getFmt3Name = getFmt3Name;
++function isFmtString(fmtStr) {
++    return fmts.hasOwnProperty(fmtStr.toUpperCase()) || fmt3s.hasOwnProperty(fmtStr.toUpperCase());
+ }
+-
+-const conds = {
+-  F: 0,
+-  UN: 1,
+-  EQ: 2,
+-  UEQ: 3,
+-  OLT: 4,
+-  ULT: 5,
+-  OLE: 6,
+-  ULE: 7,
+-  SF: 8,
+-  NGLE: 9,
+-  SEQ: 10,
+-  NGL: 11,
+-  LT: 12,
+-  NGE: 13,
+-  LE: 14,
+-  NGT: 15,
++exports.isFmtString = isFmtString;
++var conds = {
++    F: 0,
++    UN: 1,
++    EQ: 2,
++    UEQ: 3,
++    OLT: 4,
++    ULT: 5,
++    OLE: 6,
++    ULE: 7,
++    SF: 8,
++    NGLE: 9,
++    SEQ: 10,
++    NGL: 11,
++    LT: 12,
++    NGE: 13,
++    LE: 14,
++    NGT: 15,
+ };
+-
+-export function getCondBits(condStr) {
+-  return conds[condStr.toUpperCase()];
++function getCondBits(condStr) {
++    return conds[condStr.toUpperCase()];
+ }
+-
+-export function getCondName(bits) {
+-  for (let name in conds) {
+-    if (conds[name] === bits)
+-      return name;
+-  }
+-  return "";
++exports.getCondBits = getCondBits;
++function getCondName(bits) {
++    for (var name_4 in conds) {
++        if (conds[name_4] === bits)
++            return name_4;
++    }
++    return "";
+ }
+-
+-export function isCondString(condStr) {
+-  return conds.hasOwnProperty(condStr.toUpperCase());
++exports.getCondName = getCondName;
++function isCondString(condStr) {
++    return conds.hasOwnProperty(condStr.toUpperCase());
+ }
++exports.isCondString = isCondString;
+diff --git a/node_modules/mips-inst/tsconfig.json b/node_modules/mips-inst/tsconfig.json
+new file mode 100644
+index 0000000..83b5f57
+--- /dev/null
++++ b/node_modules/mips-inst/tsconfig.json
+@@ -0,0 +1,100 @@
++{
++  "compilerOptions": {
++    /* Visit https://aka.ms/tsconfig.json to read more about this file */
++
++    /* Projects */
++    // "incremental": true,                              /* Enable incremental compilation */
++    // "composite": true,                                /* Enable constraints that allow a TypeScript project to be used with project references. */
++    // "tsBuildInfoFile": "./",                          /* Specify the folder for .tsbuildinfo incremental compilation files. */
++    // "disableSourceOfProjectReferenceRedirect": true,  /* Disable preferring source files instead of declaration files when referencing composite projects */
++    // "disableSolutionSearching": true,                 /* Opt a project out of multi-project reference checking when editing. */
++    // "disableReferencedProjectLoad": true,             /* Reduce the number of projects loaded automatically by TypeScript. */
++
++    /* Language and Environment */
++    "target": "es5",                                     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
++    // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
++    // "jsx": "preserve",                                /* Specify what JSX code is generated. */
++    // "experimentalDecorators": true,                   /* Enable experimental support for TC39 stage 2 draft decorators. */
++    // "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files. */
++    // "jsxFactory": "",                                 /* Specify the JSX factory function used when targeting React JSX emit, e.g. 'React.createElement' or 'h' */
++    // "jsxFragmentFactory": "",                         /* Specify the JSX Fragment reference used for fragments when targeting React JSX emit e.g. 'React.Fragment' or 'Fragment'. */
++    // "jsxImportSource": "",                            /* Specify module specifier used to import the JSX factory functions when using `jsx: react-jsx*`.` */
++    // "reactNamespace": "",                             /* Specify the object invoked for `createElement`. This only applies when targeting `react` JSX emit. */
++    // "noLib": true,                                    /* Disable including any library files, including the default lib.d.ts. */
++    // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
++
++    /* Modules */
++    "module": "commonjs",                                /* Specify what module code is generated. */
++    // "rootDir": "./",                                  /* Specify the root folder within your source files. */
++    // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */
++    // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
++    // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
++    // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
++    // "typeRoots": [],                                  /* Specify multiple folders that act like `./node_modules/@types`. */
++    // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
++    // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
++    // "resolveJsonModule": true,                        /* Enable importing .json files */
++    // "noResolve": true,                                /* Disallow `import`s, `require`s or `<reference>`s from expanding the number of files TypeScript should add to a project. */
++
++    /* JavaScript Support */
++    // "allowJs": true,                                  /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */
++    // "checkJs": true,                                  /* Enable error reporting in type-checked JavaScript files. */
++    // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from `node_modules`. Only applicable with `allowJs`. */
++
++    /* Emit */
++    // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
++    // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
++    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
++    // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
++    // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If `declaration` is true, also designates a file that bundles all .d.ts output. */
++    // "outDir": "./",                                   /* Specify an output folder for all emitted files. */
++    // "removeComments": true,                           /* Disable emitting comments. */
++    // "noEmit": true,                                   /* Disable emitting files from a compilation. */
++    // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
++    // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types */
++    // "downlevelIteration": true,                       /* Emit more compliant, but verbose and less performant JavaScript for iteration. */
++    // "sourceRoot": "",                                 /* Specify the root path for debuggers to find the reference source code. */
++    // "mapRoot": "",                                    /* Specify the location where debugger should locate map files instead of generated locations. */
++    // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
++    // "inlineSources": true,                            /* Include source code in the sourcemaps inside the emitted JavaScript. */
++    // "emitBOM": true,                                  /* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
++    // "newLine": "crlf",                                /* Set the newline character for emitting files. */
++    // "stripInternal": true,                            /* Disable emitting declarations that have `@internal` in their JSDoc comments. */
++    // "noEmitHelpers": true,                            /* Disable generating custom helper functions like `__extends` in compiled output. */
++    // "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. */
++    // "preserveConstEnums": true,                       /* Disable erasing `const enum` declarations in generated code. */
++    // "declarationDir": "./",                           /* Specify the output directory for generated declaration files. */
++
++    /* Interop Constraints */
++    // "isolatedModules": true,                          /* Ensure that each file can be safely transpiled without relying on other imports. */
++    // "allowSyntheticDefaultImports": true,             /* Allow 'import x from y' when a module doesn't have a default export. */
++    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
++    // "preserveSymlinks": true,                         /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */
++    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
++
++    /* Type Checking */
++    "strict": true,                                      /* Enable all strict type-checking options. */
++    // "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied `any` type.. */
++    // "strictNullChecks": true,                         /* When type checking, take into account `null` and `undefined`. */
++    // "strictFunctionTypes": true,                      /* When assigning functions, check to ensure parameters and the return values are subtype-compatible. */
++    // "strictBindCallApply": true,                      /* Check that the arguments for `bind`, `call`, and `apply` methods match the original function. */
++    // "strictPropertyInitialization": true,             /* Check for class properties that are declared but not set in the constructor. */
++    // "noImplicitThis": true,                           /* Enable error reporting when `this` is given the type `any`. */
++    // "useUnknownInCatchVariables": true,               /* Type catch clause variables as 'unknown' instead of 'any'. */
++    // "alwaysStrict": true,                             /* Ensure 'use strict' is always emitted. */
++    // "noUnusedLocals": true,                           /* Enable error reporting when a local variables aren't read. */
++    // "noUnusedParameters": true,                       /* Raise an error when a function parameter isn't read */
++    // "exactOptionalPropertyTypes": true,               /* Interpret optional property types as written, rather than adding 'undefined'. */
++    // "noImplicitReturns": true,                        /* Enable error reporting for codepaths that do not explicitly return in a function. */
++    // "noFallthroughCasesInSwitch": true,               /* Enable error reporting for fallthrough cases in switch statements. */
++    // "noUncheckedIndexedAccess": true,                 /* Include 'undefined' in index signature results */
++    // "noImplicitOverride": true,                       /* Ensure overriding members in derived classes are marked with an override modifier. */
++    // "noPropertyAccessFromIndexSignature": true,       /* Enforces using indexed accessors for keys declared using an indexed type */
++    // "allowUnusedLabels": true,                        /* Disable error reporting for unused labels. */
++    // "allowUnreachableCode": true,                     /* Disable error reporting for unreachable code. */
++
++    /* Completeness */
++    // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
++    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
++  }
++}

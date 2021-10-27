@@ -2,6 +2,18 @@ import gulp from 'gulp';
 import fs from 'fs-extra';
 import child_process from 'child_process';
 
+gulp.task('update_overlays', function(){
+    let og = process.cwd();
+    process.chdir("./overlays/CommandBuffer/bin");
+    child_process.execSync("bintots -i ./CommandBuffer_oot.ovl");
+    child_process.execSync("bintots -i ./CommandBuffer_mm.ovl");
+    process.chdir(og);
+    fs.copyFileSync("./overlays/CommandBuffer/bin/CommandBuffer_oot.ts", "./cores/Z64Lib/API/OoT/CommandBuffer_oot.ts");
+    fs.copyFileSync("./overlays/CommandBuffer/bin/CommandBuffer_mm.ts", "./cores/Z64Lib/API/MM/CommandBuffer_mm.ts");
+
+    return gulp.src('./src/**/*.ts');
+});
+
 gulp.task('build', function () {
     try {
         fs.copyFileSync("./_tsconfig.json", "./tsconfig.json");
@@ -42,6 +54,16 @@ gulp.task('remove_nightly_flag', function(){
     } catch (err: any) {
         console.log(err.stack);
     }
+    return gulp.src('./src/**/*.ts')
+});
+
+gulp.task('postinstall', function(){
+    let og = process.cwd();
+
+    process.chdir("./cores/Z64Lib");
+    child_process.execSync("npx patch-package", {stdio: 'inherit'});
+
+    process.chdir(og);
     return gulp.src('./src/**/*.ts')
 });
 

@@ -20,4 +20,6 @@ export interface IActor extends IMemory {
   redeadFreeze: number; // 0x110 s16 frames to freeze.
   destroy(): void;
   exists: boolean;
+  homePos: IPosition;
+  homeRot: IRotation;
 }

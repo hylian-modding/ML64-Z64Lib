@@ -1,0 +1,2165 @@
+diff --git a/node_modules/mips-assembler/dist/js/src/assembler.js b/node_modules/mips-assembler/dist/js/src/assembler.js
+index 955f887..0fce761 100644
+--- a/node_modules/mips-assembler/dist/js/src/assembler.js
++++ b/node_modules/mips-assembler/dist/js/src/assembler.js
+@@ -1,28 +1,32 @@
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.assemble = void 0;
+ var __spreadArrays = (this && this.__spreadArrays) || function () {
+-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
++    for (var s = 0, i = 0, il = arguments.length; i < il; i++)
++        s += arguments[i].length;
+     for (var r = Array(s), k = 0, i = 0; i < il; i++)
+         for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+             r[k] = a[j];
+     return r;
+ };
+-import { parse } from "mips-inst";
+-import { AssemblerPhase } from "./types";
+-import { handleDirective, isConditionalDirective, getDirectiveToRun } from "./directives";
+-import { parseGlobalLabel } from "./labels";
+-import { getSymbolByValue } from "./symbols";
+-import { evaluateExpressionsOnCurrentLine, parseExpressionsOnCurrentLine } from "./expressions";
+-import { IfElseStateFlags } from "./conditionals";
+-import { makeNewAssemblerState } from "./state";
+-import { throwError } from "./errors";
++var mips_inst_1 = require("mips-inst");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var directives_1 = require("mips-assembler/dist/js/src/directives");
++var labels_1 = require("mips-assembler/dist/js/src/labels");
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++var expressions_1 = require("mips-assembler/dist/js/src/expressions");
++var conditionals_1 = require("mips-assembler/dist/js/src/conditionals");
++var state_1 = require("mips-assembler/dist/js/src/state");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * Assembles the given input instructions.
+  * @param input Assembly text or lines.
+  * @param opts Optional parameters.
+  */
+-export function assemble(input, opts) {
++function assemble(input, opts) {
+     opts = opts || {};
+     var arr = normalizeInput(input);
+-    var state = makeNewAssemblerState(opts);
++    var state = (0, state_1.makeNewAssemblerState)(opts);
+     var outStrs = [];
+     // First pass, calculate label positions.
+     // Not using `arr.map` because `arr` changes mid-processing.
+@@ -37,10 +41,10 @@ export function assemble(input, opts) {
+             continue;
+         }
+         line = processLabelsOnCurrentLine(state);
+-        var directive = getDirectiveToRun(state);
++        var directive = (0, directives_1.getDirectiveToRun)(state);
+         if (directive) {
+-            parseExpressionsOnCurrentLine(state);
+-            handleDirective(state, directive);
++            (0, expressions_1.parseExpressionsOnCurrentLine)(state);
++            (0, directives_1.handleDirective)(state, directive);
+             line = state.line; // Directive may change the line.
+         }
+         else {
+@@ -64,7 +68,7 @@ export function assemble(input, opts) {
+     state.dataView = new DataView(state.buffer);
+     state.memPos = 0;
+     state.outIndex = 0;
+-    state.currentPass = AssemblerPhase.secondPass;
++    state.currentPass = types_1.AssemblerPhase.secondPass;
+     // Second pass, assemble!
+     arr.forEach(function (line) {
+         state.line = line;
+@@ -72,55 +76,56 @@ export function assemble(input, opts) {
+         state.evaluatedLineExpressions = [];
+         if (shouldSkipCurrentInstruction(state))
+             return line;
+-        var directive = getDirectiveToRun(state);
++        var directive = (0, directives_1.getDirectiveToRun)(state);
+         if (directive) {
+-            evaluateExpressionsOnCurrentLine(state);
+-            handleDirective(state, directive);
++            (0, expressions_1.evaluateExpressionsOnCurrentLine)(state);
++            (0, directives_1.handleDirective)(state, directive);
+             return;
+         }
+         // Start a new "area" if we hit a global symbol boundary.
+-        var globalSymbol = getSymbolByValue(state, state.memPos + state.outIndex);
++        var globalSymbol = (0, symbols_1.getSymbolByValue)(state, state.memPos + state.outIndex);
+         if (globalSymbol !== null) {
+             state.currentLabel = globalSymbol;
+         }
+         // Apply any built-in functions, symbols.
+-        line = state.line = evaluateExpressionsOnCurrentLine(state);
++        line = state.line = (0, expressions_1.evaluateExpressionsOnCurrentLine)(state);
+         if (opts.text)
+             outStrs.push(line);
+         // At this point, we should be able to parse the instruction.
+         var inst;
+         try {
+-            inst = parse(line);
++            inst = (0, mips_inst_1.parse)(line);
+         }
+         catch (e) {
+-            throwError(e, state);
++            (0, errors_1.throwError)(e, state);
+             return;
+         }
+         state.dataView.setUint32(state.outIndex, inst);
+         state.outIndex += 4;
+     });
+     if (state.ifElseStack.length) {
+-        throwError("An if directive was used without an endif directive", state);
++        (0, errors_1.throwError)("An if directive was used without an endif directive", state);
+     }
+     if (state.staticSymbolIndices[0] !== 0) {
+-        throwError("A beginfile directive was used without an endfile directive", state);
++        (0, errors_1.throwError)("A beginfile directive was used without an endfile directive", state);
+     }
+     if (opts.text)
+         return outStrs;
+     return state.buffer;
+ }
++exports.assemble = assemble;
+ /** Tests if the current state deems we shouldn't execute the current line. */
+ function shouldSkipCurrentInstruction(state) {
+     if (state.ifElseStack.length) {
+         var ifElseState = state.ifElseStack[state.ifElseStack.length - 1];
+-        return !(ifElseState & IfElseStateFlags.ExecutingBlock)
+-            && !isConditionalDirective(state.line);
++        return !(ifElseState & conditionals_1.IfElseStateFlags.ExecutingBlock)
++            && !(0, directives_1.isConditionalDirective)(state.line);
+     }
+     return false;
+ }
+ function processLabelsOnCurrentLine(state) {
+     var parsedLabel;
+-    while (parsedLabel = parseGlobalLabel(state)) {
++    while (parsedLabel = (0, labels_1.parseGlobalLabel)(state)) {
+         state.line = state.line.substr(parsedLabel.length + 1).trim();
+     }
+     return state.line;
+diff --git a/node_modules/mips-assembler/dist/js/src/conditionals.js b/node_modules/mips-assembler/dist/js/src/conditionals.js
+index 8a6ea72..9497128 100644
+--- a/node_modules/mips-assembler/dist/js/src/conditionals.js
++++ b/node_modules/mips-assembler/dist/js/src/conditionals.js
+@@ -1,5 +1,6 @@
+-/** States of an if/else/endif level. */
+-export var IfElseStateFlags;
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.setIfElseBlockState = exports.IfElseBlockStateMask = exports.IfElseStateFlags = void 0;
+ (function (IfElseStateFlags) {
+     /** Unused */
+     IfElseStateFlags[IfElseStateFlags["None"] = 0] = "None";
+@@ -16,12 +17,13 @@ export var IfElseStateFlags;
+     IfElseStateFlags[IfElseStateFlags["NoLongerAcceptingBlock"] = 4] = "NoLongerAcceptingBlock";
+     /** Flag set once a plain else directive is encountered. */
+     IfElseStateFlags[IfElseStateFlags["SawElse"] = 8] = "SawElse";
+-})(IfElseStateFlags || (IfElseStateFlags = {}));
++})(exports.IfElseStateFlags || (exports.IfElseStateFlags = {}));
+ /** Mask for checking current block state. */
+-export var IfElseBlockStateMask = IfElseStateFlags.AcceptingBlock
+-    | IfElseStateFlags.ExecutingBlock
+-    | IfElseStateFlags.NoLongerAcceptingBlock;
+-export function setIfElseBlockState(state, newBlockState) {
+-    state.ifElseStack[state.ifElseStack.length - 1] &= ~IfElseBlockStateMask;
++exports.IfElseBlockStateMask = exports.IfElseStateFlags.AcceptingBlock
++    | exports.IfElseStateFlags.ExecutingBlock
++    | exports.IfElseStateFlags.NoLongerAcceptingBlock;
++function setIfElseBlockState(state, newBlockState) {
++    state.ifElseStack[state.ifElseStack.length - 1] &= ~exports.IfElseBlockStateMask;
+     state.ifElseStack[state.ifElseStack.length - 1] |= newBlockState;
+ }
++exports.setIfElseBlockState = setIfElseBlockState;
+diff --git a/node_modules/mips-assembler/dist/js/src/directives.js b/node_modules/mips-assembler/dist/js/src/directives.js
+index 39239e5..b9f40c6 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives.js
++++ b/node_modules/mips-assembler/dist/js/src/directives.js
+@@ -1,61 +1,67 @@
+-import definelabel from "./directives/definelabel";
+-import equ from "./directives/equ";
+-import org from "./directives/org";
+-import orga from "./directives/orga";
+-import align from "./directives/align";
+-import skip from "./directives/skip";
+-import fill from "./directives/fill";
+-import { ascii, asciiz } from "./directives/ascii";
+-import byte from "./directives/byte";
+-import halfword from "./directives/halfword";
+-import word from "./directives/word";
+-import float from "./directives/float";
+-import ifcond from "./directives/if";
+-import elseblock from "./directives/else";
+-import elseif from "./directives/elseif";
+-import endif from "./directives/endif";
+-import include from "./directives/include";
+-import beginfile from "./directives/beginfile";
+-import endfile from "./directives/endfile";
+-import beqz from "./macros/beqz";
+-import bnez from "./macros/bnez";
+-import bnezl from "./macros/bnezl";
+-import li from "./macros/li";
+-import move from "./macros/move";
++"use strict";
++var __importDefault = (this && this.__importDefault) || function (mod) {
++    return (mod && mod.__esModule) ? mod : { "default": mod };
++};
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.isConditionalDirective = exports.handleDirective = exports.getDirectiveToRun = void 0;
++var definelabel_1 = __importDefault(require("mips-assembler/dist/js/src/directives/definelabel"));
++var equ_1 = __importDefault(require("mips-assembler/dist/js/src/directives/equ"));
++var org_1 = __importDefault(require("mips-assembler/dist/js/src/directives/org"));
++var orga_1 = __importDefault(require("mips-assembler/dist/js/src/directives/orga"));
++var align_1 = __importDefault(require("mips-assembler/dist/js/src/directives/align"));
++var skip_1 = __importDefault(require("mips-assembler/dist/js/src/directives/skip"));
++var fill_1 = __importDefault(require("mips-assembler/dist/js/src/directives/fill"));
++var ascii_1 = require("mips-assembler/dist/js/src/directives/ascii");
++var byte_1 = __importDefault(require("mips-assembler/dist/js/src/directives/byte"));
++var halfword_1 = __importDefault(require("mips-assembler/dist/js/src/directives/halfword"));
++var word_1 = __importDefault(require("mips-assembler/dist/js/src/directives/word"));
++var float_1 = __importDefault(require("mips-assembler/dist/js/src/directives/float"));
++var if_1 = __importDefault(require("mips-assembler/dist/js/src/directives/if"));
++var else_1 = __importDefault(require("mips-assembler/dist/js/src/directives/else"));
++var elseif_1 = __importDefault(require("mips-assembler/dist/js/src/directives/elseif"));
++var endif_1 = __importDefault(require("mips-assembler/dist/js/src/directives/endif"));
++var include_1 = __importDefault(require("mips-assembler/dist/js/src/directives/include"));
++var beginfile_1 = __importDefault(require("mips-assembler/dist/js/src/directives/beginfile"));
++var endfile_1 = __importDefault(require("mips-assembler/dist/js/src/directives/endfile"));
++var beqz_1 = __importDefault(require("mips-assembler/dist/js/src/macros/beqz"));
++var bnez_1 = __importDefault(require("mips-assembler/dist/js/src/macros/bnez"));
++var bnezl_1 = __importDefault(require("mips-assembler/dist/js/src/macros/bnezl"));
++var li_1 = __importDefault(require("mips-assembler/dist/js/src/macros/li"));
++var move_1 = __importDefault(require("mips-assembler/dist/js/src/macros/move"));
+ var directives = [
+-    definelabel,
+-    equ,
+-    org,
+-    orga,
+-    align,
+-    skip,
+-    fill,
+-    ascii,
+-    asciiz,
+-    byte,
+-    halfword,
+-    word,
+-    float,
+-    ifcond,
+-    elseif,
+-    elseblock,
+-    endif,
+-    include,
+-    beginfile,
+-    endfile,
++    definelabel_1.default,
++    equ_1.default,
++    org_1.default,
++    orga_1.default,
++    align_1.default,
++    skip_1.default,
++    fill_1.default,
++    ascii_1.ascii,
++    ascii_1.asciiz,
++    byte_1.default,
++    halfword_1.default,
++    word_1.default,
++    float_1.default,
++    if_1.default,
++    elseif_1.default,
++    else_1.default,
++    endif_1.default,
++    include_1.default,
++    beginfile_1.default,
++    endfile_1.default,
+ ];
+ var macros = [
+-    beqz,
+-    bnez,
+-    bnezl,
+-    li,
+-    move,
++    beqz_1.default,
++    bnez_1.default,
++    bnezl_1.default,
++    li_1.default,
++    move_1.default,
+ ];
+ /**
+  * Returns a directive function to run for the given state/line.
+  * @param state Current assembler state.
+  */
+-export function getDirectiveToRun(state) {
++function getDirectiveToRun(state) {
+     for (var _i = 0, directives_1 = directives; _i < directives_1.length; _i++) {
+         var directive = directives_1[_i];
+         if (directive.matches(state)) {
+@@ -70,23 +76,26 @@ export function getDirectiveToRun(state) {
+     }
+     return null;
+ }
++exports.getDirectiveToRun = getDirectiveToRun;
+ /**
+  * Runs a directive, which changes the assembler state.
+  * @param state Current assembler state.
+  */
+-export function handleDirective(state, directive) {
++function handleDirective(state, directive) {
+     directive(state);
+ }
++exports.handleDirective = handleDirective;
+ /**
+  * Tests if a line represents a conditional block directive.
+  * @param line Line from the pre-assembly input
+  */
+-export function isConditionalDirective(line) {
++function isConditionalDirective(line) {
+     var normalized = line.toLowerCase();
+     return startsWith(normalized, ".if")
+         || startsWith(normalized, ".else")
+         || startsWith(normalized, ".endif");
+ }
++exports.isConditionalDirective = isConditionalDirective;
+ function startsWith(str, search) {
+     return str.substr(0, search.length) === search;
+ }
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/align.js b/node_modules/mips-assembler/dist/js/src/directives/align.js
+index db3bcfa..36fad0f 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/align.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/align.js
+@@ -1,33 +1,36 @@
+-import { AssemblerPhase } from "../types";
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var types_1 = require("mips-assembler/dist/js/src/types");
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * .align pads zeroes until the output position is aligned
+  * with the specified alignment.
+  * @param state Current assembler state.
+  */
+-export default function align(state) {
++function align(state) {
+     if (state.lineExpressions.length !== 1) {
+-        throwError(".align requires one power of two number argument", state);
++        (0, errors_1.throwError)(".align requires one power of two number argument", state);
+     }
+-    var imm = runFunction(state.lineExpressions[0], state);
++    var imm = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (imm === null)
+-        throwError("Could not parse .align immediate " + state.lineExpressions, state);
++        (0, errors_1.throwError)("Could not parse .align immediate " + state.lineExpressions, state);
+     if (typeof imm !== "number") {
+-        throwError(".align requires one power of two number argument", state);
++        (0, errors_1.throwError)(".align requires one power of two number argument", state);
+         return false;
+     }
+     if (imm % 2)
+-        throwError(".align directive requires a power of two.", state);
++        (0, errors_1.throwError)(".align directive requires a power of two.", state);
+     if (imm < 0)
+-        throwError(".align directive cannot align by a negative value.", state);
++        (0, errors_1.throwError)(".align directive cannot align by a negative value.", state);
+     while (state.outIndex % imm) {
+-        if (state.currentPass === AssemblerPhase.secondPass) {
++        if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+             state.dataView.setUint8(state.outIndex, 0);
+         }
+         state.outIndex++;
+     }
+     return true;
+ }
+-align.matches = basicDirectiveMatcher("align");
++exports.default = align;
++align.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("align");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/ascii.js b/node_modules/mips-assembler/dist/js/src/directives/ascii.js
+index fe6bd6a..11a4c91 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/ascii.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/ascii.js
+@@ -1,16 +1,20 @@
+-import { AssemblerPhase } from "../types";
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.ascii = exports.asciiz = void 0;
++var types_1 = require("mips-assembler/dist/js/src/types");
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * Writes ascii bytes with a trailing zero.
+  *
+  * @param state Current assembler state.
+  */
+-export function asciiz(state) {
++function asciiz(state) {
+     return ascii(state, true);
+ }
+-asciiz.matches = basicDirectiveMatcher("asciiz");
++exports.asciiz = asciiz;
++asciiz.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("asciiz");
+ /**
+  * Writes ascii bytes.
+  *
+@@ -24,13 +28,13 @@ asciiz.matches = basicDirectiveMatcher("asciiz");
+  *
+  * @param state Current assembler state.
+  */
+-export function ascii(state, appendZero) {
++function ascii(state, appendZero) {
+     var numbers = [];
+     var lineExps = state.lineExpressions;
+     lineExps.forEach(function (expr) {
+-        var value = runFunction(expr, state);
++        var value = (0, functions_1.runFunction)(expr, state);
+         if (value === null)
+-            throwError("Could not parse .ascii value " + expr, state);
++            (0, errors_1.throwError)("Could not parse .ascii value " + expr, state);
+         if (typeof value === "number") {
+             numbers.push(value);
+         }
+@@ -42,7 +46,7 @@ export function ascii(state, appendZero) {
+     });
+     if (appendZero)
+         numbers.push(0); // Add NULL byte.
+-    if (state.currentPass === AssemblerPhase.secondPass) {
++    if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+         for (var i = 0; i < numbers.length; i++) {
+             if (numbers[i] < 0)
+                 state.dataView.setInt8(state.outIndex + i, numbers[i]);
+@@ -53,4 +57,5 @@ export function ascii(state, appendZero) {
+     state.outIndex += numbers.length;
+     return true;
+ }
+-ascii.matches = basicDirectiveMatcher("ascii");
++exports.ascii = ascii;
++ascii.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("ascii");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/beginfile.js b/node_modules/mips-assembler/dist/js/src/directives/beginfile.js
+index f1f563a..8fb14be 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/beginfile.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/beginfile.js
+@@ -1,15 +1,18 @@
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { pushStaticLabelStateLevel } from "../symbols";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .beginfile
+  *
+  * @param state Current assembler state.
+  */
+-export default function beginfile(state) {
++function beginfile(state) {
+     if (state.lineExpressions.length)
+-        throwError("The beginfile directive takes no arguments", state);
+-    pushStaticLabelStateLevel(state);
++        (0, errors_1.throwError)("The beginfile directive takes no arguments", state);
++    (0, symbols_1.pushStaticLabelStateLevel)(state);
+     return true;
+ }
+-beginfile.matches = basicDirectiveMatcher("beginfile", true);
++exports.default = beginfile;
++beginfile.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("beginfile", true);
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/byte.js b/node_modules/mips-assembler/dist/js/src/directives/byte.js
+index 067d19f..4eb0989 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/byte.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/byte.js
+@@ -1,21 +1,23 @@
+-import { AssemblerPhase } from "../types";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var types_1 = require("mips-assembler/dist/js/src/types");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .byte value[,...]
+  * .db value[,...]
+  * @param state Current assembler state.
+  */
+-export default function byte(state) {
+-    if (state.currentPass === AssemblerPhase.secondPass) {
++function byte(state) {
++    if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+         if (!state.evaluatedLineExpressions.length) {
+-            throwError(".byte directive requires arguments", state);
++            (0, errors_1.throwError)(".byte directive requires arguments", state);
+         }
+         var numbers = state.evaluatedLineExpressions;
+         for (var i = 0; i < numbers.length; i++) {
+             var num = numbers[i];
+             if (typeof num !== "number") {
+-                throwError(".byte directive requires numeric arguments, saw: " + num, state);
++                (0, errors_1.throwError)(".byte directive requires numeric arguments, saw: " + num, state);
+             }
+             if (num < 0)
+                 state.dataView.setInt8(state.outIndex + i, num);
+@@ -26,8 +28,9 @@ export default function byte(state) {
+     state.outIndex += state.lineExpressions.length;
+     return true;
+ }
+-var byteMatcher = basicDirectiveMatcher("byte");
+-var dbMatcher = basicDirectiveMatcher("db");
++exports.default = byte;
++var byteMatcher = (0, directiveHelpers_1.basicDirectiveMatcher)("byte");
++var dbMatcher = (0, directiveHelpers_1.basicDirectiveMatcher)("db");
+ byte.matches = function (state) {
+     return byteMatcher(state) || dbMatcher(state);
+ };
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/definelabel.js b/node_modules/mips-assembler/dist/js/src/directives/definelabel.js
+index 5bbfab5..aa80b5b 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/definelabel.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/definelabel.js
+@@ -1,25 +1,28 @@
+-import { addSymbol } from "../symbols";
+-import { LABEL_REGEX_STR, LABEL_CHARS } from "../labels";
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++var labels_1 = require("mips-assembler/dist/js/src/labels");
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .definelabel adds a new symbol.
+  * @param state Current assembler state.
+  */
+-export default function definelabel(state) {
++function definelabel(state) {
+     if (state.lineExpressions.length !== 2) {
+-        throwError(".definelabel must have two arguments, a label name and value", state);
++        (0, errors_1.throwError)(".definelabel must have two arguments, a label name and value", state);
+     }
+     var name = state.lineExpressions[0];
+-    var value = runFunction(state.lineExpressions[1], state);
++    var value = (0, functions_1.runFunction)(state.lineExpressions[1], state);
+     if (typeof value !== "number") {
+-        throwError("The value in .definelabel must evaluate to a numeric value", state);
++        (0, errors_1.throwError)("The value in .definelabel must evaluate to a numeric value", state);
+         return false;
+     }
+-    addSymbol(state, name, value);
++    (0, symbols_1.addSymbol)(state, name, value);
+     return true; // Symbol added
+ }
+-var defineLabelRegex = new RegExp("^\\.definelabel\\s+(" + LABEL_REGEX_STR + ")[\\s,]+([-\\w" + LABEL_CHARS + "]+)$", "i");
++exports.default = definelabel;
++var defineLabelRegex = new RegExp("^\\.definelabel\\s+(" + labels_1.LABEL_REGEX_STR + ")[\\s,]+([-\\w" + labels_1.LABEL_CHARS + "]+)$", "i");
+ definelabel.matches = function (state) {
+     var results = state.line.match(defineLabelRegex);
+     return results !== null;
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/directiveHelpers.js b/node_modules/mips-assembler/dist/js/src/directives/directiveHelpers.js
+index 5b1df5c..e44953a 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/directiveHelpers.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/directiveHelpers.js
+@@ -1,11 +1,17 @@
+-import { EXPR_CHARS } from "../expressions";
+-export function basicDirectiveMatcher(directiveAlias, noArgs) {
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.makeNumericExprListRegExp = exports.makeBasicDirectiveRegExp = exports.basicDirectiveMatcher = void 0;
++var expressions_1 = require("mips-assembler/dist/js/src/expressions");
++function basicDirectiveMatcher(directiveAlias, noArgs) {
+     var regex = makeBasicDirectiveRegExp(directiveAlias, noArgs);
+     return function (state) { return !!state.line.match(regex); };
+ }
+-export function makeBasicDirectiveRegExp(directiveAlias, noArgs) {
++exports.basicDirectiveMatcher = basicDirectiveMatcher;
++function makeBasicDirectiveRegExp(directiveAlias, noArgs) {
+     return new RegExp("^\\." + directiveAlias + (noArgs ? "" : "\\s+"), "i");
+ }
+-export function makeNumericExprListRegExp(directiveAlias) {
+-    return new RegExp("^\\." + directiveAlias + "\\s+([" + EXPR_CHARS + "]+)$", "i");
++exports.makeBasicDirectiveRegExp = makeBasicDirectiveRegExp;
++function makeNumericExprListRegExp(directiveAlias) {
++    return new RegExp("^\\." + directiveAlias + "\\s+([" + expressions_1.EXPR_CHARS + "]+)$", "i");
+ }
++exports.makeNumericExprListRegExp = makeNumericExprListRegExp;
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/else.js b/node_modules/mips-assembler/dist/js/src/directives/else.js
+index dd370e7..7c57789 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/else.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/else.js
+@@ -1,32 +1,35 @@
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { setIfElseBlockState, IfElseStateFlags, IfElseBlockStateMask } from "../conditionals";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var conditionals_1 = require("mips-assembler/dist/js/src/conditionals");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .else
+  *
+  * @param state Current assembler state.
+  */
+-export default function elseblock(state) {
++function elseblock(state) {
+     if (state.lineExpressions.length)
+-        throwError("The else directive cannot take a condition or parameters", state);
++        (0, errors_1.throwError)("The else directive cannot take a condition or parameters", state);
+     if (!state.ifElseStack.length)
+-        throwError("An else directive was reached, but there was no previous if directive", state);
++        (0, errors_1.throwError)("An else directive was reached, but there was no previous if directive", state);
+     var curState = state.ifElseStack[state.ifElseStack.length - 1];
+-    if (curState & IfElseStateFlags.SawElse)
+-        throwError("Encountered another else directive, but an else directive was already passed", state);
+-    switch (curState & IfElseBlockStateMask) {
+-        case IfElseStateFlags.AcceptingBlock:
+-            setIfElseBlockState(state, IfElseStateFlags.ExecutingBlock);
++    if (curState & conditionals_1.IfElseStateFlags.SawElse)
++        (0, errors_1.throwError)("Encountered another else directive, but an else directive was already passed", state);
++    switch (curState & conditionals_1.IfElseBlockStateMask) {
++        case conditionals_1.IfElseStateFlags.AcceptingBlock:
++            (0, conditionals_1.setIfElseBlockState)(state, conditionals_1.IfElseStateFlags.ExecutingBlock);
+             break;
+-        case IfElseStateFlags.ExecutingBlock:
+-            setIfElseBlockState(state, IfElseStateFlags.NoLongerAcceptingBlock);
++        case conditionals_1.IfElseStateFlags.ExecutingBlock:
++            (0, conditionals_1.setIfElseBlockState)(state, conditionals_1.IfElseStateFlags.NoLongerAcceptingBlock);
+             break;
+-        case IfElseStateFlags.NoLongerAcceptingBlock:
++        case conditionals_1.IfElseStateFlags.NoLongerAcceptingBlock:
+             break;
+         default:
+-            throwError("Unexpected conditional block state: " + curState.toString(16), state);
++            (0, errors_1.throwError)("Unexpected conditional block state: " + curState.toString(16), state);
+     }
+-    state.ifElseStack[state.ifElseStack.length - 1] |= IfElseStateFlags.SawElse;
++    state.ifElseStack[state.ifElseStack.length - 1] |= conditionals_1.IfElseStateFlags.SawElse;
+     return true;
+ }
+-elseblock.matches = basicDirectiveMatcher("else", true);
++exports.default = elseblock;
++elseblock.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("else", true);
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/elseif.js b/node_modules/mips-assembler/dist/js/src/directives/elseif.js
+index b8c673e..ee70c60 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/elseif.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/elseif.js
+@@ -1,7 +1,9 @@
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { runFunction } from "../functions";
+-import { setIfElseBlockState, IfElseStateFlags, IfElseBlockStateMask } from "../conditionals";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var conditionals_1 = require("mips-assembler/dist/js/src/conditionals");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .elseif cond
+  *
+@@ -9,35 +11,36 @@ import { throwError } from "../errors";
+  *
+  * @param state Current assembler state.
+  */
+-export default function elseif(state) {
++function elseif(state) {
+     if (!state.lineExpressions.length)
+-        throwError("A condition must be passed to an elseif directive", state);
++        (0, errors_1.throwError)("A condition must be passed to an elseif directive", state);
+     if (state.lineExpressions.length > 1)
+-        throwError("Only a single condition can be passed to an elseif directive", state);
++        (0, errors_1.throwError)("Only a single condition can be passed to an elseif directive", state);
+     if (!state.ifElseStack.length)
+-        throwError("An elseif directive was reached, but there was no previous if directive", state);
++        (0, errors_1.throwError)("An elseif directive was reached, but there was no previous if directive", state);
+     var curState = state.ifElseStack[state.ifElseStack.length - 1];
+-    if (curState & IfElseStateFlags.SawElse)
+-        throwError("Encountered an elseif after seeing an else directive", state);
+-    var value = runFunction(state.lineExpressions[0], state);
++    if (curState & conditionals_1.IfElseStateFlags.SawElse)
++        (0, errors_1.throwError)("Encountered an elseif after seeing an else directive", state);
++    var value = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (value === null)
+-        throwError("Could not parse .elseif condition", state);
++        (0, errors_1.throwError)("Could not parse .elseif condition", state);
+     if (typeof value !== "number")
+-        throwError("Condition of elseif directive must evaluate to a numeric value, saw: " + value, state);
+-    switch (curState & IfElseBlockStateMask) {
+-        case IfElseStateFlags.AcceptingBlock:
++        (0, errors_1.throwError)("Condition of elseif directive must evaluate to a numeric value, saw: " + value, state);
++    switch (curState & conditionals_1.IfElseBlockStateMask) {
++        case conditionals_1.IfElseStateFlags.AcceptingBlock:
+             if (value) {
+-                setIfElseBlockState(state, IfElseStateFlags.ExecutingBlock);
++                (0, conditionals_1.setIfElseBlockState)(state, conditionals_1.IfElseStateFlags.ExecutingBlock);
+             }
+             break;
+-        case IfElseStateFlags.ExecutingBlock:
+-            setIfElseBlockState(state, IfElseStateFlags.NoLongerAcceptingBlock);
++        case conditionals_1.IfElseStateFlags.ExecutingBlock:
++            (0, conditionals_1.setIfElseBlockState)(state, conditionals_1.IfElseStateFlags.NoLongerAcceptingBlock);
+             break;
+-        case IfElseStateFlags.NoLongerAcceptingBlock:
++        case conditionals_1.IfElseStateFlags.NoLongerAcceptingBlock:
+             break;
+         default:
+-            throwError("Unexpected conditional block state: " + curState.toString(16), state);
++            (0, errors_1.throwError)("Unexpected conditional block state: " + curState.toString(16), state);
+     }
+     return true;
+ }
+-elseif.matches = basicDirectiveMatcher("elseif");
++exports.default = elseif;
++elseif.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("elseif");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/endfile.js b/node_modules/mips-assembler/dist/js/src/directives/endfile.js
+index 47ce8fb..2fb5028 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/endfile.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/endfile.js
+@@ -1,15 +1,18 @@
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { popStaticLabelStateLevel } from "../symbols";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .endfile
+  *
+  * @param state Current assembler state.
+  */
+-export default function beginfile(state) {
++function beginfile(state) {
+     if (state.lineExpressions.length)
+-        throwError("The endfile directive takes no arguments", state);
+-    popStaticLabelStateLevel(state);
++        (0, errors_1.throwError)("The endfile directive takes no arguments", state);
++    (0, symbols_1.popStaticLabelStateLevel)(state);
+     return true;
+ }
+-beginfile.matches = basicDirectiveMatcher("endfile", true);
++exports.default = beginfile;
++beginfile.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("endfile", true);
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/endif.js b/node_modules/mips-assembler/dist/js/src/directives/endif.js
+index 82f51db..86bf392 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/endif.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/endif.js
+@@ -1,17 +1,20 @@
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .endif
+  * Ends the last open if or else block.
+  *
+  * @param state Current assembler state.
+  */
+-export default function endif(state) {
++function endif(state) {
+     if (state.lineExpressions.length)
+-        throwError("The endif directive cannot take a condition or parameters", state);
++        (0, errors_1.throwError)("The endif directive cannot take a condition or parameters", state);
+     if (!state.ifElseStack.length)
+-        throwError("An endif directive was reached, but there was no previous if directive", state);
++        (0, errors_1.throwError)("An endif directive was reached, but there was no previous if directive", state);
+     state.ifElseStack.pop();
+     return true;
+ }
+-endif.matches = basicDirectiveMatcher("endif", true);
++exports.default = endif;
++endif.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("endif", true);
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/equ.js b/node_modules/mips-assembler/dist/js/src/directives/equ.js
+index 1b69a1e..4ac36fd 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/equ.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/equ.js
+@@ -1,22 +1,25 @@
+-import { addSymbol } from "../symbols";
+-import { LABEL_REGEX_STR } from "../labels";
+-import { throwError } from "../errors";
+-var equRegex = new RegExp("^\\s*(" + LABEL_REGEX_STR + ")\\s+equ(?:$|(?:\\s+(.+)$))", "i");
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++var labels_1 = require("mips-assembler/dist/js/src/labels");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var equRegex = new RegExp("^\\s*(" + labels_1.LABEL_REGEX_STR + ")\\s+equ(?:$|(?:\\s+(.+)$))", "i");
+ /**
+  * `equ` is used for direct text replacement.
+  * @param state Current assembler state.
+  */
+-export default function equ(state) {
++function equ(state) {
+     var match = state.line.match(equRegex);
+     if (!match) {
+-        throwError("equ directive was not able to be parsed", state);
++        (0, errors_1.throwError)("equ directive was not able to be parsed", state);
+     }
+     // lineExpressions only has ["equ", value] and might split the value, so use regex.
+     var name = match[1];
+     var value = match[2] || "";
+-    addSymbol(state, name, value);
++    (0, symbols_1.addSymbol)(state, name, value);
+     return true; // Symbol added
+ }
++exports.default = equ;
+ equ.matches = function (state) {
+     var results = state.line.match(equRegex);
+     return results !== null;
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/fill.js b/node_modules/mips-assembler/dist/js/src/directives/fill.js
+index 6ab0ff1..e1b4ed8 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/fill.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/fill.js
+@@ -1,37 +1,40 @@
+-import { AssemblerPhase } from "../types";
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var types_1 = require("mips-assembler/dist/js/src/types");
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * .fill length[,value]
+  * @param state Current assembler state.
+  */
+-export default function fill(state) {
++function fill(state) {
+     if (!state.lineExpressions.length || state.lineExpressions.length > 2) {
+-        throwError(".fill directive takes a length and optional value", state);
++        (0, errors_1.throwError)(".fill directive takes a length and optional value", state);
+     }
+     var length, value;
+-    length = runFunction(state.lineExpressions[0], state);
++    length = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (typeof length !== "number") {
+-        throwError("Could not parse .fill length " + state.lineExpressions[0], state);
++        (0, errors_1.throwError)("Could not parse .fill length " + state.lineExpressions[0], state);
+         return false;
+     }
+     if (length < 0)
+-        throwError(".fill length must be positive.", state);
++        (0, errors_1.throwError)(".fill length must be positive.", state);
+     if (state.lineExpressions.length > 1) {
+-        value = runFunction(state.lineExpressions[1], state);
++        value = (0, functions_1.runFunction)(state.lineExpressions[1], state);
+         if (typeof value !== "number") {
+-            throwError("Could not parse .fill value " + state.lineExpressions[1], state);
++            (0, errors_1.throwError)("Could not parse .fill value " + state.lineExpressions[1], state);
+             return false;
+         }
+     }
+     else
+         value = 0;
+-    if (state.currentPass === AssemblerPhase.secondPass) {
++    if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+         for (var i = 0; i < length; i++)
+             state.dataView.setInt8(state.outIndex + i, value);
+     }
+     state.outIndex += length;
+     return true;
+ }
+-fill.matches = basicDirectiveMatcher("fill");
++exports.default = fill;
++fill.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("fill");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/float.js b/node_modules/mips-assembler/dist/js/src/directives/float.js
+index f226e79..d9fab2f 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/float.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/float.js
+@@ -1,18 +1,20 @@
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * Writes 32-bit float values.
+  * .float value[,...]
+  * @param state Current assembler state.
+  */
+-export default function float(state) {
+-    if (state.currentPass === AssemblerPhase.secondPass) {
++function float(state) {
++    if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+         if (!state.evaluatedLineExpressions.length) {
+-            throwError(".float directive requires arguments", state);
++            (0, errors_1.throwError)(".float directive requires arguments", state);
+         }
+         if (state.evaluatedLineExpressions.some(function (v) { return typeof v !== "number"; })) {
+-            throwError(".float directive requires numeric arguments", state);
++            (0, errors_1.throwError)(".float directive requires numeric arguments", state);
+         }
+         var numbers = state.evaluatedLineExpressions;
+         for (var i = 0; i < numbers.length; i++) {
+@@ -22,4 +24,5 @@ export default function float(state) {
+     state.outIndex += 4 * state.lineExpressions.length;
+     return true;
+ }
+-float.matches = basicDirectiveMatcher("float");
++exports.default = float;
++float.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("float");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/halfword.js b/node_modules/mips-assembler/dist/js/src/directives/halfword.js
+index 65be207..b4d711e 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/halfword.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/halfword.js
+@@ -1,22 +1,24 @@
+-import { AssemblerPhase } from "../types";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var types_1 = require("mips-assembler/dist/js/src/types");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * Writes 16-bit values.
+  * .halfword value[,...]
+  * .dh value[,...]
+  * @param state Current assembler state.
+  */
+-export default function halfword(state) {
+-    if (state.currentPass === AssemblerPhase.secondPass) {
++function halfword(state) {
++    if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+         if (!state.evaluatedLineExpressions.length) {
+-            throwError(".halfword directive requires arguments", state);
++            (0, errors_1.throwError)(".halfword directive requires arguments", state);
+         }
+         var numbers = state.evaluatedLineExpressions;
+         for (var i = 0; i < numbers.length; i++) {
+             var num = numbers[i];
+             if (typeof num !== "number") {
+-                throwError(".halfword directive requires numeric arguments, saw: " + num, state);
++                (0, errors_1.throwError)(".halfword directive requires numeric arguments, saw: " + num, state);
+             }
+             if (num < 0)
+                 state.dataView.setInt16(state.outIndex + (i * 2), num);
+@@ -27,8 +29,9 @@ export default function halfword(state) {
+     state.outIndex += 2 * state.lineExpressions.length;
+     return true;
+ }
+-var hwMatcher = basicDirectiveMatcher("halfword");
+-var dhMatcher = basicDirectiveMatcher("dh");
++exports.default = halfword;
++var hwMatcher = (0, directiveHelpers_1.basicDirectiveMatcher)("halfword");
++var dhMatcher = (0, directiveHelpers_1.basicDirectiveMatcher)("dh");
+ halfword.matches = function (state) {
+     return hwMatcher(state) || dhMatcher(state);
+ };
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/if.js b/node_modules/mips-assembler/dist/js/src/directives/if.js
+index 590def3..cafe061 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/if.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/if.js
+@@ -1,7 +1,9 @@
+-import { runFunction } from "../functions";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { IfElseStateFlags } from "../conditionals";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var conditionals_1 = require("mips-assembler/dist/js/src/conditionals");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .if cond
+  *
+@@ -9,22 +11,23 @@ import { throwError } from "../errors";
+  *
+  * @param state Current assembler state.
+  */
+-export default function ifcond(state) {
++function ifcond(state) {
+     if (!state.lineExpressions.length)
+-        throwError("A condition must be passed to an if directive", state);
++        (0, errors_1.throwError)("A condition must be passed to an if directive", state);
+     if (state.lineExpressions.length > 1)
+-        throwError("Only a single condition can be passed to an if directive", state);
+-    var value = runFunction(state.lineExpressions[0], state);
++        (0, errors_1.throwError)("Only a single condition can be passed to an if directive", state);
++    var value = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (value === null)
+-        throwError("Could not parse .if condition", state);
++        (0, errors_1.throwError)("Could not parse .if condition", state);
+     if (typeof value !== "number")
+-        throwError("Condition of if directive must evaluate to a numeric value, saw: " + value, state);
++        (0, errors_1.throwError)("Condition of if directive must evaluate to a numeric value, saw: " + value, state);
+     if (value) {
+-        state.ifElseStack.push(IfElseStateFlags.ExecutingBlock);
++        state.ifElseStack.push(conditionals_1.IfElseStateFlags.ExecutingBlock);
+     }
+     else {
+-        state.ifElseStack.push(IfElseStateFlags.AcceptingBlock);
++        state.ifElseStack.push(conditionals_1.IfElseStateFlags.AcceptingBlock);
+     }
+     return true;
+ }
+-ifcond.matches = basicDirectiveMatcher("if");
++exports.default = ifcond;
++ifcond.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("if");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/include.js b/node_modules/mips-assembler/dist/js/src/directives/include.js
+index bae13f0..5dff9f2 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/include.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/include.js
+@@ -1,7 +1,9 @@
+-import { runFunction } from "../functions";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * .include FileName
+  *
+@@ -9,27 +11,28 @@ import { throwError } from "../errors";
+  *
+  * @param state Current assembler state.
+  */
+-export default function include(state) {
++function include(state) {
+     if (!state.lineExpressions.length)
+-        throwError("A file name must be passed to an include directive", state);
++        (0, errors_1.throwError)("A file name must be passed to an include directive", state);
+     if (state.lineExpressions.length > 1)
+-        throwError("Only a single file name can be passed to an include directive", state);
+-    var filename = runFunction(state.lineExpressions[0], state);
++        (0, errors_1.throwError)("Only a single file name can be passed to an include directive", state);
++    var filename = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (filename === null)
+-        throwError("Could not parse .include file name", state);
++        (0, errors_1.throwError)("Could not parse .include file name", state);
+     if (typeof filename !== "string") {
+-        throwError("File name of include directive must evaluate to a string, saw: " + filename, state);
++        (0, errors_1.throwError)("File name of include directive must evaluate to a string, saw: " + filename, state);
+         return;
+     }
+     var file = state.files[filename];
+     if (typeof file !== "string")
+-        throwError("The " + filename + " file was not a string", state);
+-    if (state.currentPass !== AssemblerPhase.firstPass) {
+-        throwError("The `include` directive shouldn't be present after the first assembly phase", state);
++        (0, errors_1.throwError)("The " + filename + " file was not a string", state);
++    if (state.currentPass !== types_1.AssemblerPhase.firstPass) {
++        (0, errors_1.throwError)("The `include` directive shouldn't be present after the first assembly phase", state);
+         return;
+     }
+     state.linesToInsert =
+         ".beginfile\n" + file + "\n.endfile";
+     state.line = ""; // Delete this directive.
+ }
+-include.matches = basicDirectiveMatcher("include");
++exports.default = include;
++include.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("include");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/org.js b/node_modules/mips-assembler/dist/js/src/directives/org.js
+index 9cbf71f..e85fd12 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/org.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/org.js
+@@ -1,22 +1,25 @@
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * .org changes the effective memory position.
+  * @param state Current assembler state.
+  */
+-export default function org(state) {
++function org(state) {
+     if (state.lineExpressions.length !== 1) {
+-        throwError(".org directive requires one numeric argument", state);
++        (0, errors_1.throwError)(".org directive requires one numeric argument", state);
+     }
+-    var imm = runFunction(state.lineExpressions[0], state);
++    var imm = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (typeof imm !== "number") {
+-        throwError("Could not parse .org immediate " + imm, state);
++        (0, errors_1.throwError)("Could not parse .org immediate " + imm, state);
+         return false;
+     }
+     if (imm < 0)
+-        throwError(".org directive cannot be negative", state);
++        (0, errors_1.throwError)(".org directive cannot be negative", state);
+     state.memPos = imm >>> 0; // Better be 32-bit
+     return true;
+ }
+-org.matches = basicDirectiveMatcher("org");
++exports.default = org;
++org.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("org");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/orga.js b/node_modules/mips-assembler/dist/js/src/directives/orga.js
+index 0e37fbb..0975b3a 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/orga.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/orga.js
+@@ -1,22 +1,25 @@
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * .orga updates the current output buffer index.
+  * @param state Current assembler state.
+  */
+-export default function orga(state) {
++function orga(state) {
+     if (state.lineExpressions.length !== 1) {
+-        throwError(".orga directive requires one numeric argument", state);
++        (0, errors_1.throwError)(".orga directive requires one numeric argument", state);
+     }
+-    var imm = runFunction(state.lineExpressions[0], state);
++    var imm = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (typeof imm !== "number") {
+-        throwError("Could not parse .orga immediate " + imm, state);
++        (0, errors_1.throwError)("Could not parse .orga immediate " + imm, state);
+         return false;
+     }
+     if (imm < 0)
+-        throwError(".orga directive cannot be negative.", state);
++        (0, errors_1.throwError)(".orga directive cannot be negative.", state);
+     state.outIndex = imm >>> 0; // Better be 32-bit
+     return true;
+ }
+-orga.matches = basicDirectiveMatcher("orga");
++exports.default = orga;
++orga.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("orga");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/skip.js b/node_modules/mips-assembler/dist/js/src/directives/skip.js
+index 735cad6..b0e6e4c 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/skip.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/skip.js
+@@ -1,22 +1,25 @@
+-import { runFunction } from "../functions";
+-import { throwError } from "../errors";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
+ /**
+  * .skip passes over a given amout of bytes without overwriting them.
+  * @param state Current assembler state.
+  */
+-export default function skip(state) {
++function skip(state) {
+     if (state.lineExpressions.length !== 1) {
+-        throwError(".skip directive requires one numeric argument", state);
++        (0, errors_1.throwError)(".skip directive requires one numeric argument", state);
+     }
+-    var imm = runFunction(state.lineExpressions[0], state);
++    var imm = (0, functions_1.runFunction)(state.lineExpressions[0], state);
+     if (typeof imm !== "number") {
+-        throwError("Could not parse .skip immediate " + imm, state);
++        (0, errors_1.throwError)("Could not parse .skip immediate " + imm, state);
+         return false;
+     }
+     if (imm < 0)
+-        throwError(".skip directive cannot skip a negative length.", state);
++        (0, errors_1.throwError)(".skip directive cannot skip a negative length.", state);
+     state.outIndex += imm;
+     return true;
+ }
+-skip.matches = basicDirectiveMatcher("skip");
++exports.default = skip;
++skip.matches = (0, directiveHelpers_1.basicDirectiveMatcher)("skip");
+diff --git a/node_modules/mips-assembler/dist/js/src/directives/word.js b/node_modules/mips-assembler/dist/js/src/directives/word.js
+index 027e9a0..3314db1 100644
+--- a/node_modules/mips-assembler/dist/js/src/directives/word.js
++++ b/node_modules/mips-assembler/dist/js/src/directives/word.js
+@@ -1,22 +1,24 @@
+-import { AssemblerPhase } from "../types";
+-import { basicDirectiveMatcher } from "./directiveHelpers";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var types_1 = require("mips-assembler/dist/js/src/types");
++var directiveHelpers_1 = require("mips-assembler/dist/js/src/directives/directiveHelpers");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * Writes 32-bit values.
+  * .word value[,...]
+  * .dw value[,...]
+  * @param state Current assembler state.
+  */
+-export default function word(state) {
+-    if (state.currentPass === AssemblerPhase.secondPass) {
++function word(state) {
++    if (state.currentPass === types_1.AssemblerPhase.secondPass) {
+         if (!state.evaluatedLineExpressions.length) {
+-            throwError(".word directive requires arguments", state);
++            (0, errors_1.throwError)(".word directive requires arguments", state);
+         }
+         var numbers = state.evaluatedLineExpressions;
+         for (var i = 0; i < numbers.length; i++) {
+             var num = numbers[i];
+             if (typeof num !== "number") {
+-                throwError(".word directive requires numeric arguments, saw: " + num, state);
++                (0, errors_1.throwError)(".word directive requires numeric arguments, saw: " + num, state);
+             }
+             if (num < 0)
+                 state.dataView.setInt32(state.outIndex + (i * 4), num);
+@@ -27,8 +29,9 @@ export default function word(state) {
+     state.outIndex += 4 * state.lineExpressions.length;
+     return true;
+ }
+-var wMatcher = basicDirectiveMatcher("word");
+-var dwMatcher = basicDirectiveMatcher("dw");
++exports.default = word;
++var wMatcher = (0, directiveHelpers_1.basicDirectiveMatcher)("word");
++var dwMatcher = (0, directiveHelpers_1.basicDirectiveMatcher)("dw");
+ word.matches = function (state) {
+     return wMatcher(state) || dwMatcher(state);
+ };
+diff --git a/node_modules/mips-assembler/dist/js/src/errors.js b/node_modules/mips-assembler/dist/js/src/errors.js
+index d36c8b6..d3b1e77 100644
+--- a/node_modules/mips-assembler/dist/js/src/errors.js
++++ b/node_modules/mips-assembler/dist/js/src/errors.js
+@@ -1,3 +1,7 @@
+-export function throwError(message, state) {
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.throwError = void 0;
++function throwError(message, state) {
+     throw new Error(message + "\nLine: " + state.line);
+ }
++exports.throwError = throwError;
+diff --git a/node_modules/mips-assembler/dist/js/src/expressions.js b/node_modules/mips-assembler/dist/js/src/expressions.js
+index 0d248e3..92a9bd3 100644
+--- a/node_modules/mips-assembler/dist/js/src/expressions.js
++++ b/node_modules/mips-assembler/dist/js/src/expressions.js
+@@ -1,13 +1,16 @@
+-import { runFunction } from "./functions";
+-import { formatImmediate } from "./immediates";
+-import { LABEL_CHARS } from "./labels";
+-import { throwError } from "./errors";
+-import { firstIndexOf } from "./strings";
+-import { getSymbolValue } from "./symbols";
+-export var EXPR_CHARS = ",-\\w\\s\\(\\)" + LABEL_CHARS;
+-export function parseExpressionsOnCurrentLine(state) {
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.evaluateExpressionsOnCurrentLine = exports.parseExpressionsOnCurrentLine = exports.EXPR_CHARS = void 0;
++var functions_1 = require("mips-assembler/dist/js/src/functions");
++var immediates_1 = require("mips-assembler/dist/js/src/immediates");
++var labels_1 = require("mips-assembler/dist/js/src/labels");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var strings_1 = require("mips-assembler/dist/js/src/strings");
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++exports.EXPR_CHARS = ",-\\w\\s\\(\\)" + labels_1.LABEL_CHARS;
++function parseExpressionsOnCurrentLine(state) {
+     var line = state.line;
+-    var firstWhitespaceIndex = firstIndexOf(line, " ", "\t");
++    var firstWhitespaceIndex = (0, strings_1.firstIndexOf)(line, " ", "\t");
+     if (firstWhitespaceIndex === -1) {
+         state.lineExpressions = [];
+         return; // Must not have any arguments, there would need to be whitespace for those.
+@@ -17,9 +20,10 @@ export function parseExpressionsOnCurrentLine(state) {
+     splitExpressionList(exprList, exprs, state);
+     state.lineExpressions = exprs;
+ }
+-export function evaluateExpressionsOnCurrentLine(state) {
++exports.parseExpressionsOnCurrentLine = parseExpressionsOnCurrentLine;
++function evaluateExpressionsOnCurrentLine(state) {
+     var line = state.line;
+-    var firstWhitespaceIndex = firstIndexOf(line, " ", "\t");
++    var firstWhitespaceIndex = (0, strings_1.firstIndexOf)(line, " ", "\t");
+     if (firstWhitespaceIndex === -1)
+         return line; // Must not have any arguments, there would need to be whitespace for those.
+     var firstPiece = line.substring(0, firstWhitespaceIndex);
+@@ -30,7 +34,7 @@ export function evaluateExpressionsOnCurrentLine(state) {
+     if (exprs.length > 0) {
+         var evaluatedExprs_1 = [];
+         exprs.forEach(function (expr, i) {
+-            var evaluated = runFunction(expr, state);
++            var evaluated = (0, functions_1.runFunction)(expr, state);
+             // For the last piece, do extra logic to fix branch values.
+             if (typeof evaluated === "number" && i === exprs.length - 1) {
+                 evaluated = _fixBranch(firstPiece, evaluated, state);
+@@ -42,10 +46,11 @@ export function evaluateExpressionsOnCurrentLine(state) {
+     }
+     return line;
+ }
++exports.evaluateExpressionsOnCurrentLine = evaluateExpressionsOnCurrentLine;
+ function _formatEvaluatedExprs(values, originalValues) {
+     return values.map(function (value, i) {
+         if (typeof value === "number") {
+-            return formatImmediate(value);
++            return (0, immediates_1.formatImmediate)(value);
+         }
+         if (value === null) {
+             return originalValues[i];
+@@ -59,7 +64,7 @@ function _fixBranch(inst, offset, state) {
+         var memOffset = state.memPos + state.outIndex;
+         var offsetDiff = offset - memOffset;
+         if (offsetDiff % 4 !== 0) {
+-            throwError("Misaligned branch instruction detected", state);
++            (0, errors_1.throwError)("Misaligned branch instruction detected", state);
+         }
+         var diff = (offsetDiff / 4) - 1;
+         return diff;
+@@ -115,7 +120,7 @@ function splitExpressionList(str, pieces, state) {
+         // If this piece directly evaluates to an equ replacement symbol,
+         // then handle the replacement here.
+         // This is what makes equ work, in a limited capacity.
+-        var symValue = getSymbolValue(state, currentPiece);
++        var symValue = (0, symbols_1.getSymbolValue)(state, currentPiece);
+         if (typeof symValue === "string") {
+             splitExpressionList(symValue, pieces, state);
+         }
+@@ -143,7 +148,7 @@ function splitExpressionList(str, pieces, state) {
+             case ")":
+                 if (!escaped && !currentStrQuoteChar) {
+                     if (currentParenLevel <= 0) {
+-                        throwError("Imbalanced parenthesis in expression: " + str, state);
++                        (0, errors_1.throwError)("Imbalanced parenthesis in expression: " + str, state);
+                     }
+                     currentParenLevel--;
+                 }
+@@ -173,9 +178,9 @@ function splitExpressionList(str, pieces, state) {
+         prevChar = char;
+     }
+     if (currentParenLevel > 0)
+-        throwError("Imbalanced parenthesis in expression: " + str, state);
++        (0, errors_1.throwError)("Imbalanced parenthesis in expression: " + str, state);
+     if (currentStrQuoteChar)
+-        throwError("Unterminated string: " + currentPiece, state);
++        (0, errors_1.throwError)("Unterminated string: " + currentPiece, state);
+     endCurrentPiece();
+     return pieces;
+ }
+diff --git a/node_modules/mips-assembler/dist/js/src/functions.js b/node_modules/mips-assembler/dist/js/src/functions.js
+index 1fd5e47..af43c21 100644
+--- a/node_modules/mips-assembler/dist/js/src/functions.js
++++ b/node_modules/mips-assembler/dist/js/src/functions.js
+@@ -1,32 +1,36 @@
+-import { parseImmediate } from "./immediates";
+-import { getSymbolValue } from "./symbols";
+-import { unescapeString } from "./strings";
+-import { LABEL_CHARS } from "./labels";
+-import { abs } from "./functions/abs";
+-import { hi } from "./functions/hi";
+-import { lo } from "./functions/lo";
+-import { org } from "./functions/org";
+-import { throwError } from "./errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.runFunction = void 0;
++var immediates_1 = require("mips-assembler/dist/js/src/immediates");
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++var strings_1 = require("mips-assembler/dist/js/src/strings");
++var labels_1 = require("mips-assembler/dist/js/src/labels");
++var abs_1 = require("mips-assembler/dist/js/src/functions/abs");
++var hi_1 = require("mips-assembler/dist/js/src/functions/hi");
++var lo_1 = require("mips-assembler/dist/js/src/functions/lo");
++var org_1 = require("mips-assembler/dist/js/src/functions/org");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /** Runs any built-in functions, and also resolves symbols. */
+-export function runFunction(value, state) {
++function runFunction(value, state) {
+     return _runFunction(value, state);
+ }
+-var fnRegex = new RegExp("^([-\\w]+)\\(([\\(\\),-\\w" + LABEL_CHARS + "]*)\\)$", "i");
++exports.runFunction = runFunction;
++var fnRegex = new RegExp("^([-\\w]+)\\(([\\(\\),-\\w" + labels_1.LABEL_CHARS + "]*)\\)$", "i");
+ function _runFunction(value, state) {
+     var results = fnRegex.exec(value);
+     if (results === null) { // Not a function
+         // Symbol?
+-        var symbolValue = getSymbolValue(state, value);
++        var symbolValue = (0, symbols_1.getSymbolValue)(state, value);
+         if (symbolValue !== null) {
+             return symbolValue;
+         }
+         // Number?
+-        var imm = parseImmediate(value);
++        var imm = (0, immediates_1.parseImmediate)(value);
+         if (imm !== null) {
+             return imm;
+         }
+         // String?
+-        var str = unescapeString(value);
++        var str = (0, strings_1.unescapeString)(value);
+         if (typeof str === "string") {
+             return str;
+         }
+@@ -36,7 +40,7 @@ function _runFunction(value, state) {
+         var fn = results[1];
+         if (!fns[fn]) {
+             // Did a symbol label accidentally look like a function?
+-            var symbolValue = getSymbolValue(state, fn);
++            var symbolValue = (0, symbols_1.getSymbolValue)(state, fn);
+             if (symbolValue !== null) {
+                 return symbolValue;
+             }
+@@ -73,7 +77,7 @@ function _runFunction(value, state) {
+             arg = _runFunction(fnArgs, state);
+         }
+         if (arg === null) {
+-            throwError("Could not evaluate " + fnArgs, state);
++            (0, errors_1.throwError)("Could not evaluate " + fnArgs, state);
+             return null;
+         }
+         var result = fns[fn](state, arg);
+@@ -85,7 +89,7 @@ function _runFunction(value, state) {
+ }
+ /** Built-in functions */
+ var fns = Object.create(null);
+-fns.abs = abs;
+-fns.hi = hi;
+-fns.lo = lo;
+-fns.org = org;
++fns.abs = abs_1.abs;
++fns.hi = hi_1.hi;
++fns.lo = lo_1.lo;
++fns.org = org_1.org;
+diff --git a/node_modules/mips-assembler/dist/js/src/functions/abs.js b/node_modules/mips-assembler/dist/js/src/functions/abs.js
+index b83d6f2..bf06cbe 100644
+--- a/node_modules/mips-assembler/dist/js/src/functions/abs.js
++++ b/node_modules/mips-assembler/dist/js/src/functions/abs.js
+@@ -1,10 +1,14 @@
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.abs = void 0;
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * Absolute value of the given `value`.
+  */
+-export function abs(state, value) {
++function abs(state, value) {
+     if (typeof value === "string")
+-        throwError("Assembler function abs cannot be called with string \"" + value + "\", value must be a number.", state);
++        (0, errors_1.throwError)("Assembler function abs cannot be called with string \"" + value + "\", value must be a number.", state);
+     return Math.abs(value);
+ }
++exports.abs = abs;
+ ;
+diff --git a/node_modules/mips-assembler/dist/js/src/functions/hi.js b/node_modules/mips-assembler/dist/js/src/functions/hi.js
+index db92bcb..ddb0380 100644
+--- a/node_modules/mips-assembler/dist/js/src/functions/hi.js
++++ b/node_modules/mips-assembler/dist/js/src/functions/hi.js
+@@ -1,15 +1,19 @@
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.hi = void 0;
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * Returns the high half of a 32-bit `value`, adjusted for sign extension of
+  * the low half.
+  */
+-export function hi(state, value) {
++function hi(state, value) {
+     if (typeof value === "string")
+-        throwError("Assembler function hi cannot be called with string \"" + value + "\", value must be a number.", state);
++        (0, errors_1.throwError)("Assembler function hi cannot be called with string \"" + value + "\", value must be a number.", state);
+     var lower = value & 0x0000FFFF;
+     var upper = value >>> 16;
+     if (lower & 0x8000)
+         upper += 1;
+     return upper;
+ }
++exports.hi = hi;
+ ;
+diff --git a/node_modules/mips-assembler/dist/js/src/functions/lo.js b/node_modules/mips-assembler/dist/js/src/functions/lo.js
+index ab855f1..1dc2d71 100644
+--- a/node_modules/mips-assembler/dist/js/src/functions/lo.js
++++ b/node_modules/mips-assembler/dist/js/src/functions/lo.js
+@@ -1,8 +1,12 @@
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.lo = void 0;
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /** Returns the sign-extended low half of a 32-bit `value`. */
+-export function lo(state, value) {
++function lo(state, value) {
+     if (typeof value === "string")
+-        throwError("Assembler function lo cannot be called with string \"" + value + "\", value must be a number.", state);
++        (0, errors_1.throwError)("Assembler function lo cannot be called with string \"" + value + "\", value must be a number.", state);
+     return value & 0x0000FFFF;
+ }
++exports.lo = lo;
+ ;
+diff --git a/node_modules/mips-assembler/dist/js/src/functions/org.js b/node_modules/mips-assembler/dist/js/src/functions/org.js
+index a82c3f3..59e6f57 100644
+--- a/node_modules/mips-assembler/dist/js/src/functions/org.js
++++ b/node_modules/mips-assembler/dist/js/src/functions/org.js
+@@ -1,5 +1,9 @@
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.org = void 0;
+ /** Current memory address */
+-export function org(state, value) {
++function org(state, value) {
+     return state.memPos + state.outIndex;
+ }
++exports.org = org;
+ ;
+diff --git a/node_modules/mips-assembler/dist/js/src/immediates.js b/node_modules/mips-assembler/dist/js/src/immediates.js
+index 20624f0..53d4c33 100644
+--- a/node_modules/mips-assembler/dist/js/src/immediates.js
++++ b/node_modules/mips-assembler/dist/js/src/immediates.js
+@@ -1,4 +1,7 @@
+-export function parseImmediate(value) {
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.formatImmediate = exports.parseImmediate = void 0;
++function parseImmediate(value) {
+     if (typeof value !== "string")
+         return null;
+     var negative = value[0] === "-";
+@@ -19,11 +22,12 @@ export function parseImmediate(value) {
+         result = -result;
+     return result;
+ }
++exports.parseImmediate = parseImmediate;
+ /**
+  * Formats a numeric value for use in final assembly.
+  * @param value Numeric value
+  */
+-export function formatImmediate(value) {
++function formatImmediate(value) {
+     var isZero = value === 0;
+     var isNegative = value < 0;
+     var result = value.toString(16).toUpperCase();
+@@ -34,3 +38,4 @@ export function formatImmediate(value) {
+         + (isZero ? "" : "0x")
+         + result;
+ }
++exports.formatImmediate = formatImmediate;
+diff --git a/node_modules/mips-assembler/dist/js/src/index.js b/node_modules/mips-assembler/dist/js/src/index.js
+index 588e572..1748901 100644
+--- a/node_modules/mips-assembler/dist/js/src/index.js
++++ b/node_modules/mips-assembler/dist/js/src/index.js
+@@ -1 +1,5 @@
+-export { assemble } from "./assembler";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.assemble = void 0;
++var assembler_1 = require("mips-assembler/dist/js/src/assembler");
++Object.defineProperty(exports, "assemble", { enumerable: true, get: function () { return assembler_1.assemble; } });
+diff --git a/node_modules/mips-assembler/dist/js/src/labels.js b/node_modules/mips-assembler/dist/js/src/labels.js
+index 35ee7bb..261f523 100644
+--- a/node_modules/mips-assembler/dist/js/src/labels.js
++++ b/node_modules/mips-assembler/dist/js/src/labels.js
+@@ -1,14 +1,17 @@
+-import { addSymbol } from "./symbols";
+-export var LABEL_CHARS = "\\?\\!\\@";
+-export var LABEL_REGEX_STR = "@?@?[\\w\\?\\!]+";
+-var labelRegex = new RegExp("^(" + LABEL_REGEX_STR + ")\\:");
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.isStaticLabel = exports.isLocalLabel = exports.parseGlobalLabel = exports.LABEL_REGEX_STR = exports.LABEL_CHARS = void 0;
++var symbols_1 = require("mips-assembler/dist/js/src/symbols");
++exports.LABEL_CHARS = "\\?\\!\\@";
++exports.LABEL_REGEX_STR = "@?@?[\\w\\?\\!]+";
++var labelRegex = new RegExp("^(" + exports.LABEL_REGEX_STR + ")\\:");
+ /**
+  * Parses a LABEL: expression and adds it to the symbol table.
+  * Examples of valid labels:
+  *    basicLabel:    excited!Label!:    mystery?Label?:
+  *    @@localLabel:  12345:             !?!:
+  */
+-export function parseGlobalLabel(state) {
++function parseGlobalLabel(state) {
+     var results = state.line.match(labelRegex);
+     if (results === null)
+         return false; // Not a label.
+@@ -16,15 +19,18 @@ export function parseGlobalLabel(state) {
+     if (!isLocalLabel(name) && !isStaticLabel(name)) {
+         state.currentLabel = name;
+     }
+-    addSymbol(state, name, getLabelValueFromState(state));
++    (0, symbols_1.addSymbol)(state, name, getLabelValueFromState(state));
+     return name;
+ }
+-export function isLocalLabel(name) {
++exports.parseGlobalLabel = parseGlobalLabel;
++function isLocalLabel(name) {
+     return name.indexOf("@@") === 0;
+ }
+-export function isStaticLabel(name) {
++exports.isLocalLabel = isLocalLabel;
++function isStaticLabel(name) {
+     return name.indexOf("@") === 0 && name[1] !== "@";
+ }
++exports.isStaticLabel = isStaticLabel;
+ function getLabelValueFromState(state) {
+     return (state.memPos + state.outIndex) >>> 0;
+ }
+diff --git a/node_modules/mips-assembler/dist/js/src/macros/beqz.js b/node_modules/mips-assembler/dist/js/src/macros/beqz.js
+index dc9a010..fc613db 100644
+--- a/node_modules/mips-assembler/dist/js/src/macros/beqz.js
++++ b/node_modules/mips-assembler/dist/js/src/macros/beqz.js
+@@ -1,19 +1,22 @@
+-import { basicMacroMatcher } from "./macroHelpers";
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var macroHelpers_1 = require("mips-assembler/dist/js/src/macros/macroHelpers");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * beqz reg,dest
+  *
+  * @param state Current assembler state.
+  */
+-export default function beqz(state) {
+-    if (state.currentPass !== AssemblerPhase.firstPass) {
+-        throwError("The `beqz` macro shouldn't be present after the first assembly phase", state);
++function beqz(state) {
++    if (state.currentPass !== types_1.AssemblerPhase.firstPass) {
++        (0, errors_1.throwError)("The `beqz` macro shouldn't be present after the first assembly phase", state);
+         return;
+     }
+     if (state.lineExpressions.length !== 2)
+-        throwError("The `beqz` macro must take a register and label", state);
++        (0, errors_1.throwError)("The `beqz` macro must take a register and label", state);
+     state.line = ""; // Delete this line.
+     state.linesToInsert = "BEQ " + state.lineExpressions[0] + " R0 " + state.lineExpressions[1];
+ }
+-beqz.matches = basicMacroMatcher("beqz");
++exports.default = beqz;
++beqz.matches = (0, macroHelpers_1.basicMacroMatcher)("beqz");
+diff --git a/node_modules/mips-assembler/dist/js/src/macros/bnez.js b/node_modules/mips-assembler/dist/js/src/macros/bnez.js
+index b19aa44..69b5ba8 100644
+--- a/node_modules/mips-assembler/dist/js/src/macros/bnez.js
++++ b/node_modules/mips-assembler/dist/js/src/macros/bnez.js
+@@ -1,19 +1,22 @@
+-import { basicMacroMatcher } from "./macroHelpers";
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var macroHelpers_1 = require("mips-assembler/dist/js/src/macros/macroHelpers");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * bnez reg,dest
+  *
+  * @param state Current assembler state.
+  */
+-export default function bnez(state) {
+-    if (state.currentPass !== AssemblerPhase.firstPass) {
+-        throwError("The `bnez` macro shouldn't be present after the first assembly phase", state);
++function bnez(state) {
++    if (state.currentPass !== types_1.AssemblerPhase.firstPass) {
++        (0, errors_1.throwError)("The `bnez` macro shouldn't be present after the first assembly phase", state);
+         return;
+     }
+     if (state.lineExpressions.length !== 2)
+-        throwError("The `bnez` macro must take a register and label", state);
++        (0, errors_1.throwError)("The `bnez` macro must take a register and label", state);
+     state.line = ""; // Delete this line.
+     state.linesToInsert = "BNE " + state.lineExpressions[0] + " R0 " + state.lineExpressions[1];
+ }
+-bnez.matches = basicMacroMatcher("bnez");
++exports.default = bnez;
++bnez.matches = (0, macroHelpers_1.basicMacroMatcher)("bnez");
+diff --git a/node_modules/mips-assembler/dist/js/src/macros/bnezl.js b/node_modules/mips-assembler/dist/js/src/macros/bnezl.js
+index 8040fc5..cb332d7 100644
+--- a/node_modules/mips-assembler/dist/js/src/macros/bnezl.js
++++ b/node_modules/mips-assembler/dist/js/src/macros/bnezl.js
+@@ -1,19 +1,22 @@
+-import { basicMacroMatcher } from "./macroHelpers";
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var macroHelpers_1 = require("mips-assembler/dist/js/src/macros/macroHelpers");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * bnezl reg,dest
+  *
+  * @param state Current assembler state.
+  */
+-export default function bnezl(state) {
+-    if (state.currentPass !== AssemblerPhase.firstPass) {
+-        throwError("The `bnezl` macro shouldn't be present after the first assembly phase", state);
++function bnezl(state) {
++    if (state.currentPass !== types_1.AssemblerPhase.firstPass) {
++        (0, errors_1.throwError)("The `bnezl` macro shouldn't be present after the first assembly phase", state);
+         return;
+     }
+     if (state.lineExpressions.length !== 2)
+-        throwError("The `bnezl` macro must take a register and label", state);
++        (0, errors_1.throwError)("The `bnezl` macro must take a register and label", state);
+     state.line = ""; // Delete this line.
+     state.linesToInsert = "BNEL " + state.lineExpressions[0] + " R0 " + state.lineExpressions[1];
+ }
+-bnezl.matches = basicMacroMatcher("bnezl");
++exports.default = bnezl;
++bnezl.matches = (0, macroHelpers_1.basicMacroMatcher)("bnezl");
+diff --git a/node_modules/mips-assembler/dist/js/src/macros/li.js b/node_modules/mips-assembler/dist/js/src/macros/li.js
+index 1cc4308..bc1d1af 100644
+--- a/node_modules/mips-assembler/dist/js/src/macros/li.js
++++ b/node_modules/mips-assembler/dist/js/src/macros/li.js
+@@ -1,21 +1,23 @@
+-import { basicMacroMatcher } from "./macroHelpers";
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
+-import { runFunction } from "../functions";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var macroHelpers_1 = require("mips-assembler/dist/js/src/macros/macroHelpers");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
++var functions_1 = require("mips-assembler/dist/js/src/functions");
+ /**
+  * li dest,value
+  *
+  * @param state Current assembler state.
+  */
+-export default function li(state) {
+-    if (state.currentPass !== AssemblerPhase.firstPass) {
+-        throwError("The `li` macro shouldn't be present after the first assembly phase", state);
++function li(state) {
++    if (state.currentPass !== types_1.AssemblerPhase.firstPass) {
++        (0, errors_1.throwError)("The `li` macro shouldn't be present after the first assembly phase", state);
+         return;
+     }
+     if (state.lineExpressions.length <= 1)
+-        throwError("The `li` macro must take a register and immediate", state);
++        (0, errors_1.throwError)("The `li` macro must take a register and immediate", state);
+     var dest = state.lineExpressions[0];
+-    var value = runFunction(state.lineExpressions[1], state);
++    var value = (0, functions_1.runFunction)(state.lineExpressions[1], state);
+     if (value === null) {
+         // Most likely a label is not yet defined in the first pass.
+         // We can try to salvage this situation with "worst case" handling.
+@@ -25,7 +27,7 @@ export default function li(state) {
+         return;
+     }
+     if (typeof value !== "number") {
+-        throwError("Immediate value of `li` macro must evaluate to a number, saw: " + value, state);
++        (0, errors_1.throwError)("Immediate value of `li` macro must evaluate to a number, saw: " + value, state);
+         return;
+     }
+     state.line = ""; // Delete this line.
+@@ -44,7 +46,8 @@ export default function li(state) {
+             "LUI " + dest + ", " + ((value >>> 16) + (needsSignAdjust ? 1 : 0)) + "\nADDIU " + dest + ", " + dest + ", " + (value & 0xFFFF);
+     }
+     else {
+-        throwError("li immediate value " + value + " seems out of range", state);
++        (0, errors_1.throwError)("li immediate value " + value + " seems out of range", state);
+     }
+ }
+-li.matches = basicMacroMatcher("li");
++exports.default = li;
++li.matches = (0, macroHelpers_1.basicMacroMatcher)("li");
+diff --git a/node_modules/mips-assembler/dist/js/src/macros/macroHelpers.js b/node_modules/mips-assembler/dist/js/src/macros/macroHelpers.js
+index 3e00301..9b4ae20 100644
+--- a/node_modules/mips-assembler/dist/js/src/macros/macroHelpers.js
++++ b/node_modules/mips-assembler/dist/js/src/macros/macroHelpers.js
+@@ -1,7 +1,12 @@
+-export function basicMacroMatcher(macroAlias) {
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.makeMacroRegExp = exports.basicMacroMatcher = void 0;
++function basicMacroMatcher(macroAlias) {
+     var regex = makeMacroRegExp(macroAlias);
+     return function (state) { return !!state.line.match(regex); };
+ }
+-export function makeMacroRegExp(macroAlias) {
++exports.basicMacroMatcher = basicMacroMatcher;
++function makeMacroRegExp(macroAlias) {
+     return new RegExp("^" + macroAlias + "\\s+", "i");
+ }
++exports.makeMacroRegExp = makeMacroRegExp;
+diff --git a/node_modules/mips-assembler/dist/js/src/macros/move.js b/node_modules/mips-assembler/dist/js/src/macros/move.js
+index 0c81f1f..d41a1db 100644
+--- a/node_modules/mips-assembler/dist/js/src/macros/move.js
++++ b/node_modules/mips-assembler/dist/js/src/macros/move.js
+@@ -1,19 +1,22 @@
+-import { basicMacroMatcher } from "./macroHelpers";
+-import { AssemblerPhase } from "../types";
+-import { throwError } from "../errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++var macroHelpers_1 = require("mips-assembler/dist/js/src/macros/macroHelpers");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * move dest,reg
+  *
+  * @param state Current assembler state.
+  */
+-export default function move(state) {
+-    if (state.currentPass !== AssemblerPhase.firstPass) {
+-        throwError("The `move` macro shouldn't be present after the first assembly phase", state);
++function move(state) {
++    if (state.currentPass !== types_1.AssemblerPhase.firstPass) {
++        (0, errors_1.throwError)("The `move` macro shouldn't be present after the first assembly phase", state);
+         return;
+     }
+     if (state.lineExpressions.length !== 2)
+-        throwError("The `move` macro must take two registers", state);
++        (0, errors_1.throwError)("The `move` macro must take two registers", state);
+     state.line = ""; // Delete this line.
+     state.linesToInsert = "ADDU " + state.lineExpressions[0] + " " + state.lineExpressions[1] + " R0";
+ }
+-move.matches = basicMacroMatcher("move");
++exports.default = move;
++move.matches = (0, macroHelpers_1.basicMacroMatcher)("move");
+diff --git a/node_modules/mips-assembler/dist/js/src/state.js b/node_modules/mips-assembler/dist/js/src/state.js
+index b2633fb..de37852 100644
+--- a/node_modules/mips-assembler/dist/js/src/state.js
++++ b/node_modules/mips-assembler/dist/js/src/state.js
+@@ -1,5 +1,8 @@
+-import { AssemblerPhase } from "./types";
+-export function makeNewAssemblerState(opts) {
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.makeNewAssemblerState = void 0;
++var types_1 = require("mips-assembler/dist/js/src/types");
++function makeNewAssemblerState(opts) {
+     var staticSymbolIndices = [0];
+     staticSymbolIndices.before = Object.create(null);
+     return {
+@@ -15,7 +18,7 @@ export function makeNewAssemblerState(opts) {
+         localSymbols: Object.create(null),
+         staticSymbols: [Object.create(null)],
+         staticSymbolIndices: staticSymbolIndices,
+-        currentPass: AssemblerPhase.firstPass,
++        currentPass: types_1.AssemblerPhase.firstPass,
+         lineExpressions: [],
+         evaluatedLineExpressions: null,
+         ifElseStack: [],
+@@ -23,3 +26,4 @@ export function makeNewAssemblerState(opts) {
+         linesToInsert: null,
+     };
+ }
++exports.makeNewAssemblerState = makeNewAssemblerState;
+diff --git a/node_modules/mips-assembler/dist/js/src/strings.js b/node_modules/mips-assembler/dist/js/src/strings.js
+index 2bd11e9..27180a5 100644
+--- a/node_modules/mips-assembler/dist/js/src/strings.js
++++ b/node_modules/mips-assembler/dist/js/src/strings.js
+@@ -1,3 +1,6 @@
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.firstIndexOf = exports.unescapeString = void 0;
+ /**
+  * Takes a string like
+  * "\"has quotes\""
+@@ -6,7 +9,7 @@
+  * Also handles escape sequences.
+  * @returns Parsed string, or null if could not parse.
+  */
+-export function unescapeString(str) {
++function unescapeString(str) {
+     if (str.length < 2)
+         return null;
+     var startQuoteChar = str[0];
+@@ -90,6 +93,7 @@ export function unescapeString(str) {
+     }
+     return output;
+ }
++exports.unescapeString = unescapeString;
+ function isOctalDigit(chr) {
+     switch (chr) {
+         case "0":
+@@ -126,7 +130,7 @@ function isHexDigit(chr) {
+     }
+     return false;
+ }
+-export function firstIndexOf(str) {
++function firstIndexOf(str) {
+     var searchTokens = [];
+     for (var _i = 1; _i < arguments.length; _i++) {
+         searchTokens[_i - 1] = arguments[_i];
+@@ -144,3 +148,4 @@ export function firstIndexOf(str) {
+     }
+     return Math.min.apply(Math, results);
+ }
++exports.firstIndexOf = firstIndexOf;
+diff --git a/node_modules/mips-assembler/dist/js/src/symbols.js b/node_modules/mips-assembler/dist/js/src/symbols.js
+index fec904a..269d0fd 100644
+--- a/node_modules/mips-assembler/dist/js/src/symbols.js
++++ b/node_modules/mips-assembler/dist/js/src/symbols.js
+@@ -1,39 +1,44 @@
+-import { isLocalLabel, isStaticLabel } from "./labels";
+-import { AssemblerPhase } from "./types";
+-import { throwError } from "./errors";
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.getSymbolByValue = exports.getSymbolValue = exports.popStaticLabelStateLevel = exports.pushStaticLabelStateLevel = exports.addStaticLabel = exports.addLocalSymbol = exports.addGlobalSymbol = exports.addSymbol = void 0;
++var labels_1 = require("mips-assembler/dist/js/src/labels");
++var types_1 = require("mips-assembler/dist/js/src/types");
++var errors_1 = require("mips-assembler/dist/js/src/errors");
+ /**
+  * Adds a symbol to the symbol table.
+  * @param state Assembler state
+  * @param name Symbol name
+  * @param value Symbol value
+  */
+-export function addSymbol(state, name, value) {
+-    if (isLocalLabel(name)) {
++function addSymbol(state, name, value) {
++    if ((0, labels_1.isLocalLabel)(name)) {
+         if (!state.currentLabel) {
+-            throwError("Local label " + name + " (starts with @@) cannot be used before a global label", state);
++            (0, errors_1.throwError)("Local label " + name + " (starts with @@) cannot be used before a global label", state);
+         }
+         addLocalSymbol(state, name, value);
+     }
+-    else if (isStaticLabel(name)) {
++    else if ((0, labels_1.isStaticLabel)(name)) {
+         addStaticLabel(state, name, value);
+     }
+     else {
+         addGlobalSymbol(state, name, value);
+     }
+ }
++exports.addSymbol = addSymbol;
+ /**
+  * Adds a global symbol to the symbol table.
+  * @param state Assembler state
+  * @param name Symbol name
+  * @param value Symbol value
+  */
+-export function addGlobalSymbol(state, name, value) {
++function addGlobalSymbol(state, name, value) {
+     state.symbols[name] = value;
+     state.symbolsByValue[value] = name;
+     if (state.symbolOutputMap) {
+         state.symbolOutputMap[name] = state.outIndex;
+     }
+ }
++exports.addGlobalSymbol = addGlobalSymbol;
+ /**
+  * Adds a local symbol to the symbol table.
+  * @param state Assembler state
+@@ -42,19 +47,21 @@ export function addGlobalSymbol(state, name, value) {
+  *
+  * Assumes !!state.currentLabel
+  */
+-export function addLocalSymbol(state, name, value) {
++function addLocalSymbol(state, name, value) {
+     var localTable = state.localSymbols[state.currentLabel];
+     if (!localTable) {
+         localTable = state.localSymbols[state.currentLabel] = Object.create(null);
+     }
+     localTable[name] = value;
+ }
+-export function addStaticLabel(state, name, value) {
++exports.addLocalSymbol = addLocalSymbol;
++function addStaticLabel(state, name, value) {
+     var staticsTable = state.staticSymbols[state.staticSymbols.length - 1];
+     staticsTable[name] = value;
+ }
+-export function pushStaticLabelStateLevel(state) {
+-    if (state.currentPass === AssemblerPhase.firstPass) {
++exports.addStaticLabel = addStaticLabel;
++function pushStaticLabelStateLevel(state) {
++    if (state.currentPass === types_1.AssemblerPhase.firstPass) {
+         state.staticSymbols.push(Object.create(null));
+         var prevIndex = state.staticSymbolIndices[state.staticSymbolIndices.length - 1];
+         var newIndex = state.staticSymbols.length - 1;
+@@ -65,8 +72,9 @@ export function pushStaticLabelStateLevel(state) {
+         state.staticSymbolIndices.shift();
+     }
+ }
+-export function popStaticLabelStateLevel(state) {
+-    if (state.currentPass === AssemblerPhase.firstPass) {
++exports.pushStaticLabelStateLevel = pushStaticLabelStateLevel;
++function popStaticLabelStateLevel(state) {
++    if (state.currentPass === types_1.AssemblerPhase.firstPass) {
+         var indices = state.staticSymbolIndices;
+         indices.push(indices.before[indices[indices.length - 1]]);
+     }
+@@ -74,8 +82,9 @@ export function popStaticLabelStateLevel(state) {
+         state.staticSymbolIndices.shift();
+     }
+ }
++exports.popStaticLabelStateLevel = popStaticLabelStateLevel;
+ function getCurrentStaticSymbols(state) {
+-    if (state.currentPass === AssemblerPhase.firstPass) {
++    if (state.currentPass === types_1.AssemblerPhase.firstPass) {
+         return state.staticSymbols[state.staticSymbolIndices[state.staticSymbolIndices.length - 1]];
+     }
+     else {
+@@ -85,10 +94,10 @@ function getCurrentStaticSymbols(state) {
+ /**
+  * Retrieves a symbol by name. Works for all: global, static, or local.
+  */
+-export function getSymbolValue(state, name) {
+-    if (isLocalLabel(name)) {
++function getSymbolValue(state, name) {
++    if ((0, labels_1.isLocalLabel)(name)) {
+         if (!state.currentLabel) {
+-            throwError("Local label " + name + " cannot be referenced in the current scope", state);
++            (0, errors_1.throwError)("Local label " + name + " cannot be referenced in the current scope", state);
+         }
+         var localTable = state.localSymbols[state.currentLabel];
+         if (localTable && Object.prototype.hasOwnProperty.call(localTable, name)) {
+@@ -96,7 +105,7 @@ export function getSymbolValue(state, name) {
+         }
+         return null;
+     }
+-    if (isStaticLabel(name)) {
++    if ((0, labels_1.isStaticLabel)(name)) {
+         var staticTable = getCurrentStaticSymbols(state);
+         if (Object.prototype.hasOwnProperty.call(staticTable, name)) {
+             return staticTable[name];
+@@ -108,12 +117,14 @@ export function getSymbolValue(state, name) {
+     }
+     return null;
+ }
++exports.getSymbolValue = getSymbolValue;
+ /**
+  * Retrieves a symbol by value from the symbol table.
+  * Does not retrieve local labels.
+  * TODO: Should do static labels too.
+  */
+-export function getSymbolByValue(state, value) {
++function getSymbolByValue(state, value) {
+     // Don't need hasOwnProperty check here, all values in key->value should be truthy strings.
+     return state.symbolsByValue[value] || null;
+ }
++exports.getSymbolByValue = getSymbolByValue;
+diff --git a/node_modules/mips-assembler/dist/js/src/types.js b/node_modules/mips-assembler/dist/js/src/types.js
+index ef65209..90f4f39 100644
+--- a/node_modules/mips-assembler/dist/js/src/types.js
++++ b/node_modules/mips-assembler/dist/js/src/types.js
+@@ -1,5 +1,7 @@
+-export var AssemblerPhase;
++"use strict";
++Object.defineProperty(exports, "__esModule", { value: true });
++exports.AssemblerPhase = void 0;
+ (function (AssemblerPhase) {
+     AssemblerPhase[AssemblerPhase["firstPass"] = 0] = "firstPass";
+     AssemblerPhase[AssemblerPhase["secondPass"] = 1] = "secondPass";
+-})(AssemblerPhase || (AssemblerPhase = {}));
++})(exports.AssemblerPhase || (exports.AssemblerPhase = {}));
+diff --git a/node_modules/mips-assembler/tsconfig.json b/node_modules/mips-assembler/tsconfig.json
+new file mode 100644
+index 0000000..5570b82
+--- /dev/null
++++ b/node_modules/mips-assembler/tsconfig.json
+@@ -0,0 +1,100 @@
++{
++  "compilerOptions": {
++    /* Visit https://aka.ms/tsconfig.json to read more about this file */
++
++    /* Projects */
++    // "incremental": true,                              /* Enable incremental compilation */
++    // "composite": true,                                /* Enable constraints that allow a TypeScript project to be used with project references. */
++    // "tsBuildInfoFile": "./",                          /* Specify the folder for .tsbuildinfo incremental compilation files. */
++    // "disableSourceOfProjectReferenceRedirect": true,  /* Disable preferring source files instead of declaration files when referencing composite projects */
++    // "disableSolutionSearching": true,                 /* Opt a project out of multi-project reference checking when editing. */
++    // "disableReferencedProjectLoad": true,             /* Reduce the number of projects loaded automatically by TypeScript. */
++
++    /* Language and Environment */
++    "target": "ESNEXT",                                     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
++    // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
++    // "jsx": "preserve",                                /* Specify what JSX code is generated. */
++    // "experimentalDecorators": true,                   /* Enable experimental support for TC39 stage 2 draft decorators. */
++    // "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files. */
++    // "jsxFactory": "",                                 /* Specify the JSX factory function used when targeting React JSX emit, e.g. 'React.createElement' or 'h' */
++    // "jsxFragmentFactory": "",                         /* Specify the JSX Fragment reference used for fragments when targeting React JSX emit e.g. 'React.Fragment' or 'Fragment'. */
++    // "jsxImportSource": "",                            /* Specify module specifier used to import the JSX factory functions when using `jsx: react-jsx*`.` */
++    // "reactNamespace": "",                             /* Specify the object invoked for `createElement`. This only applies when targeting `react` JSX emit. */
++    // "noLib": true,                                    /* Disable including any library files, including the default lib.d.ts. */
++    // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
++
++    /* Modules */
++    "module": "commonjs",                                /* Specify what module code is generated. */
++    // "rootDir": "./",                                  /* Specify the root folder within your source files. */
++    // "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */
++    // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
++    // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
++    // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
++    // "typeRoots": [],                                  /* Specify multiple folders that act like `./node_modules/@types`. */
++    // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
++    // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
++    // "resolveJsonModule": true,                        /* Enable importing .json files */
++    // "noResolve": true,                                /* Disallow `import`s, `require`s or `<reference>`s from expanding the number of files TypeScript should add to a project. */
++
++    /* JavaScript Support */
++    // "allowJs": true,                                  /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */
++    // "checkJs": true,                                  /* Enable error reporting in type-checked JavaScript files. */
++    // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from `node_modules`. Only applicable with `allowJs`. */
++
++    /* Emit */
++    // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
++    // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
++    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
++    // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
++    // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If `declaration` is true, also designates a file that bundles all .d.ts output. */
++    // "outDir": "./",                                   /* Specify an output folder for all emitted files. */
++    // "removeComments": true,                           /* Disable emitting comments. */
++    // "noEmit": true,                                   /* Disable emitting files from a compilation. */
++    // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
++    // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types */
++    // "downlevelIteration": true,                       /* Emit more compliant, but verbose and less performant JavaScript for iteration. */
++    // "sourceRoot": "",                                 /* Specify the root path for debuggers to find the reference source code. */
++    // "mapRoot": "",                                    /* Specify the location where debugger should locate map files instead of generated locations. */
++    // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
++    // "inlineSources": true,                            /* Include source code in the sourcemaps inside the emitted JavaScript. */
++    // "emitBOM": true,                                  /* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
++    // "newLine": "crlf",                                /* Set the newline character for emitting files. */
++    // "stripInternal": true,                            /* Disable emitting declarations that have `@internal` in their JSDoc comments. */
++    // "noEmitHelpers": true,                            /* Disable generating custom helper functions like `__extends` in compiled output. */
++    // "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. */
++    // "preserveConstEnums": true,                       /* Disable erasing `const enum` declarations in generated code. */
++    // "declarationDir": "./",                           /* Specify the output directory for generated declaration files. */
++
++    /* Interop Constraints */
++    // "isolatedModules": true,                          /* Ensure that each file can be safely transpiled without relying on other imports. */
++    // "allowSyntheticDefaultImports": true,             /* Allow 'import x from y' when a module doesn't have a default export. */
++    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
++    // "preserveSymlinks": true,                         /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */
++    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
++
++    /* Type Checking */
++    "strict": true,                                      /* Enable all strict type-checking options. */
++    // "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied `any` type.. */
++    // "strictNullChecks": true,                         /* When type checking, take into account `null` and `undefined`. */
++    // "strictFunctionTypes": true,                      /* When assigning functions, check to ensure parameters and the return values are subtype-compatible. */
++    // "strictBindCallApply": true,                      /* Check that the arguments for `bind`, `call`, and `apply` methods match the original function. */
++    // "strictPropertyInitialization": true,             /* Check for class properties that are declared but not set in the constructor. */
++    // "noImplicitThis": true,                           /* Enable error reporting when `this` is given the type `any`. */
++    // "useUnknownInCatchVariables": true,               /* Type catch clause variables as 'unknown' instead of 'any'. */
++    // "alwaysStrict": true,                             /* Ensure 'use strict' is always emitted. */
++    // "noUnusedLocals": true,                           /* Enable error reporting when a local variables aren't read. */
++    // "noUnusedParameters": true,                       /* Raise an error when a function parameter isn't read */
++    // "exactOptionalPropertyTypes": true,               /* Interpret optional property types as written, rather than adding 'undefined'. */
++    // "noImplicitReturns": true,                        /* Enable error reporting for codepaths that do not explicitly return in a function. */
++    // "noFallthroughCasesInSwitch": true,               /* Enable error reporting for fallthrough cases in switch statements. */
++    // "noUncheckedIndexedAccess": true,                 /* Include 'undefined' in index signature results */
++    // "noImplicitOverride": true,                       /* Ensure overriding members in derived classes are marked with an override modifier. */
++    // "noPropertyAccessFromIndexSignature": true,       /* Enforces using indexed accessors for keys declared using an indexed type */
++    // "allowUnusedLabels": true,                        /* Disable error reporting for unused labels. */
++    // "allowUnreachableCode": true,                     /* Disable error reporting for unreachable code. */
++
++    /* Completeness */
++    // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
++    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
++  }
++}

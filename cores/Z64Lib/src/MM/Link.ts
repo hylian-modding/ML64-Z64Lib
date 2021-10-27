@@ -28,6 +28,8 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
 
     rotation: Z64API.IRotation;
     position: Z64API.IPosition;
+    homePos: Z64API.IPosition;
+    homeRot: Z64API.IRotation;
     actorUUID = 'Link';
 
     jsonFields: string[] = [
@@ -47,6 +49,8 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
         this.emulator = emu;
         this.rotation = new Z64CORE.Z64.Rotation(this);
         this.position = new Z64CORE.Z64.Position(this);
+        this.homePos = new Z64CORE.Z64.Position(this, 0x8);
+        this.homeRot = new Z64CORE.Z64.Rotation(this, 0xC);
     }
 
     tunic: any;
