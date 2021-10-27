@@ -213,7 +213,7 @@ class CommandBufferBootstrap {
             JAL(instance, 0x14, "Actor_InitCave");
             JAL(instance, 0x18, "Actor_UpdateCave");
             if (Z64_GAME === OOT_GAME) {
-                JAL(instance, 0x20, "Actor_SpawnTransitionActorCave");
+                //JAL(instance, 0x20, "Actor_SpawnTransitionActorCave");
             } else if (Z64_GAME === MM_GAME) {
                 // This crashes. Investigate at some point. Red bar.
                 //JNOP(instance, 0x20, "Actor_SpawnTransitionActorCave");
