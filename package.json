@@ -4,8 +4,7 @@
   "description": "Shared library for Z64 games.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "ML64Prebuild": "gulp postinstall"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
