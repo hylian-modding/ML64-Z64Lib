@@ -61,6 +61,7 @@ gulp.task('postinstall', function(){
     let og = process.cwd();
 
     process.chdir("./cores/Z64Lib");
+    child_process.execSync("yarn", {stdio: 'inherit'});
     child_process.execSync("npx patch-package", {stdio: 'inherit'});
 
     process.chdir(og);
