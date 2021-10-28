@@ -207,21 +207,23 @@ class CommandBufferBootstrap {
              * This section hooks several game functions in order to feed data...
              * ... to the event system.
              */
-            JNOP(instance, 0x08, "Actor_SpawnCave");
-            JAL(instance, 0x0C, "Actor_DestroyCave");
-            JAL(instance, 0x10, "Actor_SpawnEntryCave");
-            JAL(instance, 0x14, "Actor_InitCave");
-            JAL(instance, 0x18, "Actor_UpdateCave");
-            if (Z64_GAME === OOT_GAME) {
-                //JAL(instance, 0x20, "Actor_SpawnTransitionActorCave");
-            } else if (Z64_GAME === MM_GAME) {
-                // This crashes. Investigate at some point. Red bar.
-                //JNOP(instance, 0x20, "Actor_SpawnTransitionActorCave");
-                JNOP(instance, 0x24, "Actor_SpawnWithParentAndCutscene");
+            // This if block is temporary until we solve some issues in MM.
+            if (Z64_GAME === OOT_GAME){
+                JNOP(instance, 0x08, "Actor_SpawnCave");
+                JAL(instance, 0x0C, "Actor_DestroyCave");
+                JAL(instance, 0x10, "Actor_SpawnEntryCave");
+                JAL(instance, 0x14, "Actor_InitCave");
+                JAL(instance, 0x18, "Actor_UpdateCave");
+                if (Z64_GAME === OOT_GAME) {
+                    //JAL(instance, 0x20, "Actor_SpawnTransitionActorCave");
+                } else if (Z64_GAME === MM_GAME) {
+                    // This crashes. Investigate at some point. Red bar.
+                    //JNOP(instance, 0x20, "Actor_SpawnTransitionActorCave");
+                    JNOP(instance, 0x24, "Actor_SpawnWithParentAndCutscene");
+                }
+                // Object spawn would go here but its broke. 0x28
             }
-            // Object spawn would go here but its broke. 0x28
-
-
+            
             this.ModLoader.emulator.invalidateCachedCode();
         }, 1);
 
