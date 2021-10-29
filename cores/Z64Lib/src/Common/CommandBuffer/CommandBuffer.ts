@@ -8,7 +8,7 @@ import { Z64LibSupportedGames } from "@Z64Lib/API/Utilities/Z64LibSupportedGames
 import { Command, IActor, ICommandBuffer } from "@Z64Lib/API/imports";
 import { IInjectedAssembly } from "@Z64Lib/API/Common/IInjectedAssembly";
 import { AssemblyList } from "@Z64Lib/API/Common/AssemblyList";
-import { setCommandBufferAddr, Z64_GAME, Z64_GLOBAL_PTR } from "../types/GameAliases";
+import { setSpawnWithAddrPointer, Z64_GAME } from "../types/GameAliases";
 import { IZ64Core } from "@Z64Lib/API/Common/Z64API";
 import { SmartBuffer } from "smart-buffer";
 import { OOT_GAME } from "../types/OotAliases";
@@ -149,6 +149,7 @@ class CommandBufferBootstrap {
         sb.writeUInt32BE(JAL_ENCODE(this.bootstrapPointer));
         this.ModLoader.emulator.rdramWriteBuffer(this.data.VERSIONS.get(this.revision)!.get("CommandBuffer_Update")!, sb.toBuffer());
         sb.clear();
+
         this.ModLoader.emulator.invalidateCachedCode();
 
         /**
@@ -207,23 +208,28 @@ class CommandBufferBootstrap {
              * This section hooks several game functions in order to feed data...
              * ... to the event system.
              */
-            // This if block is temporary until we solve some issues in MM.
-            if (Z64_GAME === OOT_GAME){
-                JNOP(instance, 0x08, "Actor_SpawnCave");
-                JAL(instance, 0x0C, "Actor_DestroyCave");
-                JAL(instance, 0x10, "Actor_SpawnEntryCave");
-                JAL(instance, 0x14, "Actor_InitCave");
-                JAL(instance, 0x18, "Actor_UpdateCave");
-                if (Z64_GAME === OOT_GAME) {
-                    //JAL(instance, 0x20, "Actor_SpawnTransitionActorCave");
-                } else if (Z64_GAME === MM_GAME) {
-                    // This crashes. Investigate at some point. Red bar.
-                    //JNOP(instance, 0x20, "Actor_SpawnTransitionActorCave");
-                    JNOP(instance, 0x24, "Actor_SpawnWithParentAndCutscene");
-                }
-                // Object spawn would go here but its broke. 0x28
-            }
+            JNOP(instance, 0x08, "Actor_SpawnCave");
+
+            // These don't have events yet.
+            //JAL(instance, 0x10, "Actor_SpawnEntryCave");
+            //JAL(instance, 0x14, "Actor_InitCave");
+            //JAL(instance, 0x18, "Actor_UpdateCave");
             
+            if (Z64_GAME === OOT_GAME) {
+                //JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
+                // MMR also hooks this. Solve later.
+                JAL(instance, 0x0C, "Actor_DestroyCave");
+            } else if (Z64_GAME === MM_GAME) {
+                //JNOP(instance, 0x1C, "Actor_SpawnTransitionActorCave");
+                JNOP(instance, 0x20, "Actor_SpawnWithParentAndCutscene");
+            }
+            // Object spawn would go here but its broke. 0x24
+
+            /**
+             * Set this for other possible hooks.
+             */
+            setSpawnWithAddrPointer(this.ModLoader.emulator.rdramRead32(instance + 0x28));
+
             this.ModLoader.emulator.invalidateCachedCode();
         }, 1);
 
@@ -242,7 +248,6 @@ export class CommandBuffer implements ICommandBuffer {
         this.ModLoader = ModLoader;
         this.cmdbuf = CommandBuffer_Factory.Inject(this.ModLoader, core, this, this.ModLoader.heap!, revision, AssemblyList.getAssemblyForGame(game)!);
         this.core = core;
-        setCommandBufferAddr(this.cmdbuf);
     }
 
     @Deprecated("CommandBuffer.runCommand is deprecated.")

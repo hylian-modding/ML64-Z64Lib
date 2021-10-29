@@ -15,9 +15,4 @@
 #endif
 #include "Actor_SpawnWithAddress.h"
 
-static void init(void* thisx, GlobalContext* globalCtx);
-static void destroy(void* thisx, GlobalContext* globalCtx);
-static void update(void* thisx, GlobalContext* globalCtx);
-static void draw(void* thisx, GlobalContext* globalCtx);
-
 #endif /* __OVL_EN_HAXBASE__ */

@@ -21,7 +21,7 @@ export let Z64_PLAYER_STATE2: number;
 export let Z64_PLAYER_RAWANIM: number;
 export let Z64_PAUSED: number;
 export let Z64_DMAROM: number;
-export let Z64_COMMAND_BUFFER: number;
+export let Z64_SPAWN_WITH_ADDRESS_POINTER: number;
 
 export let Z64_EQUIP_ADDR: number;
 
@@ -105,6 +105,10 @@ export function markAsRandomizer() {
     Z64_IS_RANDOMIZER = true;
 }
 
-export function setCommandBufferAddr(pointer: number){
-    Z64_COMMAND_BUFFER = pointer;
+/**
+ * Internal function please don't call.
+ * @param pointer 
+ */
+export function setSpawnWithAddrPointer(pointer: number){
+    Z64_SPAWN_WITH_ADDRESS_POINTER = pointer;
 }

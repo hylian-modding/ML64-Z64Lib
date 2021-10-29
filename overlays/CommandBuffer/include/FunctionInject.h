@@ -15,6 +15,6 @@ typedef struct{
     /* 0x20 */ uint32_t Actor_SpawnWithAddress;
 } En_FunctionHooks;
 
-static En_FunctionHooks* haxPointer = 0;
+extern En_FunctionHooks* haxPointer;
 
 #endif /* __HAX_INJECT_H__ */
