@@ -216,7 +216,7 @@ class CommandBufferBootstrap {
             //JAL(instance, 0x18, "Actor_UpdateCave");
             
             if (Z64_GAME === OOT_GAME) {
-                //JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
+                JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
                 // MMR also hooks this. Solve later.
                 JAL(instance, 0x0C, "Actor_DestroyCave");
             } else if (Z64_GAME === MM_GAME) {
@@ -233,6 +233,7 @@ class CommandBufferBootstrap {
             this.ModLoader.emulator.invalidateCachedCode();
         }, 1);
 
+        this.ModLoader.logger.debug(`Command Buffer: ${this.commands.toString(16)}`);
         return this.commands;
     }
 
