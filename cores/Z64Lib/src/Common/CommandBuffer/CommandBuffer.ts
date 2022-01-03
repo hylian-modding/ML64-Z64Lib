@@ -27,7 +27,8 @@ export enum CommandBuffer_CommandType {
     ARBITRARYFUNCTIONCALL,
     PVPDAMAGE,
     MALLOCFREE,
-    OBJECTLOAD
+    OBJECTLOAD,
+    SPAWN_NO_EVENT
 }
 
 export enum CommandBuffer_CommandEventType {
@@ -281,6 +282,47 @@ export class CommandBuffer implements ICommandBuffer {
                     let uuid = this.ModLoader.emulator.rdramRead32(offset + 4);
 
                     if (type === CommandBuffer_CommandType.ACTORSPAWN && uuid === myUUID) {
+                        this.ModLoader.emulator.rdramWrite32(offset, 0); // free return slot
+                        if (this.ModLoader.emulator.rdramRead32(offset + 8) === 0) {
+                            reject("Actor pointer was zero.");
+                        }
+                        else {
+                            accept(new ActorBase(this.ModLoader, this.core.global.scene, this.ModLoader.emulator.rdramRead32(offset + 8)));
+                        }
+                    }
+                }
+                reject("Failed to find return value.");
+            }, 1);
+        });
+    }
+
+    spawnActorQuietly(actorId: number, params: number, rot: Vector3, pos: Vector3, address: number = 0): Promise<IActor> {
+        let count = this.ModLoader.emulator.rdramRead16(this.cmdbuf);
+        let offset = this.cmdbuf + COMMAND_OFFSET + COMMAND_SIZEOF * count;
+
+        let myUUID = this.uuid++;
+
+        this.ModLoader.emulator.rdramWrite16(this.cmdbuf, count + 1);
+        this.ModLoader.emulator.rdramWrite32(offset, CommandBuffer_CommandType.SPAWN_NO_EVENT);
+        this.ModLoader.emulator.rdramWrite32(offset + 4, myUUID);
+        this.ModLoader.emulator.rdramWrite16(offset + 8, actorId);
+        this.ModLoader.emulator.rdramWrite16(offset + 8 + 2, params);
+        this.ModLoader.emulator.rdramWrite16(offset + 8 + 4, Math.floor(rot.x) % 32768);
+        this.ModLoader.emulator.rdramWrite16(offset + 8 + 6, Math.floor(rot.y) % 32768);
+        this.ModLoader.emulator.rdramWrite16(offset + 8 + 8, Math.floor(rot.z) % 32768);
+        this.ModLoader.emulator.rdramWriteF32(offset + 8 + 0xC, pos.x);
+        this.ModLoader.emulator.rdramWriteF32(offset + 8 + 0x10, pos.y);
+        this.ModLoader.emulator.rdramWriteF32(offset + 8 + 0x14, pos.z);
+        this.ModLoader.emulator.rdramWrite32(offset + 8 + 0x18, address);
+
+        return new Promise((accept, reject) => {
+            this.ModLoader.utils.setTimeoutFrames(() => {
+                for (let index = 0; index < COMMAND_MAX; index++) {
+                    let offset = this.cmdbuf + COMMAND_RETURN_OFFSET + COMMAND_RETURN_SIZEOF * index;
+                    let type = this.ModLoader.emulator.rdramRead32(offset);
+                    let uuid = this.ModLoader.emulator.rdramRead32(offset + 4);
+
+                    if (type === CommandBuffer_CommandType.SPAWN_NO_EVENT && uuid === myUUID) {
                         this.ModLoader.emulator.rdramWrite32(offset, 0); // free return slot
                         if (this.ModLoader.emulator.rdramRead32(offset + 8) === 0) {
                             reject("Actor pointer was zero.");

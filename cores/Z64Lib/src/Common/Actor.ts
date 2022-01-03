@@ -173,6 +173,7 @@ export class ActorBase extends JSONTemplate implements Z64API.IActor {
         'actorUUID',
         'rotation',
         'position',
+        'variable'
     ];
 
     constructor(ModLoader: IModLoaderAPI, scene: number, pointer: number) {

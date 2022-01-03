@@ -17,6 +17,7 @@ export const enum Command {
 export interface ICommandBuffer {
   runCommand(command: Command, param: number, callback?: Function): void;
   spawnActor(actorId: number, params: number, rot: Vector3, pos: Vector3, address?: number): Promise<IActor>;
+  spawnActorQuietly(actorId: number, params: number, rot: Vector3, pos: Vector3, address?: number): Promise<IActor>;
   spawnActorRXYZ(actorId: number, params: number, rotX: number, rotY: number, rotZ: number, pos: Vector3, address?: number): Promise<IActor>;
   spawnActorRXY_Z(actorId: number, params: number, rotXY: number, rotZ: number, pos: Vector3, address?: number): Promise<IActor>
   runWarp(entranceIndex: number, cutsceneIndex: number, age?: number, transition?: number): Promise<boolean>;

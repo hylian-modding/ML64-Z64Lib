@@ -3,6 +3,7 @@
 #include "command.h"
 #include "commandreturn.h"
 #include "Actor_SpawnWithAddress.h"
+#include "Actor_SpawnNoEvent.h"
 
 typedef enum {
     /* 0x00 */ BTN_ENABLED,
@@ -60,7 +61,7 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
 
         // can't use a switch unless we relocate the jtable
         if (command->type != COMMANDTYPE_NONE) {
-            if (command->type == COMMANDTYPE_ACTORSPAWN && commandReturn) {
+            if ((command->type == COMMANDTYPE_ACTORSPAWN || command->type == COMMANDTYPE_SPAWNNOEVENT) && commandReturn) {
                 commandReturn->type = command->type;
                 commandReturn->uuid = command->uuid;
 
@@ -72,9 +73,12 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
                 if (command->params.actorSpawn.address) {
                     Actor_SpawnWithAddress(globalCtx, command->params.actorSpawn.actorId, command->params.actorSpawn.params, &command->params.actorSpawn.pos, &command->params.actorSpawn.rot, command->params.actorSpawn.address);
                     commandReturn->data.actorSpawn.actor = command->params.actorSpawn.address;
-                }
-                else {
-                    commandReturn->data.actorSpawn.actor = Actor_Spawn(actorCtx, globalCtx, command->params.actorSpawn.actorId, command->params.actorSpawn.pos.x, command->params.actorSpawn.pos.y, command->params.actorSpawn.pos.z, command->params.actorSpawn.rot.x, command->params.actorSpawn.rot.y, command->params.actorSpawn.rot.z, command->params.actorSpawn.params);
+                }else {
+                    if (command->type == COMMANDTYPE_SPAWNNOEVENT){
+                        commandReturn->data.actorSpawn.actor = Actor_SpawnNoEvent(actorCtx, globalCtx, command->params.actorSpawn.actorId, command->params.actorSpawn.pos.x, command->params.actorSpawn.pos.y, command->params.actorSpawn.pos.z, command->params.actorSpawn.rot.x, command->params.actorSpawn.rot.y, command->params.actorSpawn.rot.z, command->params.actorSpawn.params);
+                    }else{
+                        commandReturn->data.actorSpawn.actor = Actor_Spawn(actorCtx, globalCtx, command->params.actorSpawn.actorId, command->params.actorSpawn.pos.x, command->params.actorSpawn.pos.y, command->params.actorSpawn.pos.z, command->params.actorSpawn.rot.x, command->params.actorSpawn.rot.y, command->params.actorSpawn.rot.z, command->params.actorSpawn.params);
+                    }
                 }
             }
             else if (command->type == COMMANDTYPE_ACTORADDREMCAT) {
