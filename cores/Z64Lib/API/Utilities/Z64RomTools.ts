@@ -255,7 +255,7 @@ export class Z64RomTools {
   relocateFileToExtendedRom(rom: Buffer, index: number, file: Buffer, sizeOverride = 0, nocompress = false): number {
     if (heap === undefined){
       let f = rom.indexOf(mb, 0x2000000);
-      heap = new RomHeap(this.ModLoader.rom, f, (0x100 * 1024 * 1024) - f);
+      heap = new RomHeap(rom, this.ModLoader.rom, f, (0x100 * 1024 * 1024) - f);
     }
     let r = 0;
     let buf: Buffer = file;
@@ -306,7 +306,7 @@ export class Z64RomTools {
   injectNewFile(rom: Buffer, index: number, file: Buffer, nocompress: boolean = false) {
     if (heap === undefined){
       let f = rom.indexOf(mb, 0x2000000);
-      heap = new RomHeap(this.ModLoader.rom, f, (0x100 * 1024 * 1024) - f);
+      heap = new RomHeap(rom, this.ModLoader.rom, f, (0x100 * 1024 * 1024) - f);
     }
     let r = 0;
     let buf: Buffer = file;
