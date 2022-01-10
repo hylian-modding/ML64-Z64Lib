@@ -181,7 +181,7 @@ export interface IZ64Offsets {
     DL_GORON_ROLL_2: number;
     DL_CENTER_FLOWER_PROPELLER_OPEN: number;
     DL_CENTER_FLOWER_PROPELLER_CLOSED: number;
-    DL_UNK61: number;
+    DL_LHAND_SWORD_DEITY: number;
     DL_UNK62: number;
     DL_UNK63: number;
     DL_UNK64: number;
@@ -255,8 +255,8 @@ export interface IZ64Offsets {
     DL_UNK132: number;
     DL_UNK133: number;
     DL_UNK134: number;
-    DL_UNK135: number;
-    DL_UNK136: number;
+    TEX_EYES: number;
+    TEX_MOUTH: number;
     DL_DF: number;
     DF_COMMAND: number;
     SKEL_SECTION: number;
@@ -455,7 +455,7 @@ export const Z64Offsets: IZ64Offsets = {
     "DL_GORON_ROLL_2": 21920,
     "DL_CENTER_FLOWER_PROPELLER_OPEN": 21928,
     "DL_CENTER_FLOWER_PROPELLER_CLOSED": 21936,
-    "DL_UNK61": 21944,
+    "DL_LHAND_SWORD_DEITY": 21944,
     "DL_UNK62": 21952,
     "DL_UNK63": 21960,
     "DL_UNK64": 21968,
@@ -529,8 +529,8 @@ export const Z64Offsets: IZ64Offsets = {
     "DL_UNK132": 22512,
     "DL_UNK133": 22520,
     "DL_UNK134": 22528,
-    "DL_UNK135": 22536,
-    "DL_UNK136": 22544,
+    "TEX_EYES": 22536,
+    "TEX_MOUTH": 22544,
     "DL_DF": 22552,
     "DF_COMMAND": 22560,
     "SKEL_SECTION": 22576,

@@ -11,6 +11,7 @@ import { EventSystem } from './Common/CommandBuffer/EventSystem';
 import { OverlayPayload } from './OverlayPayload';
 import { IActorManager } from '@Z64Lib/API/Common/Z64API';
 import MessageContext from './OoT/MessageContext';
+import { OOTDBG_GAME } from './Common/types/OotAliases';
 
 export interface OOT_Offsets {
     state: number;
@@ -194,10 +195,10 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
 
     @EventHandler(EventsClient.ON_INJECT_FINISHED)
     onInject(evt: any) {
-/*         if (this.ModLoader.config.data["OcarinaofTime"]["skipN64Logo"]) {
-            this.ModLoader.logger.info("Skipping N64 logo screen...");
-            this.ModLoader.emulator.rdramWritePtr8(Z64_GLOBAL_PTR, 0x1E1, 0x1);
-        } */
+        /*         if (this.ModLoader.config.data["OcarinaofTime"]["skipN64Logo"]) {
+                    this.ModLoader.logger.info("Skipping N64 logo screen...");
+                    this.ModLoader.emulator.rdramWritePtr8(Z64_GLOBAL_PTR, 0x1E1, 0x1);
+                } */
     }
 
     @EventHandler(EventsClient.ON_HEAP_SETUP)
@@ -224,8 +225,10 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
 
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME, this);
-        this.actorManager = new EventSystem(this.ModLoader, this, this.commandBuffer.cmdbuf);
+        if (Z64_GAME !== OOTDBG_GAME) {
+            this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME, this);
+            this.actorManager = new EventSystem(this.ModLoader, this, this.commandBuffer.cmdbuf);
+        }
         let MessageContextPtr = this.ModLoader.emulator.rdramRead32(Z64_GLOBAL_PTR) + 0x0020D8;
         this.msgCtx = new MessageContext(this, this.ModLoader, MessageContextPtr);
     }

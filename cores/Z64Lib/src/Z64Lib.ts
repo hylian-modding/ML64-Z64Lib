@@ -26,7 +26,7 @@ export enum ROM_REGIONS {
 }
 
 export default class Z64Lib implements ICore, IZ64Main, IExtendedCore {
-    header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.NTSC_MM];
+    header = [ROM_REGIONS.NTSC_OOT, ROM_REGIONS.DEBUG_OOT, ROM_REGIONS.NTSC_MM];
     ModLoader!: IModLoaderAPI;
     eventTicks: Map<string, Function> = new Map<string, Function>();
 

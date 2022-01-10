@@ -2,14 +2,14 @@
 # yarn lockfile v1
 
 
-mips-assembler@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/mips-assembler/-/mips-assembler-2.0.1.tgz#f558a6ee651d49990ed5c14c87375bc9b94525ac"
-  integrity sha512-YAtMbBL1dKXaN4mupLgcRhzjX7kJCKHg8S6LcpDoTXnYFuTEXSR2T/8CXGoIPL92DuRNEZELjNInOWgnN9pafw==
+"mips-assembler@^2.0.1":
+  "integrity" "sha512-YAtMbBL1dKXaN4mupLgcRhzjX7kJCKHg8S6LcpDoTXnYFuTEXSR2T/8CXGoIPL92DuRNEZELjNInOWgnN9pafw=="
+  "resolved" "https://registry.npmjs.org/mips-assembler/-/mips-assembler-2.0.1.tgz"
+  "version" "2.0.1"
   dependencies:
-    mips-inst "^3.0.0"
+    "mips-inst" "^3.0.0"
 
-mips-inst@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/mips-inst/-/mips-inst-3.0.0.tgz#a65340ee9480a732469a0b354dd86dfc2a6aba29"
-  integrity sha512-6idJNzfzD77JSPKUJtvwEoIxOx9F6RMHUg9u0HdeHC+OS+S2tWTOmbyfqiOOfmlIprO2zrL7r4Ww7V1GvPJ0IA==
+"mips-inst@^3.0.0":
+  "integrity" "sha512-6idJNzfzD77JSPKUJtvwEoIxOx9F6RMHUg9u0HdeHC+OS+S2tWTOmbyfqiOOfmlIprO2zrL7r4Ww7V1GvPJ0IA=="
+  "resolved" "https://registry.npmjs.org/mips-inst/-/mips-inst-3.0.0.tgz"
+  "version" "3.0.0"

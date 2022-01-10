@@ -419,13 +419,20 @@ export class MMManifest implements IManifest {
         _player.GoTo(0x13F02);
         _player.Lo32(Z64Offsets.GORON_MAGIC_0);
 
+        // 00 00 40 40 02 02 40 40 FF 00 00 01 06 01 31 30
+        //_code.GoTo(0x7D326);
+        //_code.Hi32(Z64Offsets.GORON_MATERIAL_0);
+        //_code.GoTo(0x7D32E);
+        //_code.Lo32(Z64Offsets.GORON_MATERIAL_0);
+        //7D326 = code ptr (hi) for object_link_goron_Matanimheader_013138
+        //7D32E = code ptr (hi) for object_link_goron_Matanimheader_013138
+
         let hilo = (m: ManifestBuffer, hi: number, lo: number, p: number) => {
             m.GoTo(hi);
             m.Hi32(p);
             m.GoTo(lo);
             m.Lo32(p);
         }
-        
         
         hilo(_player, 0x1917E, 0x19182, Z64Offsets.DL_INIT_FIRE);
         hilo(_player, 0x191AE, 0x191B2, Z64Offsets.DL_FIRE_ROLL);
@@ -606,11 +613,11 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_LFIST);
         _code.Write32(Z64Offsets.DL_LFIST);
         _code.GoTo(0x11A6A4); // Broad Sword
-        _code.Write32(Z64Offsets.DL_SWORD_DEITY);
-        _code.Write32(Z64Offsets.DL_SWORD_DEITY);
+        _code.Write32(Z64Offsets.DL_LHAND_SWORD_DEITY);
+        _code.Write32(Z64Offsets.DL_LHAND_SWORD_DEITY);
         _code.GoTo(0x11A62C);  //Long Sword
-        _code.Write32(Z64Offsets.DL_SWORD_DEITY);
-        _code.Write32(Z64Offsets.DL_SWORD_DEITY);
+        _code.Write32(Z64Offsets.DL_LHAND_SWORD_DEITY);
+        _code.Write32(Z64Offsets.DL_LHAND_SWORD_DEITY);
 
         _code.GoTo(0x11B0B0);
         _code.Write32(Z64Offsets.DL_DEITY_MASK);
