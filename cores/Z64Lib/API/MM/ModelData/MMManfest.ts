@@ -58,6 +58,13 @@ export class MMManifest implements IManifest {
         let _player = new ManifestBuffer(tools.decompressDMAFileFromRom(rom, 38));
         let _zot = new ManifestBuffer(tools.decompressDMAFileFromRom(rom, 511));
 
+        let hilo = (m: ManifestBuffer, hi: number, lo: number, p: number) => {
+            m.GoTo(hi);
+            m.Hi32(p);
+            m.GoTo(lo);
+            m.Lo32(p);
+        }
+
         // Human Link
         _code.GoTo(0x11A55C);
         _code.Write32(Z64Offsets.DL_WAIST);                   // Waist
@@ -419,20 +426,13 @@ export class MMManifest implements IManifest {
         _player.GoTo(0x13F02);
         _player.Lo32(Z64Offsets.GORON_MAGIC_0);
 
-        // 00 00 40 40 02 02 40 40 FF 00 00 01 06 01 31 30
-        //_code.GoTo(0x7D326);
-        //_code.Hi32(Z64Offsets.GORON_MATERIAL_0);
-        //_code.GoTo(0x7D32E);
-        //_code.Lo32(Z64Offsets.GORON_MATERIAL_0);
-        //7D326 = code ptr (hi) for object_link_goron_Matanimheader_013138
-        //7D32E = code ptr (hi) for object_link_goron_Matanimheader_013138
+        _code.GoTo(0x7D326);
+        _code.Hi32(Z64Offsets.GORON_MAGIC_1);
+        _code.GoTo(0x7D32E);
+        _code.Lo32(Z64Offsets.GORON_MAGIC_1);
 
-        let hilo = (m: ManifestBuffer, hi: number, lo: number, p: number) => {
-            m.GoTo(hi);
-            m.Hi32(p);
-            m.GoTo(lo);
-            m.Lo32(p);
-        }
+        hilo(_player, 0x19132, 0x1913A, Z64Offsets.GORON_MAGIC_1);
+        hilo(_player, 0x1916E, 0x1919A, Z64Offsets.GORON_MAGIC_1 + 0x10);
         
         hilo(_player, 0x1917E, 0x19182, Z64Offsets.DL_INIT_FIRE);
         hilo(_player, 0x191AE, 0x191B2, Z64Offsets.DL_FIRE_ROLL);
@@ -443,11 +443,7 @@ export class MMManifest implements IManifest {
         _code.GoTo(0x11A324);
         _code.Write32(Z64Offsets.DL_FIRE_PUNCH);
 
-        _code.GoTo(0x83932);
-        _code.Hi32(Z64Offsets.DL_DRUM_STRAP);
-        _code.GoTo(0x83936);
-        _code.Lo32(Z64Offsets.DL_DRUM_STRAP);
-
+        hilo(_code, 0x83932, 0x83936, Z64Offsets.DL_DRUM_STRAP);
 
         // Zora Link
 

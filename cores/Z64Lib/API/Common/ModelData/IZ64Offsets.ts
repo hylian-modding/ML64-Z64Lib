@@ -272,6 +272,7 @@ export interface IZ64Offsets {
     MATRIX_BUNNYHOOD0: number;
     MATRIX_BUNNYHOOD1: number;
     GORON_MAGIC_0: number;
+    GORON_MAGIC_1: number;
 }
 export const Z64Offsets: IZ64Offsets = {
     "FACE_TEXTURES": 0,
@@ -545,7 +546,8 @@ export const Z64Offsets: IZ64Offsets = {
     "MATRIX_SHIELD1_ITEM": 23056,
     "MATRIX_BUNNYHOOD0": 23120,
     "MATRIX_BUNNYHOOD1": 23184,
-    "GORON_MAGIC_0": 0x00005BDC
+    "GORON_MAGIC_0": 0x00005BDC,
+    "GORON_MAGIC_1": 0x00005BF0
 };
 Object.keys(Z64Offsets).forEach((key: string) => {
     Z64Offsets[key] = Z64Offsets[key] + 0x06000000;
