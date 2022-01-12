@@ -163,7 +163,7 @@ export interface IZ64Offsets {
     DL_RHAND_OCARINA_FAIRY: number;
     DL_FPS_RARM_SLINGSHOT: number;
     DL_PEDESTAL_SWORD: number;
-    DL_RFIST_SWORD4: number;
+    DL_LFIST_SWORD4: number;
     DL_FPS_RARM_BOW: number;
     DL_FPS_RARM_HOOKSHOT: number;
     DL_ZORA_GUITAR: number;
@@ -438,7 +438,7 @@ export const Z64Offsets: IZ64Offsets = {
     "DL_RHAND_OCARINA_FAIRY": 21776,
     "DL_FPS_RARM_SLINGSHOT": 21784,
     "DL_PEDESTAL_SWORD": 21792,
-    "DL_RFIST_SWORD4": 21800,
+    "DL_LFIST_SWORD4": 21800,
     "DL_FPS_RARM_BOW": 21808,
     "DL_FPS_RARM_HOOKSHOT": 21816,
     "DL_ZORA_GUITAR": 21824,

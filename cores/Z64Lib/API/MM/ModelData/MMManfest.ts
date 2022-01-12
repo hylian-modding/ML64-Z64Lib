@@ -93,8 +93,8 @@ export class MMManifest implements IManifest {
         _code.Write32(Z64Offsets.DL_SWORD_SHEATH_3);
 
         _code.GoTo(0x11A64C);                    // Left Fist + Great Fairy's Sword
-        _code.Write32(Z64Offsets.DL_RFIST_SWORD4);
-        _code.Write32(Z64Offsets.DL_RFIST_SWORD4);
+        _code.Write32(Z64Offsets.DL_LFIST_SWORD4);
+        _code.Write32(Z64Offsets.DL_LFIST_SWORD4);
 
         _code.GoTo(0x11A674);                    // Left Hand
         _code.Write32(Z64Offsets.DL_LHAND);
@@ -426,11 +426,7 @@ export class MMManifest implements IManifest {
         _player.GoTo(0x13F02);
         _player.Lo32(Z64Offsets.GORON_MAGIC_0);
 
-        _code.GoTo(0x7D326);
-        _code.Hi32(Z64Offsets.GORON_MAGIC_1);
-        _code.GoTo(0x7D32E);
-        _code.Lo32(Z64Offsets.GORON_MAGIC_1);
-
+        hilo(_code, 0x7D326, 0x7D32E, Z64Offsets.GORON_MAGIC_1);
         hilo(_player, 0x19132, 0x1913A, Z64Offsets.GORON_MAGIC_1);
         hilo(_player, 0x1916E, 0x1919A, Z64Offsets.GORON_MAGIC_1 + 0x10);
         
