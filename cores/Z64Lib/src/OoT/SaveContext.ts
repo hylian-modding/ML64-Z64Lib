@@ -3,6 +3,7 @@ import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import { ILogger, IModLoaderAPI } from 'modloader64_api/IModLoaderAPI';
 import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../importsZ64';
+import { IZ64Core } from '@Z64Lib/API/Common/Z64API';
 
 export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext {
     private ModLoader: IModLoaderAPI;
@@ -82,11 +83,11 @@ export class SaveContext extends JSONTemplate implements Z64API.OoT.ISaveContext
         'scarecrowsSongChildFlag',
         'scarecrowsSong'
     ];
-    constructor(ModLoader: IModLoaderAPI, log: ILogger) {
+    constructor(ModLoader: IModLoaderAPI, log: ILogger, core: IZ64Core) {
         super();
         this.ModLoader = ModLoader;
         this.emulator = ModLoader.emulator;
-        this.swords = new Z64CORE.Z64.SwordsEquipment(this.emulator, this.commandBuffer);
+        this.swords = new Z64CORE.Z64.SwordsEquipment(this.emulator, core);
         this.shields = new Z64CORE.Z64.ShieldsEquipment(this.emulator);
         this.tunics = new Z64CORE.OoT.TunicsEquipment(this.emulator);
         this.boots = new Z64CORE.OoT.BootsEquipment(this.emulator);

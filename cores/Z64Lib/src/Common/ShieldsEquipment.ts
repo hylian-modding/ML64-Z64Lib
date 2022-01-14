@@ -8,7 +8,7 @@ export const enum ShieldBitMap {
   HYLIAN = 2,
   MIRROR_OOT = 1,
 
-  HEROES = 1,
+  HEROES = 3,
   MIRROR_MM = 2,
 }
 

@@ -582,49 +582,6 @@ export class Inventory extends JSONTemplate implements Z64API.MM.IInventory {
         return Z64API.Z64.AmmoUpgrade.NONE;
     }
 
-    get bulletBag(): Z64API.Z64.AmmoUpgrade {
-        let buf: Buffer = this.emulator.rdramReadBits8(
-            this.inventory_upgrades_addr + 0x2
-        );
-        let str = buf.slice(0, 2).toString('hex');
-        switch (str) {
-            case '0000':
-                return Z64API.Z64.AmmoUpgrade.NONE;
-            case '0001':
-                return Z64API.Z64.AmmoUpgrade.BASE;
-            case '0100':
-                return Z64API.Z64.AmmoUpgrade.UPGRADED;
-            case '0101':
-                return Z64API.Z64.AmmoUpgrade.MAX;
-        }
-        return Z64API.Z64.AmmoUpgrade.NONE;
-    }
-
-    set bulletBag(bb: Z64API.Z64.AmmoUpgrade) {
-        let buf: Buffer = this.emulator.rdramReadBits8(
-            this.inventory_upgrades_addr + 0x2
-        );
-        switch (bb) {
-            case Z64API.Z64.AmmoUpgrade.NONE:
-                buf[0x0] = 0x00;
-                buf[0x1] = 0x00;
-                break;
-            case Z64API.Z64.AmmoUpgrade.BASE:
-                buf[0x0] = 0x00;
-                buf[0x1] = 0x01;
-                break;
-            case Z64API.Z64.AmmoUpgrade.UPGRADED:
-                buf[0x0] = 0x01;
-                buf[0x1] = 0x00;
-                break;
-            case Z64API.Z64.AmmoUpgrade.MAX:
-                buf[0x0] = 0x01;
-                buf[0x1] = 0x01;
-                break;
-        }
-        this.emulator.rdramWriteBits8(this.inventory_upgrades_addr + 0x2, buf);
-    }
-
     get quiver(): Z64API.Z64.AmmoUpgrade {
         let buf: Buffer = this.emulator.rdramReadBits8(
             this.inventory_upgrades_addr + 0x3
@@ -764,10 +721,10 @@ export class Inventory extends JSONTemplate implements Z64API.MM.IInventory {
     }
 
     get photoCount(): number {
-        return this.getAmmoForSlot(Z64API.MM.InventorySlots.PICTOGRAPH_BOX);
+        return this.getAmmoForSlot(0x1C); //slot: save + inventoryCount + 0x1C
     }
     set photoCount(count: number) {
-        this.setAmmoInSlot(Z64API.MM.InventorySlots.PICTOGRAPH_BOX, count);
+        this.setAmmoInSlot(0x1C, count);
     }
 
     get FIELD_BOTTLE1(): Z64API.MM.InventoryItem {

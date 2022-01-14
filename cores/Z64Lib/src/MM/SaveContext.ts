@@ -3,6 +3,7 @@ import IMemory from "modloader64_api/IMemory";
 import { ILogger } from "modloader64_api/IModLoaderAPI";
 import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../importsZ64';
+import { IZ64Core, Magic, MagicQuantities } from "@Z64Lib/API/Common/Z64API";
 
 export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext {
 
@@ -20,6 +21,10 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     sword_helper: Z64API.MM.ISwordHelper;
     shields: Z64CORE.Z64.ShieldsEquipment;
     commandBuffer!: Z64API.ICommandBuffer;
+
+    magic_meter_size_addr: number = this.save_context + 0x38;
+    magic_flag_1_addr: number = this.save_context + 0x40;
+    magic_flag_2_addr: number = this.save_context + 0x41;
 
     jsonFields: string[] = [
         'entrance_index',
@@ -55,10 +60,10 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         'pictoboxUsed'
     ];
 
-    constructor(emu: IMemory, log: ILogger, core: Z64API.MM.IMMCore) {
+    constructor(emu: IMemory, log: ILogger, core: IZ64Core) {
         super();
         this.emulator = emu;
-        this.swords = new Z64CORE.Z64.SwordsEquipment(emu, this.commandBuffer);
+        this.swords = new Z64CORE.Z64.SwordsEquipment(emu, core);
         this.sword_helper = this.swords;
         this.shields = new Z64CORE.Z64.ShieldsEquipment(emu);
         this.inventory = new Z64CORE.MM.Inventory(emu, log);
@@ -124,28 +129,28 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     }
 
     // Several things need to be set in order for magic to function properly.
-    set magic_meter_size(size: Z64API.Z64.Magic) {
-        this.emulator.rdramWrite8(0x801EF6A8, size);
+    set magic_meter_size(size: Magic) {
+        this.emulator.rdramWrite8(this.magic_meter_size_addr, size);
         switch (size) {
-            case Z64API.Z64.Magic.NONE: {
-                this.emulator.rdramWrite8(0x801EF6B0, 0);
-                this.emulator.rdramWrite8(0x801EF6B1, 0);
-                this.emulator.rdramWrite8(0x801EF6A9, Z64API.Z64.MagicQuantities.NONE);
-                this.emulator.rdramWrite8(0x801EF6A8, 0);
+            case Magic.NONE: {
+                this.emulator.rdramWrite8(this.magic_flag_1_addr, 0);
+                this.emulator.rdramWrite8(this.magic_flag_2_addr, 0);
+                this.emulator.rdramWrite8(0x801EF6A9, MagicQuantities.NONE);
+                this.emulator.rdramWrite8(this.magic_meter_size_addr, 0);
                 break;
             }
-            case Z64API.Z64.Magic.NORMAL: {
-                this.emulator.rdramWrite8(0x801EF6B0, 1);
-                this.emulator.rdramWrite8(0x801EF6B1, 0);
-                this.emulator.rdramWrite8(0x801EF6A9, Z64API.Z64.MagicQuantities.NORMAL);
-                this.emulator.rdramWrite8(0x801EF6A8, 0);
+            case Magic.NORMAL: {
+                this.emulator.rdramWrite8(this.magic_flag_1_addr, 1);
+                this.emulator.rdramWrite8(this.magic_flag_2_addr, 0);
+                this.emulator.rdramWrite8(0x801EF6A9, MagicQuantities.NORMAL);
+                this.emulator.rdramWrite8(this.magic_meter_size_addr, 0);
                 break;
             }
-            case Z64API.Z64.Magic.EXTENDED: {
-                this.emulator.rdramWrite8(0x801EF6B0, 1);
-                this.emulator.rdramWrite8(0x801EF6B1, 1);
-                this.emulator.rdramWrite8(0x801EF6A9, Z64API.Z64.MagicQuantities.EXTENDED);
-                this.emulator.rdramWrite8(0x801EF6A8, 0);
+            case Magic.EXTENDED: {
+                this.emulator.rdramWrite8(this.magic_flag_1_addr, 1);
+                this.emulator.rdramWrite8(this.magic_flag_2_addr, 1);
+                this.emulator.rdramWrite8(0x801EF6A9, MagicQuantities.EXTENDED);
+                this.emulator.rdramWrite8(this.magic_meter_size_addr, 0);
                 break;
             }
         }

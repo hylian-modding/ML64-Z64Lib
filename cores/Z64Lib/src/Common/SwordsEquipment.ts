@@ -1,3 +1,4 @@
+import { IZ64Core } from '@Z64Lib/API/Common/Z64API';
 import IMemory from 'modloader64_api/IMemory';
 import { JSONTemplate } from 'modloader64_api/JSONTemplate';
 import * as Z64API from '../../API/imports';
@@ -16,8 +17,8 @@ export class SwordsEquipment extends JSONTemplate implements Z64API.Z64.ISwords 
   private emulator: IMemory;
   private biggoron_flag_addr: number = Z64CORE.Z64.Z64_SAVE + 0x003e;
   private biggoron_dmg_addr: number = Z64CORE.Z64.Z64_SAVE + 0x0036;
-  private commandBuf: Z64API.ICommandBuffer;
-  
+  private core: IZ64Core;
+
   jsonFields: string[] = [
     'kokiriSword',
     'masterSword',
@@ -25,10 +26,10 @@ export class SwordsEquipment extends JSONTemplate implements Z64API.Z64.ISwords 
     'biggoronSword',
     'swordLevel',
   ];
-  constructor(emulator: IMemory, commandBuf: Z64API.ICommandBuffer) {
+  constructor(emulator: IMemory, core: IZ64Core) {
     super();
     this.emulator = emulator;
-    this.commandBuf = commandBuf;
+    this.core = core;
   }
   get kokiriSword() {
     return this.emulator.rdramReadBit8(Z64CORE.Z64.Z64_EQUIP_ADDR + 1, SwordBitMap.KOKIRI_OOT);
@@ -104,27 +105,24 @@ export class SwordsEquipment extends JSONTemplate implements Z64API.Z64.ISwords 
       case Z64API.Z64.Sword.NONE:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0xFF);
-          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
       case Z64API.Z64.Sword.KOKIRI_MM:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0x4D);
-          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
       case Z64API.Z64.Sword.RAZOR:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0x4E);
-          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
       case Z64API.Z64.Sword.GILDED:
         if (this.emulator.rdramRead8(0x1EF6BC) !== 0x50) {
           this.emulator.rdramWrite8(0x1EF6BC, 0x4F);
-          //this.commandBuf.runCommand(Z64API.Command.UPDATEBUTTON, 0x0);
         }
         break;
     }
+    this.core.commandBuffer.updateButton(0);
   }
 }

@@ -37,7 +37,7 @@ export const enum LinkState2 {
     MOVING_FORWARD,
 }
 
-export const enum Sword {
+export enum Sword {
     NONE,
     //OoT
     KOKIRI_OOT = 1,
