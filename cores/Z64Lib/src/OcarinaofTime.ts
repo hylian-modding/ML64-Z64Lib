@@ -162,7 +162,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
     postinit(): void {
         this.global = new Z64CORE.OoT.GlobalContext(this.ModLoader);
         this.link = new Z64CORE.OoT.Link(this.ModLoader.emulator, this.ModLoader.math);
-        this.save = new Z64CORE.OoT.SaveContext(this.ModLoader, this.ModLoader.logger);
+        this.save = new Z64CORE.OoT.SaveContext(this.ModLoader, this.ModLoader.logger, this);
         this.helper = new Z64CORE.OoT.OotHelper(
             this.save,
             this.global,
