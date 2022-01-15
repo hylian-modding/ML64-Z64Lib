@@ -637,6 +637,8 @@ export class Inventory extends JSONTemplate implements Z64API.MM.IInventory {
                 return Z64API.Z64.Wallet.ADULT;
             case '0100':
                 return Z64API.Z64.Wallet.GIANT;
+            case '0101':
+                return Z64API.Z64.Wallet.ROYAL;
         }
         return Z64API.Z64.Wallet.CHILD;
     }
@@ -657,6 +659,10 @@ export class Inventory extends JSONTemplate implements Z64API.MM.IInventory {
             case Z64API.Z64.Wallet.GIANT:
                 buf[0x2] = 0x10;
                 buf[0x3] = 0x00;
+                break;
+            case Z64API.Z64.Wallet.ROYAL:
+                buf[0x2] = 0x01;
+                buf[0x3] = 0x01;
                 break;
         }
         this.emulator.rdramWriteBits8(this.inventory_upgrades_addr + 0x2, buf);

@@ -108,11 +108,12 @@ export const enum AmmoUpgrade {
     MAX
 }
 
-export const enum Wallet {
+export enum Wallet {
     CHILD,
     ADULT,
     GIANT,
     TYCOON,
+    ROYAL,
 }
 
 export const enum AgeOrForm {

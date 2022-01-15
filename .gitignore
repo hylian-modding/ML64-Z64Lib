@@ -13,3 +13,7 @@ overlays/CommandBuffer/bin_mm
 overlays/CommandBuffer/bin_oot
 .vscode
 *.ld
+src/cheatmenu.pak
+src/MemoryUtils3.pak
+src/MMR_15_0_10_Enemizer_28_2.bps
+src/z64_fast_run.pak

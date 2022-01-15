@@ -30,7 +30,7 @@ export class MMHelper extends JSONTemplate implements Z64API.MM.IMMHelper {
     isFadeIn(): boolean {
         let fadePre = this.fadeHelper;
         this.fadeHelper = this.emu.rdramRead16(0x803FF71F);
-        if(this.fadeHelper === 0 && fadePre !== this.fadeHelper) console.log("fade in complete")
+        if(this.fadeHelper === 0 && fadePre !== this.fadeHelper) // console.log("fade in complete")
         return fadePre > this.fadeHelper;
     }
 
