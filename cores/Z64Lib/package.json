@@ -1,13 +1,13 @@
 {
   "name": "Z64Lib",
-  "version": "2.1.1-nightly@7f601fe",
+  "version": "2.1.1-nightly@ebc43aa",
   "description": "",
   "main": "Z64LibEntryPoint.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "date": "Fri, 14 Jan 2022 14:50:41 GMT",
-  "commit": "7f601fe",
+  "date": "Sat, 15 Jan 2022 06:49:37 GMT",
+  "commit": "ebc43aa",
   "keywords": [],
   "author": "",
   "license": "ISC",

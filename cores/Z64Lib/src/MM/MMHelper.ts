@@ -10,6 +10,7 @@ export class MMHelper extends JSONTemplate implements Z64API.MM.IMMHelper {
     private global: Z64API.MM.IGlobalContext;
     private link: Z64API.Z64.ILink;
     private emu: IMemory;
+    private fadeHelper = 0xFF;
     constructor(
         save: Z64API.MM.ISaveContext,
         global: Z64API.MM.IGlobalContext,
@@ -21,6 +22,16 @@ export class MMHelper extends JSONTemplate implements Z64API.MM.IMMHelper {
         this.global = global;
         this.link = link;
         this.emu = memory;
+    }
+
+    //803FF71F: uin16: Fade in/out
+    // Fade out: 0x00 -> 0xFF
+    // Fade in: 0xFF -> 0x00
+    isFadeIn(): boolean {
+        let fadePre = this.fadeHelper;
+        this.fadeHelper = this.emu.rdramRead16(0x803FF71F);
+        if(this.fadeHelper === 0 && fadePre !== this.fadeHelper) console.log("fade in complete")
+        return fadePre > this.fadeHelper;
     }
 
     Player_InBlockingCsMode(): boolean {

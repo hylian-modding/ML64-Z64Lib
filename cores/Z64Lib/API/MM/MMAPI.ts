@@ -473,6 +473,7 @@ export interface IViewStruct {
 }
 
 export interface IMMHelper {
+  isFadeIn(): boolean;
   isTitleScreen(): boolean;
   isSceneNumberValid(): boolean;
   isLinkEnteringLoadingZone(): boolean;
