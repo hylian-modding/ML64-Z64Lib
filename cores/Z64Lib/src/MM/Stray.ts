@@ -16,7 +16,8 @@ export class Stray extends JSONTemplate implements Z64API.MM.IStray {
         'strayWoodfall',
         'straySnowhead',
         'strayBay',
-        'strayStone'
+        'strayStone',
+        'strayClockTown'
     ];
     constructor(emulator: IMemory) {
         super();
