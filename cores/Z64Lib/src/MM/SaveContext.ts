@@ -331,7 +331,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     }
 
     get time_speed(): number {
-        return this.emulator.rdramRead32(0x801EF684);
+        return this.emulator.rdramReadS32(0x801EF684);
     }
 
     set time_speed(flag: number) {
