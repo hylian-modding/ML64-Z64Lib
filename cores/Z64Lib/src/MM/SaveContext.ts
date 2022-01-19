@@ -57,7 +57,14 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         'photo',
         'skull',
         'stray',
-        'pictoboxUsed'
+        'pictoboxUsed',
+        'bank',
+        'lottery_numbers_day1',
+        'lottery_numbers_day2',
+        'lottery_numbers_day3',
+        'permSceneData',
+        'weekEventFlags',
+        'infTable'
     ];
 
     constructor(emu: IMemory, log: ILogger, core: IZ64Core) {
@@ -69,7 +76,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         this.inventory = new Z64CORE.MM.Inventory(emu, log);
         this.questStatus = new Z64CORE.MM.QuestStatus(emu);
         this.owlStatues = new Z64CORE.MM.OwlStatues(emu);
-        this.keyManager = new Z64CORE.Z64.KeyManager(emu);
+        this.keyManager = new Z64CORE.MM.KeyManager(emu);
         this.dungeonItemManager = new Z64CORE.Z64.DungeonItemManager(emu);
         this.photo = new Z64CORE.MM.Photo(emu);
         this.stray = new Z64CORE.MM.Stray(emu);
@@ -279,7 +286,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     get permSceneData(): Buffer {
         return this.emulator.rdramReadBuffer(0x801EF768, 0xD20);
     }
-
+    
     set permSceneData(flag: Buffer) {
         this.emulator.rdramWriteBuffer(0x801EF768, flag);
     }

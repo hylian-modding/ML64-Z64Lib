@@ -1,7 +1,7 @@
 export { Position, Rotation, ActorBase, ActorDeathBehavior } from './Actor';
 export { ActorCategory } from './ActorCategory'
 export { viewStruct } from './viewStruct'
-export { KeyManager } from './KeyManager'
+export { KeyManager } from '../OoT/KeyManager'
 export { DungeonItemContainer, DungeonItemManager } from './DungeonItemManager'
 export { CommandBuffer } from './CommandBuffer/CommandBuffer'
 export {

@@ -81,14 +81,14 @@ export class GlobalContext implements IGlobalContext{
 
     getSaveDataForCurrentScene(): Buffer {
         return this.ModLoader.emulator.rdramReadBuffer(
-            this.save_context + 0x00F8 + this.scene * 0xD20,
+            Z64CORE.Z64.Z64_SAVE + 0x00F8 + this.scene * 0x1c,
             0x1c
         );
     }
     writeSaveDataForCurrentScene(buf: Buffer): void {
         if (buf.byteLength === 0x1c) {
             this.ModLoader.emulator.rdramWriteBuffer(
-                this.save_context + 0x00F8 + this.scene * 0xD20,
+                Z64CORE.Z64.Z64_SAVE + 0x00F8 + this.scene * 0x1c,
                 buf
             );
         }
