@@ -268,10 +268,10 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
         this.emulator.rdramWrite16(this.sound_addr, s);
     }
     get_anim_id(): number {
-        return this.emulator.rdramRead16(this.instance + 0x1ae);
+        return this.emulator.rdramRead16(this.instance + 0x240 + 0x8);
     }
     get_anim_frame(): number {
-        return this.emulator.rdramRead16(this.instance + 0x1f4);
+        return this.emulator.rdramRead16(this.instance + 0x240 + 0x18);
     }
     // Give ILink a complete IMemory implementation for shortcuts.
     rdramRead8(addr: number): number {
