@@ -38,7 +38,7 @@ export class Inventory extends JSONTemplate implements Z64API.OoT.IInventory {
       'bottle_4',
       'childTradeItem',
       'adultTradeItem',
-      'Wallet',
+      'wallet',
       'quiver',
       'bulletBag',
       'bombBag',
