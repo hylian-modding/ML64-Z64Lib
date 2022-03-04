@@ -442,4 +442,12 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     rdramWriteBigInt64(addr: number, val: BigInt): void {
         this.emulator.rdramWriteBigInt64(this.pointer + addr, val);
     }
+
+    get iframes(): number{
+        return 0
+    }
+
+    set iframes(f: number){
+        console.log("iframes not implemented yet in MM!");
+    }
 }

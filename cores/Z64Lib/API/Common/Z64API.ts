@@ -177,6 +177,7 @@ export interface ILink extends Z64API.IActor {
     get_anim_id(): number;
     get_anim_frame(): number;
     projected_position: Vector3;
+    iframes: number;
 }
 
 export interface IGlobalContext {

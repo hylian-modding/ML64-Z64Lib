@@ -116,7 +116,7 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     }
 
     set health(h: number) {
-        this.rdramWrite8(Z64_SAVE + 0x30, h);
+        this.rdramWrite16(Z64_SAVE + 0x30, h);
     }
 
     get redeadFreeze(): number {
@@ -451,5 +451,13 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
 
     set projected_position(vec: Vector3) {
         this.math.rdramWriteV3(this.pointer + 0xE4, vec);
+    }
+
+    get iframes(): number{
+        return this.emulator.rdramRead8(this.pointer + 0xA68);
+    }
+
+    set iframes(f: number){
+        this.emulator.rdramWrite8(this.pointer + 0xA68, f);
     }
 }
