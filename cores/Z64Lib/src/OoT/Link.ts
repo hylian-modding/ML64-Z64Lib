@@ -5,7 +5,7 @@ import Vector3 from 'modloader64_api/math/Vector3';
 import { IMath } from 'modloader64_api/math/IMath';
 import * as Z64API from '../../API/imports';
 import * as Z64CORE from '../importsZ64';
-import { Z64_PLAYER_STATE, Z64_PLAYER_STATE2 } from '../Common/types/GameAliases';
+import { Z64_PLAYER_STATE, Z64_PLAYER_STATE2, Z64_SAVE } from '../Common/types/GameAliases';
 
 export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     private emulator: IMemory;
@@ -112,11 +112,11 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     }
 
     get health(): number {
-        return this.rdramRead8(0xaf);
+        return this.rdramRead16(Z64_SAVE + 0x30);
     }
 
     set health(h: number) {
-        this.rdramWrite8(0xaf, h);
+        this.rdramWrite8(Z64_SAVE + 0x30, h);
     }
 
     get redeadFreeze(): number {
