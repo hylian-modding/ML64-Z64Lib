@@ -112,11 +112,11 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     }
 
     get health(): number {
-        return this.rdramRead16(Z64_SAVE + 0x30);
+        return this.emulator.rdramRead16(Z64_SAVE + 0x30);
     }
 
     set health(h: number) {
-        this.rdramWrite16(Z64_SAVE + 0x30, h);
+        this.emulator.rdramWrite16(Z64_SAVE + 0x30, h);
     }
 
     get redeadFreeze(): number {
