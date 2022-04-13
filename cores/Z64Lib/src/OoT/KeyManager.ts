@@ -4,7 +4,7 @@ import * as Z64CORE from '../importsZ64';
 
 export class KeyManager implements Z64API.Z64.IKeyManager {
   private readonly KEY_ARRAY_ADDR: number = Z64CORE.Z64.Z64_SAVE + 0xBC;
-  private readonly KEY_ARRAY_SIZE: number = 0x4;
+  private readonly KEY_ARRAY_SIZE: number = 0x14;
   private readonly emulator: IMemory;
 
   constructor(emulator: IMemory) {
