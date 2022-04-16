@@ -139,11 +139,11 @@ export class Link extends JSONTemplate implements Z64API.Z64.ILink {
     }
 
     get redeadFreeze(): number {
-        return this.rdramReadS16(0x110);
+        return this.rdramReadS16(0x118);
     }
 
     set redeadFreeze(f: number) {
-        this.rdramWrite16(0x110, f);
+        this.rdramWrite16(0x118, f);
     }
 
     get exists(): boolean {
