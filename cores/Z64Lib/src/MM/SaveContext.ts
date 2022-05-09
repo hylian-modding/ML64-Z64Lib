@@ -23,6 +23,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     commandBuffer!: Z64API.ICommandBuffer;
 
     magic_meter_size_addr: number = this.save_context + 0x38;
+    magic_fill_cap_addr: number = this.save_context + 0x39;
     magic_flag_1_addr: number = this.save_context + 0x40;
     magic_flag_2_addr: number = this.save_context + 0x41;
 
@@ -124,39 +125,37 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
     }
 
     get magic(): number {
-        return this.emulator.rdramRead8(0x801EF6A9);
+        return this.emulator.rdramRead8(this.magic_fill_cap_addr);
     }
 
     set magic(flag: number) {
-        this.emulator.rdramWrite8(0x801EF6A9, flag);
+        this.emulator.rdramWrite8(this.magic_fill_cap_addr, flag);
     }
 
     get magic_meter_size(): Z64API.Z64.Magic {
-        return this.emulator.rdramRead8(0x801EF6A8);
+        return this.emulator.rdramRead8(this.magic_meter_size_addr);
     }
-
     // Several things need to be set in order for magic to function properly.
-    set magic_meter_size(size: Magic) {
-        this.emulator.rdramWrite8(this.magic_meter_size_addr, size);
+    set magic_meter_size(size: Z64API.Z64.Magic) {
         switch (size) {
-            case Magic.NONE: {
+            case Z64API.Z64.Magic.NONE: {
                 this.emulator.rdramWrite8(this.magic_flag_1_addr, 0);
                 this.emulator.rdramWrite8(this.magic_flag_2_addr, 0);
-                this.emulator.rdramWrite8(0x801EF6A9, MagicQuantities.NONE);
+                this.emulator.rdramWrite8(this.magic_fill_cap_addr, Z64API.Z64.MagicQuantities.NONE);
                 this.emulator.rdramWrite8(this.magic_meter_size_addr, 0);
                 break;
             }
-            case Magic.NORMAL: {
+            case Z64API.Z64.Magic.NORMAL: {
                 this.emulator.rdramWrite8(this.magic_flag_1_addr, 1);
                 this.emulator.rdramWrite8(this.magic_flag_2_addr, 0);
-                this.emulator.rdramWrite8(0x801EF6A9, MagicQuantities.NORMAL);
+                this.emulator.rdramWrite8(this.magic_fill_cap_addr, Z64API.Z64.MagicQuantities.NORMAL);
                 this.emulator.rdramWrite8(this.magic_meter_size_addr, 0);
                 break;
             }
-            case Magic.EXTENDED: {
+            case Z64API.Z64.Magic.EXTENDED: {
                 this.emulator.rdramWrite8(this.magic_flag_1_addr, 1);
                 this.emulator.rdramWrite8(this.magic_flag_2_addr, 1);
-                this.emulator.rdramWrite8(0x801EF6A9, MagicQuantities.EXTENDED);
+                this.emulator.rdramWrite8(this.magic_fill_cap_addr, Z64API.Z64.MagicQuantities.EXTENDED);
                 this.emulator.rdramWrite8(this.magic_meter_size_addr, 0);
                 break;
             }
