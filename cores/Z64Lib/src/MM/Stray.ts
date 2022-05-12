@@ -6,7 +6,6 @@ import { Flag, FlagManager } from "modloader64_api/FlagManager";
 
 export class Stray extends JSONTemplate implements Z64API.MM.IStray {
     private emulator: IMemory;
-    private strayFlags: FlagManager;
     private woodfall_fairies = 0x801EF744; //0x1
     private snowhead_fairies = 0x801EF745; //0x1
     private bay_fairies = 0x801EF746; //0x1
@@ -22,7 +21,6 @@ export class Stray extends JSONTemplate implements Z64API.MM.IStray {
     constructor(emulator: IMemory) {
         super();
         this.emulator = emulator;
-        this.strayFlags = new FlagManager(emulator, this.strayClockTownAddr);
     }
 
     get strayWoodfall(): number {
@@ -57,11 +55,10 @@ export class Stray extends JSONTemplate implements Z64API.MM.IStray {
         this.emulator.rdramWrite8(this.stone_fairies, flag);
     }
 
-    private strayClockTownFlag = new Flag(0x0, 0x0);
     get strayClockTown(): boolean {
-        return this.strayFlags.isFlagSet(this.strayClockTownFlag);
+        return this.emulator.rdramReadBit8(this.strayClockTownAddr, 0);
     }
-    set strayClockTown(bool: boolean) {
-        this.strayFlags.setFlag(this.strayClockTownFlag, bool);
+    set strayClockTown(flag: boolean) {
+        this.emulator.rdramWriteBit8(this.strayClockTownAddr, 0, flag);
     }
 }
