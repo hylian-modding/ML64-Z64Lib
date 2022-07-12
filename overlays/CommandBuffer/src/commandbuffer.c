@@ -22,6 +22,7 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
     uint32_t qndex;
     Command* command;
     CommandReturn* commandReturn;
+    CommandEvent* commandEvent;
 #ifdef GAMESTATE_CAVE
     GlobalContext* globalCtx = &gGlobalCtx;
     ActorContext* actorCtx = &globalCtx->actorCtx;
@@ -94,7 +95,13 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
                 CommandFunc_ObjectLoad(command, commandReturn, globalCtx, actorCtx);
                 break;
             }
-            default:
+            default: {
+                commandEvent = CommandBuffer_CommandEvent_GetNext();
+                commandEvent->type = COMMANDEVENTTYPE_ERROR_FILLED;
+                commandEvent->params.unknown.uuid = command->uuid;
+                commandEvent->params.unknown.type = command->type;
+                break;
+            }
             case (COMMANDTYPE_NONE): {
                 break;
             }
@@ -111,6 +118,8 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
         Lib_MemSet(gCmdBuffer->commandEvents, sizeof(gCmdBuffer->commandEvents), 0);
 
         gCmdBuffer->commandEvents[0].type = COMMANDEVENTTYPE_ERROR_FILLED; // notify ML64 that we died
+        gCmdBuffer->commandEvents[0].params.unknown.uuid = -1;
+        gCmdBuffer->commandEvents[0].params.unknown.type = -1;
     }
 
 #ifndef GAMESTATE_CAVE
