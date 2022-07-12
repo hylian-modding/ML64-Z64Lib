@@ -2,6 +2,7 @@
 #define COMMAND_H
 
 #include <libzelda64.h>
+#include "commandreturn.h"
 #include "pvp.h"
 
 enum {
@@ -126,6 +127,15 @@ void CommandBuffer_Update(GameState* gameState);
 #else
 void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCtx);
 #endif
+
+extern void CommandFunc_OverlayRelocate(Command* thisx, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_ActorSpawn(Command* thisx, CommandReturn* commandReturn, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_ActorAddRemCat(Command* thisx, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_Warp(Command* thisx, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_MovePlayerToAddress(Command* thisx, CommandReturn* commandReturn, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_ArbitraryFunctionCall(Command* thisx, CommandReturn* commandReturn, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_MallocFree(Command* thisx, CommandReturn* commandReturn, GlobalContext* globalCtx, ActorContext* actorCtx);
+extern void CommandFunc_ObjectLoad(Command* thisx, CommandReturn* commandReturn, GlobalContext* globalCtx, ActorContext* actorCtx);
 
 #endif
 

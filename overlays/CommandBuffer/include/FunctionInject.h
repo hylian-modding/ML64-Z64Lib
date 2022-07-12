@@ -10,7 +10,7 @@ typedef struct{
     /* 0x0C */ uint32_t Actor_Init;
     /* 0x10 */ uint32_t Actor_Update;
     /* 0x14 */ uint32_t Actor_SpawnTransition;
-    /* 0x18 */ uint32_t Actor_SpawnWithParentAndCutscene;
+    /* 0x18 */ uint32_t Actor_SpawnAsChildAndCutscene;
     /* 0x1C */ uint32_t Object_Spawn;
     /* 0x20 */ uint32_t Actor_SpawnWithAddress;
 } En_FunctionHooks;

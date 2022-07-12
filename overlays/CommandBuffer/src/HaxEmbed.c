@@ -10,9 +10,10 @@ const HaxEmbed_t embed = {
         .Actor_SpawnEntry = Actor_SpawnEntryCave,
         .Actor_SpawnTransition = Actor_SpawnTransitionActorCave,
         .Actor_SpawnWithAddress = Actor_SpawnWithAddress,
-        .Actor_SpawnWithParentAndCutscene = Actor_SpawnWithParentAndCutsceneCave,
+        .Actor_SpawnAsChildAndCutscene = Actor_SpawnWithParentAndCutsceneCave,
         .Actor_Update = Actor_UpdateCave,
         .Object_Spawn = Object_Spawn
     },
     .end = 0xBEEFDEAD
 };
+

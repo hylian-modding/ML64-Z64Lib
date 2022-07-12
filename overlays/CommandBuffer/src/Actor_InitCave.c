@@ -1,6 +1,6 @@
  #include "Actor_InitCave.h"
  
- void Actor_InitCave(struct Actor* actor, struct GlobalContext* globalCtx){
+ void Actor_InitCave(Actor* actor, GlobalContext* globalCtx) {
     register CommandEvent* commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_INIT, COMMANDEVENTTYPE_INIT);
 
     if (commandEvent) {

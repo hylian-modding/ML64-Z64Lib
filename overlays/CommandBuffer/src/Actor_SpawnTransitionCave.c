@@ -37,7 +37,7 @@ void Actor_SpawnTransitionActorsCave(GlobalContext* globalCtx, ActorContext* act
            (actorList->sides[1].room >= 0 && (actorList->sides[1].room == globalCtx->roomCtx.curRoom.num || actorList->sides[1].room == globalCtx->roomCtx.prevRoom.num)))) {
             int16_t params = ((actorList->rotY >> 7) & 0x1FF) * *((float*)&hexFloat);
 
-            actor = Actor_SpawnWithParentAndCutscene(actorCtx, globalCtx, actorList->id & 0x1FFF, actorList->pos.x, actorList->pos.y, actorList->pos.z, 0, params, 0, (i << 0xA) + (actorList->params & 0x3FF), actorList->rotY & 0x7F, 0x3FF, NULL);
+            actor = Actor_SpawnAsChildAndCutscene(actorCtx, globalCtx, actorList->id & 0x1FFF, actorList->pos.x, actorList->pos.y, actorList->pos.z, 0, params, 0, (i << 0xA) + (actorList->params & 0x3FF), actorList->rotY & 0x7F, 0x3FF, NULL);
             if (actor != NULL) {
                 actorList->id = -actorList->id;
 

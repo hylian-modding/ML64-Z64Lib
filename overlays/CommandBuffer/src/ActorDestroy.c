@@ -23,7 +23,6 @@ void Actor_DestroyCave(struct Actor* actor, struct GlobalContext* globalCtx) {
     return;
 }
 #elif defined GAME_MM
-// Do whatever shit for MMR?
 void Actor_DestroyCave(struct Actor* actor, struct GlobalContext* globalCtx) {
     register CommandEvent* commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_DESTROY, COMMANDEVENTTYPE_DESTROY);
 
@@ -45,4 +44,5 @@ void Actor_DestroyCave(struct Actor* actor, struct GlobalContext* globalCtx) {
 
     return;
 }
+
 #endif

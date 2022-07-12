@@ -6,6 +6,6 @@
 #include "commandevent.h"
 #include "Actor_CaveHelpers.h"
 
-struct Actor* Actor_SpawnEntryCave(struct ActorContext* actorCtx, struct ActorEntry* actorEntry, struct GlobalContext* globalCtx);
+extern Actor* Actor_SpawnEntryCave(ActorContext* actorCtx, ActorEntry* actorEntry, GlobalContext* globalCtx);
 
 #endif /* __ACTOR_SPAWN_ENTRY_H__ */
