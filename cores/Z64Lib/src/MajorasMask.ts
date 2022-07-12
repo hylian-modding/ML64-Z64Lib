@@ -63,7 +63,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         this.eventTicks.set('waitingForSaveload', () => {
             if (!this.isSaveLoaded && this.helper.isSceneNumberValid() && !this.helper.isTitleScreen()) {
                 this.isSaveLoaded = true;
-                bus.emit(Z64API.MM.MMEvents.ON_SAVE_LOADED, {});
+                bus.emit(Z64API.Z64.Z64Events.ON_SAVE_LOADED, {});
             }
         });
     }
@@ -99,7 +99,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
 
         // Loading zone check
         if (this.helper.isLinkEnteringLoadingZone() && !this.touching_loading_zone) {
-            bus.emit(Z64API.MM.MMEvents.ON_LOADING_ZONE, {});
+            bus.emit(Z64API.Z64.Z64Events.ON_LOADING_ZONE, {});
             this.touching_loading_zone = true;
         }
         // Scene change check
@@ -108,7 +108,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
             !this.sceneLockout
         ) {
             this.last_known_scene = this.global.scene;
-            bus.emit(Z64API.MM.MMEvents.ON_SCENE_CHANGE, this.last_known_scene);
+            bus.emit(Z64API.Z64.Z64Events.ON_SCENE_CHANGE, this.last_known_scene);
             this.touching_loading_zone = false;
             this.sceneLockout = true;
             this.ModLoader.utils.setTimeoutFrames(() => {
@@ -118,7 +118,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         // Age check
         if (this.save.form !== this.last_known_age) {
             this.last_known_age = this.save.form;
-            bus.emit(Z64API.MM.MMEvents.ON_AGE_CHANGE, this.last_known_age);
+            bus.emit(Z64API.Z64.Z64Events.ON_AGE_CHANGE, this.last_known_age);
         }
 
         // UnPause Check
@@ -127,7 +127,7 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
         }
         else if (!this.helper.isPaused() && this.isPaused) {
             this.isPaused = false;
-            bus.emit(Z64API.MM.MMEvents.ON_UNPAUSE);
+            bus.emit(Z64API.Z64.Z64Events.ON_UNPAUSE);
         }
 
         this.eventTicks.forEach((value: Function, key: string) => {

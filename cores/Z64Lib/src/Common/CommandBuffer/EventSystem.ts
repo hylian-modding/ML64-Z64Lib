@@ -50,7 +50,7 @@ export class EventSystem implements IActorManager {
                     let actor = this.createIActorFromPointer(actorPointer);
                     this.actors.get(actor.actorType)!.push(actor);
                     this.allActors.set(actorPointer, actor);
-                    bus.emit(Z64.OotEvents.ON_ACTOR_SPAWN, actor);
+                    bus.emit(Z64.Z64Events.ON_ACTOR_SPAWN, actor);
                 } catch (err: any) {
                     console.log(err);
                 }
@@ -62,7 +62,7 @@ export class EventSystem implements IActorManager {
                     for (let i = 0; i < actors.length; i++) {
                         if (actors[i].pointer === actorPointer) {
                             actors[i].exists = false;
-                            bus.emit(Z64.OotEvents.ON_ACTOR_DESPAWN, actors[i]);
+                            bus.emit(Z64.Z64Events.ON_ACTOR_DESPAWN, actors[i]);
                             actors.splice(i, 1);
                             break;
                         }
@@ -74,7 +74,7 @@ export class EventSystem implements IActorManager {
             case Z64CORE.Z64.CommandBuffer_CommandEventType.UPDATE: {
                 let actorPointer = event.readUInt32BE(0x4);
                 let actor = this.actors.get(actorPointer)!;
-                bus.emit(Z64.OotEvents.ON_ACTOR_UPDATE, actor);
+                bus.emit(Z64.Z64Events.ON_ACTOR_UPDATE, actor);
                 break;
             }
             case Z64CORE.Z64.CommandBuffer_CommandEventType.OBJECTSPAWN: {

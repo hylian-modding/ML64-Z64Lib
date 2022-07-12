@@ -231,7 +231,7 @@ export interface IZ64Core extends ICore {
 
 // Note: ON_ACTOR_SPAWN/ON_ACTOR_DESPAWN won't detect anything created by ICommandBuffer. This is intentional behavior.
 
-export enum OotEvents {
+export enum Z64Events {
     ON_SAVE_LOADED = 'onSaveLoaded',
     ON_SCENE_CHANGE = 'onSceneChange',
     ON_LOADING_ZONE = 'onLoadingZone',
@@ -246,7 +246,8 @@ export enum OotEvents {
     ON_NIGHT_TRANSITION = "onNightTransition",
     ON_HEALTH_CHANGE = "onHealthChange",
     ON_TUNIC_CHANGE = "onTunicChanged",
-    ON_ACTOR_UPDATE = "onActorUpdate"
+    ON_ACTOR_UPDATE = "onActorUpdate",
+    ON_UNPAUSE = "onUnpause"
 }
 
 export interface IActorManager {

@@ -492,19 +492,6 @@ export interface IMMCore extends ICore, IZ64Core {
   actorManager: IActorManager;
 }
 
-// Note: ON_ACTOR_SPAWN/ON_ACTOR_DESPAWN won't detect anything created by ICommandBuffer This is intentional behavior
-
-export enum MMEvents {
-  ON_SAVE_LOADED = 'onSaveLoaded',
-  ON_SCENE_CHANGE = 'onSceneChange',
-  ON_LOADING_ZONE = 'onLoadingZone',
-  ON_ACTOR_SPAWN = 'onActorSpawn',
-  ON_ACTOR_DESPAWN = 'onActorDespawn',
-  ON_ROOM_CHANGE = 'onRoomChange',
-  ON_ROOM_CHANGE_PRE = 'onPreRoomChange',
-  ON_AGE_CHANGE = 'onAgeChange',
-  ON_UNPAUSE = 'onUnPause'
-}
 
 export interface IActorManager {
   // Returns IActor if the actor exists or undefined if the pointer doesn't lead to an actor

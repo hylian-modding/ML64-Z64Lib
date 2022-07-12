@@ -409,24 +409,6 @@ export interface IOOTCore extends ICore {
   toggleMapSelectKeybind(): boolean;
 }
 
-// Note: ON_ACTOR_SPAWN/ON_ACTOR_DESPAWN won't detect anything created by ICommandBuffer. This is intentional behavior.
-
-export enum OotEvents {
-  ON_SAVE_LOADED = 'onSaveLoaded',
-  ON_SCENE_CHANGE = 'onSceneChange',
-  ON_LOADING_ZONE = 'onLoadingZone',
-  ON_ACTOR_SPAWN = 'onActorSpawn',
-  ON_ACTOR_DESPAWN = 'onActorDespawn',
-  ON_ROOM_CHANGE = 'onRoomChange',
-  ON_ROOM_CHANGE_PRE = 'onPreRoomChange',
-  ON_AGE_CHANGE = 'onAgeChange',
-  ON_SAVE_FLAG_CHANGE = "onSaveFlagChange",
-  ON_LOCAL_FLAG_CHANGE = "onLocalFlagChange",
-  ON_DAY_TRANSITION = "onDayTransition",
-  ON_NIGHT_TRANSITION = "onNightTransition",
-  ON_HEALTH_CHANGE = "onHealthChange",
-  ON_TUNIC_CHANGE = "onTunicChanged"
-}
 
 export interface IActorManager {
   // Returns IActor if the actor exists or undefined if the pointer doesn't lead to an actor.

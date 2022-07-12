@@ -75,14 +75,14 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
     init(): void {
         this.eventTicks.set('waitingForAgeChange', () => {
             if (this.save.age !== this.last_known_age) {
-                bus.emit(Z64API.OoT.OotEvents.ON_AGE_CHANGE, this.save.age);
+                bus.emit(Z64API.Z64.Z64Events.ON_AGE_CHANGE, this.save.age);
                 this.last_known_age = this.save.age;
             }
         });
         this.eventTicks.set('waitingForSaveload', () => {
             if (!this.isSaveLoaded && this.helper.isSceneNumberValid()) {
                 this.isSaveLoaded = true;
-                bus.emit(Z64API.OoT.OotEvents.ON_SAVE_LOADED, {});
+                bus.emit(Z64API.Z64.Z64Events.ON_SAVE_LOADED, {});
             }
         });
         this.eventTicks.set('waitingForLoadingZoneTrigger', () => {
@@ -90,7 +90,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
                 this.helper.isLinkEnteringLoadingZone() &&
                 !this.touching_loading_zone
             ) {
-                bus.emit(Z64API.OoT.OotEvents.ON_LOADING_ZONE, {});
+                bus.emit(Z64API.Z64.Z64Events.ON_LOADING_ZONE, {});
                 this.touching_loading_zone = true;
             }
         });
@@ -102,7 +102,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
             ) {
                 let cur = this.global.scene;
                 this.last_known_scene = cur;
-                bus.emit(Z64API.OoT.OotEvents.ON_SCENE_CHANGE, this.last_known_scene);
+                bus.emit(Z64API.Z64.Z64Events.ON_SCENE_CHANGE, this.last_known_scene);
                 this.touching_loading_zone = false;
                 let inventory: Buffer = this.ModLoader.emulator.rdramReadBuffer(
                     Z64_SAVE + 0x0074,
@@ -124,7 +124,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
             let cur = this.global.room;
             if (this.last_known_room !== cur) {
                 this.last_known_room = cur;
-                bus.emit(Z64API.OoT.OotEvents.ON_ROOM_CHANGE, this.last_known_room);
+                bus.emit(Z64API.Z64.Z64Events.ON_ROOM_CHANGE, this.last_known_room);
                 this.doorcheck = false;
             }
             let doorState = this.ModLoader.emulator.rdramReadPtr8(
@@ -132,29 +132,29 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
                 0x11ced
             );
             if (doorState === 1 && !this.doorcheck) {
-                bus.emit(Z64API.OoT.OotEvents.ON_ROOM_CHANGE_PRE, doorState);
+                bus.emit(Z64API.Z64.Z64Events.ON_ROOM_CHANGE_PRE, doorState);
                 this.doorcheck = true;
             }
         });
         this.eventTicks.set('nightTick', () => {
             if (!this.isNight && this.save.world_night_flag) {
                 this.isNight = true;
-                bus.emit(Z64API.OoT.OotEvents.ON_NIGHT_TRANSITION, this.isNight);
+                bus.emit(Z64API.Z64.Z64Events.ON_NIGHT_TRANSITION, this.isNight);
             } else if (this.isNight && !this.save.world_night_flag) {
                 this.isNight = false;
-                bus.emit(Z64API.OoT.OotEvents.ON_DAY_TRANSITION, this.isNight);
+                bus.emit(Z64API.Z64.Z64Events.ON_DAY_TRANSITION, this.isNight);
             }
         });
         this.eventTicks.set('healthTick', () => {
             if (this.lastHealth !== this.save.health) {
                 this.lastHealth = this.save.health;
-                bus.emit(Z64API.OoT.OotEvents.ON_HEALTH_CHANGE, this.lastHealth);
+                bus.emit(Z64API.Z64.Z64Events.ON_HEALTH_CHANGE, this.lastHealth);
             }
         });
         this.eventTicks.set('tunicTick', () => {
             if (this.lastTunic !== this.link.tunic) {
                 this.lastTunic = this.link.tunic;
-                bus.emit(Z64API.OoT.OotEvents.ON_TUNIC_CHANGE, this.lastTunic);
+                bus.emit(Z64API.Z64.Z64Events.ON_TUNIC_CHANGE, this.lastTunic);
             }
         });
     }
