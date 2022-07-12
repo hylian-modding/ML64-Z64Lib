@@ -21,7 +21,7 @@ enum {
 
 typedef struct {
     /* 0x00 */ uint16_t uuid;
-    /* 0x02 */ uint16_t _pad;
+    /* 0x02 */ uint16_t type;
 } CommandEvent_Params_UnknownCommand; /* sizeof = 0x04 */
 
 typedef struct {
