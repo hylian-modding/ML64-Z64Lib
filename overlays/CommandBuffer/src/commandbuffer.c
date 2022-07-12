@@ -8,6 +8,10 @@
 CommandBuffer* gCmdBuffer = 0xBADF00D;
 const uint32_t cbSize = sizeof(CommandBuffer);
 
+// avoid unusual behavior causes by so me implicit -f option
+#pragma GCC push_options
+#pragma GCC optimize("O1")
+
 #ifdef GAMESTATE_CAVE
 void CommandBuffer_Update(GameState* gameState)
 #else
@@ -21,7 +25,7 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
 #ifdef GAMESTATE_CAVE
     GlobalContext* globalCtx = &gGlobalCtx;
     ActorContext* actorCtx = &globalCtx->actorCtx;
-    
+
     gameState->main(gameState);
     if (gCmdBuffer == NULL || gCmdBuffer == 0xBADF00D) return;
 #else
@@ -114,4 +118,6 @@ LActor_UpdateAll:;
     Actor_UpdateAll(globalCtx, actorCtx);
 #endif
 }
+
+#pragma GCC pop_options
 

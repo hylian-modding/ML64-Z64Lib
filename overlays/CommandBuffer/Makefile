@@ -51,7 +51,7 @@ GAME_VERSION_D_FLAGS = -DGAME_VERSION_1_0
 I_FLAGS = -I$(INCLUDE_DIR) -I$(LIBZ64_PATH) -I$(ULTRALIB_PATH)
 
 ifeq ($(RELEASE_BUILD),1)
-OPT_FLAGS = -O1
+OPT_FLAGS = -Os
 OPT_FLAGS2 = -mfix4300 -mno-check-zero-division -mno-memcpy -mno-shared -fno-unroll-loops -ffreestanding -mframe-header-opt -fno-reorder-blocks -fno-inline-functions -falign-functions=16 -fwrapv -fmerge-all-constants -ffast-math -fno-stack-protector -fmodulo-sched -fmodulo-sched-allow-regmoves -fira-hoist-pressure -fweb -floop-interchange -fsplit-paths -fallow-store-data-races
 OPT_FLAGS3 = 
 else

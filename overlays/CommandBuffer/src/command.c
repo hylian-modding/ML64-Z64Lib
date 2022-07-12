@@ -35,7 +35,8 @@ void CommandFunc_ActorAddRemCat(Command* thisx, GlobalContext* globalCtx, ActorC
             Actor_AddToCategory(actorCtx, thisx->params.actorCat.address, thisx->params.actorCat.category);
             break;
         }
-        default: {
+        default:
+        case (ACTORADDREMCAT_DELETE): {
             Actor_Delete(actorCtx, thisx->params.actorCat.address, globalCtx);
             break;
         }
