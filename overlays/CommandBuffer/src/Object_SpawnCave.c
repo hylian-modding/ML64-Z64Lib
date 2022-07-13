@@ -22,3 +22,4 @@ s32 Object_SpawnCave(ObjectContext* objectCtx, s16 objectId) {
 #elif defined GAME_MM
 s32 Object_SpawnCave(ObjectContext* objectCtx, s16 objectId) {}
 #endif
+

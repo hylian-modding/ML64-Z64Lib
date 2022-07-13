@@ -1,8 +1,7 @@
 #include "ActorSpawn.h"
 
 #ifdef GAME_OOT
-Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, f32 posX, f32 posY, f32 posZ,
-                   s16 rotX, s16 rotY, s16 rotZ, s16 params) {
+Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, f32 posX, f32 posY, f32 posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params) {
     register CommandEvent* commandEvent;
     s32 pad;
     Actor* actor;

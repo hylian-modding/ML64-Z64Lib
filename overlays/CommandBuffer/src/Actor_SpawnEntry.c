@@ -1,8 +1,9 @@
 #include "Actor_SpawnEntry.h"
+#include <libzelda64.h>
 
-struct Actor* Actor_SpawnEntryCave(struct ActorContext* actorCtx, struct ActorEntry* actorEntry, struct GlobalContext* globalCtx) {
+Actor* Actor_SpawnEntryCave(ActorContext* actorCtx, ActorEntry* actorEntry, GlobalContext* globalCtx) {
     register CommandEvent* commandEvent = 0;
-    struct Actor* actor = Actor_SpawnEntry(actorCtx, actorEntry, globalCtx);
+    Actor* actor = Actor_SpawnEntry(actorCtx, actorEntry, globalCtx);
 
     commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_SPAWN, COMMANDEVENTTYPE_SPAWNTRANSITION);
     if (commandEvent) {

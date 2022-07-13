@@ -1,6 +1,6 @@
 #include "Actor_UpdateCave.h"
 
-void Actor_UpdateCave(struct Actor* actor, struct GlobalContext* globalCtx) {
+void Actor_UpdateCave(Actor* actor, GlobalContext* globalCtx) {
     register CommandEvent* commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_UPDATE, COMMANDEVENTTYPE_UPDATE);
 
     if (commandEvent) {
