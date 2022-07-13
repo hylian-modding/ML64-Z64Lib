@@ -5,12 +5,10 @@
 #include "Actor_SpawnWithAddress.h"
 #include "Actor_SpawnNoEvent.h"
 
+extern void memset_fast_32(u32* dest, u32 value, u32 length);
+
 volatile CommandBuffer* gCmdBuffer = 0xBADF00D;
 const uint32_t cbSize = sizeof(CommandBuffer);
-
-// avoid unusual behavior causes by some implicit -f option
-#pragma GCC push_options
-#pragma GCC optimize("O1")
 
 #ifdef GAMESTATE_CAVE
 void CommandBuffer_Update(GameState* gameState)
@@ -20,6 +18,7 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
 {
     uint32_t index;
     uint32_t qndex;
+    CommandBuffer* cmdBuffer = gCmdBuffer; // help gcc not write bogus behavior. wtf
     Command* command;
     CommandReturn* commandReturn;
     CommandEvent* commandEvent;
@@ -28,19 +27,19 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
     ActorContext* actorCtx = &globalCtx->actorCtx;
 
     gameState->main(gameState);
-    if (gCmdBuffer == NULL || gCmdBuffer == 0xBADF00D) return;
+    if (cmdBuffer == NULL || cmdBuffer == 0xBADF00D) return;
 #else
-    if (gCmdBuffer == NULL || gCmdBuffer == 0xBADF00D) goto LActor_UpdateAll;
+    if (cmdBuffer == NULL || cmdBuffer == 0xBADF00D) goto LActor_UpdateAll;
 #endif
 
-    for (index = 0; index < gCmdBuffer->commandCount; index++) {
-        command = &gCmdBuffer->commands[index];
+    for (index = 0; index < cmdBuffer->commandCount; index++) {
+        command = &cmdBuffer->commands[index];
         commandReturn = NULL;
 
         // get next command return, if a slot is available
         for (qndex = 0; qndex < COMMAND_MAX; qndex++) {
-            if (gCmdBuffer->commandReturns[qndex].type == COMMANDTYPE_NONE) {
-                commandReturn = &gCmdBuffer->commandReturns[qndex];
+            if (cmdBuffer->commandReturns[qndex].type == COMMANDTYPE_NONE) {
+                commandReturn = &cmdBuffer->commandReturns[qndex];
                 break;
             }
         }
@@ -111,17 +110,18 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
         command->type = COMMANDTYPE_NONE;
     }
 
-    gCmdBuffer->commandCount = 0;
+    cmdBuffer->commandCount = 0;
 
     // handle death by nuking ourselves like a star, and rising from the ashes like a phoenix
     // causes loss of event data, might want to have a timeout in Z64O
-    if (gCmdBuffer->eventCount >= COMMANDEVENT_MAX) {
-        gCmdBuffer->eventCount = 0;
-        Lib_MemSet(gCmdBuffer->commandEvents, sizeof(gCmdBuffer->commandEvents), 0);
+    if (cmdBuffer->eventCount >= COMMANDEVENT_MAX) {
+        cmdBuffer->eventCount = 0;
+        memset_fast_32(cmdBuffer->commandEvents, 0, sizeof(cmdBuffer->commandEvents));
 
-        gCmdBuffer->commandEvents[0].type = COMMANDEVENTTYPE_ERROR_FILLED; // notify Z64O that we died
-        gCmdBuffer->commandEvents[0].params.unknown.uuid = -1;
-        gCmdBuffer->commandEvents[0].params.unknown.type = -1;
+        commandEvent = &cmdBuffer->commandEvents[0];
+        commandEvent->type = COMMANDEVENTTYPE_ERROR_FILLED; // notify Z64O that we died
+        commandEvent->params.unknown.uuid = -1;
+        commandEvent->params.unknown.type = -1;
     }
 
 #ifndef GAMESTATE_CAVE
@@ -129,6 +129,4 @@ LActor_UpdateAll:;
     Actor_UpdateAll(globalCtx, actorCtx);
 #endif
 }
-
-#pragma GCC pop_options
 
