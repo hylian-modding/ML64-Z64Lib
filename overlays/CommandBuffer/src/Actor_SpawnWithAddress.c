@@ -2,7 +2,6 @@
 
 #ifdef GAME_OOT
 void Actor_SpawnWithAddress(GlobalContext* globalCtx, int16_t actorId, int16_t params, Vec3f* pos, Vec3s* rot, Actor* actor) {
-    register CommandEvent* commandEvent;
     ActorInit* actorInit;
     ActorOverlay* overlayEntry;
     int32_t objBankIndex;
@@ -76,20 +75,7 @@ void Actor_SpawnWithAddress(GlobalContext* globalCtx, int16_t actorId, int16_t p
 
     Actor_AddToCategory(&globalCtx->actorCtx, actor, actorInit->category);
 
-    commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_SPAWN, COMMANDEVENTTYPE_SPAWNTRANSITION);
-    if (commandEvent) {
-        commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-        commandEvent->params.actor = actor;
-    }
-    else {
-        commandEvent = CommandBuffer_CommandEvent_GetNext();
-
-        if (commandEvent) {
-            commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-            commandEvent->params.actor = actor;
-            gCmdBuffer->eventCount++;
-        }
-    }
+    Actor_GenericSpawnEvent(actor);
 
     temp = gSegments[6];
     Actor_Init(actor, globalCtx);
@@ -166,6 +152,8 @@ Actor* Actor_SpawnWithAddress(GlobalContext* globalCtx, int16_t index, int32_t p
 
     Actor_AddToCategory(&globalCtx->actorCtx, actor, actorInit->category);
 
+    Actor_GenericSpawnEvent(actor);
+
     segmentAux = gSegments[6];
     Actor_Init(actor, globalCtx);
     gSegments[6] = segmentAux;
@@ -173,3 +161,4 @@ Actor* Actor_SpawnWithAddress(GlobalContext* globalCtx, int16_t index, int32_t p
     return actor;
 }
 #endif
+

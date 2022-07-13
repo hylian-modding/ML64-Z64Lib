@@ -5,10 +5,10 @@
 #include "Actor_SpawnWithAddress.h"
 #include "Actor_SpawnNoEvent.h"
 
-CommandBuffer* gCmdBuffer = 0xBADF00D;
+volatile CommandBuffer* gCmdBuffer = 0xBADF00D;
 const uint32_t cbSize = sizeof(CommandBuffer);
 
-// avoid unusual behavior causes by so me implicit -f option
+// avoid unusual behavior causes by some implicit -f option
 #pragma GCC push_options
 #pragma GCC optimize("O1")
 
@@ -96,6 +96,7 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
                 break;
             }
             default: {
+                // report bogus command
                 commandEvent = CommandBuffer_CommandEvent_GetNext();
                 commandEvent->type = COMMANDEVENTTYPE_ERROR_FILLED;
                 commandEvent->params.unknown.uuid = command->uuid;
@@ -113,11 +114,12 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
     gCmdBuffer->commandCount = 0;
 
     // handle death by nuking ourselves like a star, and rising from the ashes like a phoenix
+    // causes loss of event data, might want to have a timeout in Z64O
     if (gCmdBuffer->eventCount >= COMMANDEVENT_MAX) {
         gCmdBuffer->eventCount = 0;
         Lib_MemSet(gCmdBuffer->commandEvents, sizeof(gCmdBuffer->commandEvents), 0);
 
-        gCmdBuffer->commandEvents[0].type = COMMANDEVENTTYPE_ERROR_FILLED; // notify ML64 that we died
+        gCmdBuffer->commandEvents[0].type = COMMANDEVENTTYPE_ERROR_FILLED; // notify Z64O that we died
         gCmdBuffer->commandEvents[0].params.unknown.uuid = -1;
         gCmdBuffer->commandEvents[0].params.unknown.type = -1;
     }

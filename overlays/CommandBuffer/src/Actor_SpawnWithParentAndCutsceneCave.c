@@ -5,7 +5,6 @@
 Actor* Actor_SpawnWithParentAndCutsceneCave(ActorContext* actorCtx, GlobalContext* globalCtx, int16_t index, float x, float y, float z, int16_t rotX, int16_t rotY, int16_t rotZ, int32_t params, uint32_t cutscene, int32_t param_12, Actor* parent) {}
 #elif defined GAME_MM
 Actor* Actor_SpawnWithParentAndCutsceneCave(ActorContext* actorCtx, GlobalContext* globalCtx, int16_t index, float x, float y, float z, int16_t rotX, int16_t rotY, int16_t rotZ, int32_t params, uint32_t cutscene, int32_t param_12, Actor* parent) {
-    register CommandEvent* commandEvent;
     Actor* actor;
     ActorInit* actorInit;
     int32_t objBankIndex;
@@ -87,20 +86,7 @@ Actor* Actor_SpawnWithParentAndCutsceneCave(ActorContext* actorCtx, GlobalContex
 
     Actor_AddToCategory(actorCtx, actor, actorInit->category);
 
-    commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_SPAWN, COMMANDEVENTTYPE_SPAWNTRANSITION);
-    if (commandEvent) {
-        commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-        commandEvent->params.actor = actor;
-    }
-    else {
-        commandEvent = CommandBuffer_CommandEvent_GetNext();
-
-        if (commandEvent) {
-            commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-            commandEvent->params.actor = actor;
-            gCmdBuffer->eventCount++;
-        }
-    }
+    Actor_GenericSpawnEvent(actor);
 
     segmentAux = gSegments[6];
     Actor_Init(actor, globalCtx);
@@ -109,3 +95,4 @@ Actor* Actor_SpawnWithParentAndCutsceneCave(ActorContext* actorCtx, GlobalContex
     return actor;
 }
 #endif
+

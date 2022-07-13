@@ -4,7 +4,6 @@
 #include <libzelda64.h>
 #include "FunctionInject.h"
 #include "commandevent.h"
-#include "Actor_CaveHelpers.h"
 
 #define AM_FIELD_SIZE 0x27A0
 #define ACTOR_NUMBER_MAX 200

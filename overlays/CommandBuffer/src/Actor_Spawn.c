@@ -1,9 +1,8 @@
 #include "ActorSpawn.h"
+#include "Actor_CaveHelpers.h"
 
 #ifdef GAME_OOT
 Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, s16 actorId, f32 posX, f32 posY, f32 posZ, s16 rotX, s16 rotY, s16 rotZ, s16 params) {
-    register CommandEvent* commandEvent;
-    s32 pad;
     Actor* actor;
     ActorInit* actorInit;
     s32 objBankIndex;
@@ -101,20 +100,7 @@ Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, s16 act
 
     Actor_AddToCategory(actorCtx, actor, actorInit->category);
 
-    commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_SPAWN, COMMANDEVENTTYPE_SPAWNTRANSITION);
-    if (commandEvent) {
-        commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-        commandEvent->params.actor = actor;
-    }
-    else {
-        commandEvent = CommandBuffer_CommandEvent_GetNext();
-
-        if (commandEvent) {
-            commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-            commandEvent->params.actor = actor;
-            gCmdBuffer->eventCount++;
-        }
-    }
+    Actor_GenericSpawnEvent(actor);
 
     temp = gSegments[6];
     Actor_Init(actor, globalCtx);
@@ -125,7 +111,6 @@ Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, s16 act
 }
 #elif defined GAME_MM
 Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, int16_t index, float x, float y, float z, int16_t rotX, int16_t rotY, int16_t rotZ, int32_t params) {
-    register CommandEvent* commandEvent;
     Actor* actor;
     ActorInit* actorInit;
     int32_t objBankIndex;
@@ -194,20 +179,7 @@ Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, int16_t
 
     Actor_AddToCategory(actorCtx, actor, actorInit->category);
 
-    commandEvent = CommandBuffer_CommandEvent_GetCollision(actor, COMMANDEVENTTYPE_SPAWN, COMMANDEVENTTYPE_SPAWNTRANSITION);
-    if (commandEvent) {
-        commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-        commandEvent->params.actor = actor;
-    }
-    else {
-        commandEvent = CommandBuffer_CommandEvent_GetNext();
-
-        if (commandEvent) {
-            commandEvent->type = COMMANDEVENTTYPE_SPAWN;
-            commandEvent->params.actor = actor;
-            gCmdBuffer->eventCount++;
-        }
-    }
+    Actor_GenericSpawnEvent(actor);
 
     segmentAux = gSegments[6];
     Actor_Init(actor, globalCtx);
@@ -216,3 +188,4 @@ Actor* Actor_SpawnTest(ActorContext* actorCtx, GlobalContext* globalCtx, int16_t
     return actor;
 }
 #endif
+

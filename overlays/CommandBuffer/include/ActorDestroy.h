@@ -5,6 +5,6 @@
 #include "commandevent.h"
 #include "Actor_CaveHelpers.h"
 
-void Actor_DestroyCave(struct Actor* actor, struct GlobalContext* globalCtx);
+void Actor_DestroyCave(Actor* actor, GlobalContext* globalCtx);
 
 #endif /* __ACTOR_DESTROY_H__ */

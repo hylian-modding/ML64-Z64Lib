@@ -6,8 +6,8 @@
 #include "commandreturn.h"
 #include "commandevent.h"
 
-#define COMMAND_MAX 64
-#define COMMANDEVENT_MAX 200 // probably a good amount of extra space for update calls
+#define COMMAND_MAX 256
+#define COMMANDEVENT_MAX 1024
 #define SUPER_OBJECT_EXCHANGE_BANK_MAX 48
 
 typedef struct {
@@ -32,11 +32,11 @@ typedef struct {
     /* 0x0000 */ uint16_t commandCount;
     /* 0x0002 */ uint16_t eventCount;
     /* 0x0004 */ Command commands[COMMAND_MAX];
-    /* 0x0A04 */ CommandReturn commandReturns[COMMAND_MAX]; // make sure to interpret this data, and wipe it every frame
-    /* 0x0D04 */ CommandEvent commandEvents[COMMANDEVENT_MAX]; // make sure to interpret this data, and wipe it every frame
-} CommandBuffer; /* sizeof = 0x1334 */
+    /* 0x2804 */ CommandReturn commandReturns[COMMAND_MAX]; // make sure to interpret this data, and wipe it every frame
+    /* 0x3404 */ CommandEvent commandEvents[COMMANDEVENT_MAX]; // make sure to interpret this data, and wipe it every frame
+} CommandBuffer; /* sizeof = 0x6404 */
 
-extern CommandBuffer* gCmdBuffer;
+extern volatile CommandBuffer* gCmdBuffer;
 
 extern const uint32_t cbSize;
 

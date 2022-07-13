@@ -13,7 +13,9 @@ typedef struct{
     /* 0x18 */ uint32_t Actor_SpawnAsChildAndCutscene;
     /* 0x1C */ uint32_t Object_Spawn;
     /* 0x20 */ uint32_t Actor_SpawnWithAddress;
-} En_FunctionHooks;
+    /* 0x24 */ uint32_t Actor_AddToCategory;
+    /* 0x28 */ uint32_t Actor_RemoveFromCategory;
+} En_FunctionHooks; /* sizeof = 0x2C */
 
 extern En_FunctionHooks* haxPointer;
 

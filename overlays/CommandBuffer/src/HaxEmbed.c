@@ -12,8 +12,11 @@ const HaxEmbed_t embed = {
         .Actor_SpawnWithAddress = Actor_SpawnWithAddress,
         .Actor_SpawnAsChildAndCutscene = Actor_SpawnWithParentAndCutsceneCave,
         .Actor_Update = Actor_UpdateCave,
-        .Object_Spawn = Object_Spawn
+        .Object_Spawn = Object_Spawn,
+        .Actor_AddToCategory = Actor_AddToCategoryCave,
+        .Actor_RemoveFromCategory = Actor_RemoveFromCategoryCave
     },
     .end = 0xBEEFDEAD
 };
+
 

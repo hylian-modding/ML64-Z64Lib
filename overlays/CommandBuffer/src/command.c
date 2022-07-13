@@ -179,3 +179,4 @@ void CommandFunc_ObjectLoad(Command* thisx, CommandReturn* commandReturn, Global
         commandReturn->data.objLoad.index = Object_Spawn(&globalCtx->objectCtx, thisx->params.objLoad.objectId);
     }
 }
+

@@ -14,5 +14,6 @@
 #include "Object_SpawnCave.h"
 #endif
 #include "Actor_SpawnWithAddress.h"
+#include "Actor_CategoryCave.h"
 
 #endif /* __OVL_EN_HAXBASE__ */

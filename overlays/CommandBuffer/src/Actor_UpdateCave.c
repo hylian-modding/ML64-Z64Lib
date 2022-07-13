@@ -21,3 +21,4 @@ void Actor_UpdateCave(Actor* actor, GlobalContext* globalCtx) {
 
     return;
 }
+

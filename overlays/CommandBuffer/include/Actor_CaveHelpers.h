@@ -7,7 +7,8 @@
 #define AM_FIELD_SIZE 0x27A0
 
 extern CommandEvent* CommandBuffer_CommandEvent_GetNext(void);
-extern CommandEvent* CommandBuffer_CommandEvent_GetCollision(struct Actor* actor, uint32_t minType, uint32_t maxType);
+extern CommandEvent* CommandBuffer_CommandEvent_GetCollision(Actor* actor, uint32_t minType, uint32_t maxType);
+extern void Actor_GenericSpawnEvent(Actor* thisx);
 
 #endif
 
