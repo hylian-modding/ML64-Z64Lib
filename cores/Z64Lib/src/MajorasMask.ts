@@ -89,13 +89,13 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
 
     @onTick()
     onTick() {
-        //this.commandBuffer.onTick();
-
-        if (this.helper.isTitleScreen() || !this.helper.isSceneNumberValid()) return;
-
+        
         if (this.commandBuffer !== undefined) {
             this.commandBuffer.onTick();
         }
+
+        if (this.helper.isTitleScreen() || !this.helper.isSceneNumberValid()) return;
+
         //@ts-ignore
         if (this.actorManager !== undefined) this.actorManager.onTick();
 
