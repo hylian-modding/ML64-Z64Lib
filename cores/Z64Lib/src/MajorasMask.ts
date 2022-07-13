@@ -10,6 +10,8 @@ import { number_ref } from "modloader64_api/Sylvain/ImGui";
 import { OverlayPayload } from "./OverlayPayload";
 import { EventSystem } from "./Common/CommandBuffer/EventSystem";
 import { TransitionState } from "@Z64Lib/API/MM/MMAPI";
+import { Z64_GAME } from "./Common/imports";
+import { Z64LibSupportedGames } from "@Z64Lib/API/Utilities/Z64LibSupportedGames";
 
 export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Core {
     header = [ROM_REGIONS.NTSC_MM];
@@ -179,13 +181,8 @@ export class MajorasMask implements ICore, Z64API.MM.IMMCore, Z64API.Z64.IZ64Cor
 
     @EventHandler(EventsClient.ON_HEAP_READY)
     onHeapReady(evt: any) {
-        //this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64_GAME);
-        //this.actorManager = new EventSystem(this.ModLoader, this.commandBuffer.cmdbuf);
-
-        if (this.rom_header !== undefined) {
-            this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header.revision, Z64CORE.Z64.Z64_GAME, this);
-            this.actorManager = new EventSystem(this.ModLoader, this, this.commandBuffer.cmdbuf);
-        }
+        this.commandBuffer = new Z64CORE.Z64.CommandBuffer(this.ModLoader, this.rom_header!.revision, Z64_GAME, this);
+        this.actorManager = new EventSystem(this.ModLoader, this, this.commandBuffer.cmdbuf);
     }
 
     toggleMapSelectKeybind(): boolean {

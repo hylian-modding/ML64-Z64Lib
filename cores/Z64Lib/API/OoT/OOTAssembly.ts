@@ -10,7 +10,6 @@ class OOTAssembly implements IInjectedAssembly {
             0,
             new Map<string, number>([
                 ["Actor_DestroyCave", 0x80021104],
-                ["Actor_InitCave", 0x800253c8],
                 ["Actor_SpawnEntryCave", 0x80023de8],
                 ["Actor_SpawnTransitionActorCave", 0x8002557c],
                 ["Actor_UpdateCave", 0x800240d8],
@@ -20,7 +19,9 @@ class OOTAssembly implements IInjectedAssembly {
                 ["SuperDynaPoly_AllocPolyList", 0x8003133C],
                 ["SuperDynaPoly_AllocVtxList", 0x80031358],
                 ["SuperDynaSSNodeList_Alloc", 0x80031378],
-                ["Overlay_Relocate", 0x800CC8F0]
+                ["Overlay_Relocate", 0x800CC8F0],
+                ["Actor_AddToCategory", 0x80024F98],
+                ["Actor_RemoveFromCategory", 0x80024FE0],
             ]),
         ],
     ]);

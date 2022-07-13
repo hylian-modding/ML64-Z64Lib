@@ -237,6 +237,8 @@ export enum Z64Events {
     ON_LOADING_ZONE = 'onLoadingZone',
     ON_ACTOR_SPAWN = 'onActorSpawn',
     ON_ACTOR_DESPAWN = 'onActorDespawn',
+    ON_ACTOR_ADDED_TO_CATEGORY = "onActorAddedToCategory",
+    ON_ACTOR_REMOVED_FROM_CATEGORY = "onActorRemovedFromCategory",
     ON_ROOM_CHANGE = 'onRoomChange',
     ON_ROOM_CHANGE_PRE = 'onPreRoomChange',
     ON_AGE_CHANGE = 'onAgeChange',

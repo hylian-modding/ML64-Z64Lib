@@ -1,14 +1,14 @@
 import { IModLoaderAPI } from "modloader64_api/IModLoaderAPI";
 import Vector3 from "modloader64_api/math/Vector3";
 import { Heap } from "modloader64_api/heap";
-import { JAL_ENCODE, J_ENCODE } from "./OpcodeBullshit";
+import { JAL_DECODE, JAL_ENCODE, J_ENCODE } from "./OpcodeBullshit";
 import { Deprecated } from "modloader64_api/Deprecated";
 import { ActorBase } from "../Actor";
 import { Z64LibSupportedGames } from "@Z64Lib/API/Utilities/Z64LibSupportedGames";
 import { Command, IActor, ICommandBuffer } from "@Z64Lib/API/imports";
 import { IInjectedAssembly } from "@Z64Lib/API/Common/IInjectedAssembly";
 import { AssemblyList } from "@Z64Lib/API/Common/AssemblyList";
-import { setSpawnWithAddrPointer, Z64_GAME } from "../types/GameAliases";
+import { setSpawnWithAddrPointer, Z64_GAME, Z64_IS_RANDOMIZER } from "../types/GameAliases";
 import { IZ64Core } from "@Z64Lib/API/Common/Z64API";
 import { SmartBuffer } from "smart-buffer";
 import { OOT_GAME } from "../types/OotAliases";
@@ -37,23 +37,31 @@ export enum CommandBuffer_CommandEventType {
     SPAWN,
     SPAWNENTRY,
     SPAWNTRANSITION,
+    ADDCAT,
+    REMCAT,
     DESTROY,
     UPDATE,
     OBJECTSPAWN,
     ERROR_FILLED
 }
 
-export const COMMAND_MAX = 64;
-export const COMMANDEVENT_MAX = 200;
+export const COMMAND_MAX = 256;
+export const COMMANDEVENT_MAX = 1024;
 export const COMMAND_PARAM_SIZEOF = 0x20;
 export const COMMAND_SIZEOF = COMMAND_PARAM_SIZEOF + 8;
 export const COMMAND_OFFSET = 4;
 export const COMMAND_RETURN_DATA_SIZEOF = 0x04;
 export const COMMAND_RETURN_SIZEOF = COMMAND_RETURN_DATA_SIZEOF + 8;
 export const COMMAND_RETURN_OFFSET = COMMAND_OFFSET + COMMAND_SIZEOF * COMMAND_MAX;
-export const COMMAND_EVENT_SIZEOF = 8;
+export const COMMAND_EVENT_SIZEOF = 0xC;
 export const COMMAND_EVENT_OFFSET = COMMAND_RETURN_OFFSET + COMMAND_RETURN_SIZEOF * COMMAND_MAX;
-export const COMMANDBUFFER_SIZEOF = 0x1334;
+export const COMMANDBUFFER_SIZEOF = 0x6404;
+
+export const JRRA = Buffer.from(assemble(`
+    NOP
+    JR RA
+    NOP
+`))
 
 // TODO: blah blah pvp blah (doesn't belong here)
 export interface IPvpContext {
@@ -97,12 +105,14 @@ class CommandBufferBootstrap {
          * Malloc the space for the buffer itself.
          */
         this.commands = this.ModLoader.heap!.malloc(COMMANDBUFFER_SIZEOF);
+        let wipe = Buffer.alloc(COMMANDBUFFER_SIZEOF);
+        this.ModLoader.emulator.rdramWriteBuffer(this.commands, wipe);
 
         /**
          * Malloc and write the command buffer overlay
          */
         this.payloadPointer = this.ModLoader.heap!.malloc(this.hax.byteLength);
-        this.ModLoader.emulator.rdramWriteBuffer(this.payloadPointer, this.hax);
+        this.ModLoader.emulator.rdramWriteBuffer(this.payloadPointer, this.hax); // initialize memory to 0
 
         /**
          * Find the dummy pointer inside the overlay and replace it.
@@ -185,7 +195,7 @@ class CommandBufferBootstrap {
                 if (!this.data.VERSIONS.get(this.revision)!.has(tag)) return;
                 if (this.data.VERSIONS.get(this.revision)!.get(tag)! === 0xDEADBEEF) return;
                 sb.writeUInt32BE(J_ENCODE(this.ModLoader.emulator.rdramRead32(pointer + offset)));
-                sb.writeBuffer(Buffer.from("0000000003E0000800000000", "hex"));
+                sb.writeBuffer(JRRA);
                 this.ModLoader.emulator.rdramWriteBuffer(this.data.VERSIONS.get(this.revision)!.get(tag)!, sb.toBuffer());
                 sb.clear();
             };
@@ -210,26 +220,40 @@ class CommandBufferBootstrap {
              * ... to the event system.
              */
             JNOP(instance, 0x08, "Actor_SpawnCave");
-
-            // These don't have events yet.
-            //JAL(instance, 0x10, "Actor_SpawnEntryCave");
-            //JAL(instance, 0x14, "Actor_InitCave");
-            //JAL(instance, 0x18, "Actor_UpdateCave");
+            JNOP(instance, 0x2C, "Actor_AddToCategory");
+            JNOP(instance, 0x30, "Actor_RemoveFromCategory");
+            JAL(instance, 0x18, "Actor_UpdateCave");
             
             if (Z64_GAME === OOT_GAME) {
                 JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
-                // MMR also hooks this. Solve later.
                 JAL(instance, 0x0C, "Actor_DestroyCave");
-            } else if (Z64_GAME === MM_GAME) {
-                //JNOP(instance, 0x1C, "Actor_SpawnTransitionActorCave");
+                JAL(instance, 0x10, "Actor_SpawnEntryCave");
+            }
+            else if (Z64_GAME === MM_GAME) {
+                JNOP(instance, 0x1C, "Actor_SpawnTransitionActorCave");
+                JNOP(instance, 0x10, "Actor_SpawnEntryCave");
                 JNOP(instance, 0x20, "Actor_SpawnWithParentAndCutscene");
+                if (Z64_IS_RANDOMIZER) {
+                    if (this.data.VERSIONS.get(this.revision)!.has("Actor_DestroyCave")) {
+                        if (this.data.VERSIONS.get(this.revision)!.get("Actor_DestroyCave")! === 0xDEADBEEF) {
+                            let Actor_DestroyCave_Addr = this.data.VERSIONS.get(this.revision)!.get("Actor_DestroyCave")
+                            if (Actor_DestroyCave_Addr !== undefined) {
+                                let Actor_AfterDtor_Hook = JAL_DECODE(this.ModLoader.emulator.rdramReadBuffer(Actor_DestroyCave_Addr + 4, 4))
+                                this.ModLoader.emulator.rdramWrite32(Actor_AfterDtor_Hook + 8, JAL_ENCODE(this.ModLoader.emulator.rdramRead32(instance + 0x0C)))
+                            }
+                        }
+                    }
+                }
+                else {
+                    JAL(instance, 0x0C, "Actor_DestroyCave");
+                }
             }
             // Object spawn would go here but its broke. 0x24
 
             /**
              * Set this for other possible hooks.
              */
-            setSpawnWithAddrPointer(this.ModLoader.emulator.rdramRead32(instance + 0x28));
+            setSpawnWithAddrPointer(this.ModLoader.emulator.rdramRead32(instance + 0x34));
 
             this.ModLoader.emulator.invalidateCachedCode();
         }, 1);
