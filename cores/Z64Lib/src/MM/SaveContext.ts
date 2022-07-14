@@ -37,6 +37,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         'map_visited',
         'player_name',
         'heart_containers',
+        'magic',
         'magic_meter_size',
         'magic_current',
         'rupee_count',
