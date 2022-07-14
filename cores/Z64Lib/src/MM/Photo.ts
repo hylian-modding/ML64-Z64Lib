@@ -8,15 +8,18 @@ export class Photo extends JSONTemplate implements Z64API.MM.IPhoto {
     private pictograph_spec_addr: number = 0x801F04EA; //0x1
     private pictograph_quality_addr: number = 0x801F04EB; //0x1
     private pictograph_unk_addr: number = 0x801F04EC; //0x1
+    private save: Z64API.MM.ISaveContext;
+
     jsonFields: string[] = [
         'pictograph_photoChunk',
         'pictograph_spec',
         'pictograph_quality',
         'pictograph_unk'
     ];
-    constructor(emulator: IMemory) {
+    constructor(emulator: IMemory, save: Z64API.MM.ISaveContext) {
         super();
         this.emulator = emulator;
+        this.save = save;
     }
 
     get pictograph_photoChunk(): Buffer {
@@ -39,7 +42,6 @@ export class Photo extends JSONTemplate implements Z64API.MM.IPhoto {
         return this.emulator.rdramRead8(this.pictograph_quality_addr);
     }
 
-
     set pictograph_quality(flag: number) {
         this.emulator.rdramWrite8(this.pictograph_quality_addr, flag);
     }
@@ -50,5 +52,13 @@ export class Photo extends JSONTemplate implements Z64API.MM.IPhoto {
 
     set pictograph_unk(flag: number) {
         this.emulator.rdramWrite8(this.pictograph_unk_addr, flag);
+    }
+
+    get pictograph_used(): boolean {
+        return this.save.pictoboxUsed;
+    }
+
+    set pictograph_used(b: boolean) {
+        this.save.pictoboxUsed = b;
     }
 }

@@ -80,7 +80,7 @@ export class SaveContext extends JSONTemplate implements Z64API.MM.ISaveContext 
         this.owlStatues = new Z64CORE.MM.OwlStatues(emu);
         this.keyManager = new Z64CORE.MM.KeyManager(emu);
         this.dungeonItemManager = new Z64CORE.Z64.DungeonItemManager(emu);
-        this.photo = new Z64CORE.MM.Photo(emu);
+        this.photo = new Z64CORE.MM.Photo(emu, this);
         this.stray = new Z64CORE.MM.Stray(emu);
         this.skull = new Z64CORE.MM.Skull(emu);
     }
