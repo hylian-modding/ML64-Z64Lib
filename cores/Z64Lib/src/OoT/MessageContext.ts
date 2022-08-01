@@ -136,7 +136,6 @@ abstract class MessageBoxFunctions {
 
 export default class MessageContext extends MessageBoxFunctions implements IMessageContext {
 
-    ModLoader: IModLoaderAPI;
     Ptr: number;
 
     constructor(Core: IOOTCore, ModLoader: IModLoaderAPI, _Ptr: number) {

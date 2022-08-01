@@ -14,6 +14,7 @@ import { SmartBuffer } from "smart-buffer";
 import { OOT_GAME } from "../types/OotAliases";
 import { MM_GAME } from "../types/MMAliases";
 import { assemble } from "mips-assembler";
+import MipsAssembler from "@Z64Lib/API/Utilities/MipsAssembler";
 
 export enum CommandBuffer_CommandType {
     NONE,
@@ -57,11 +58,11 @@ export const COMMAND_EVENT_SIZEOF = 0xC;
 export const COMMAND_EVENT_OFFSET = COMMAND_RETURN_OFFSET + COMMAND_RETURN_SIZEOF * COMMAND_MAX;
 export const COMMANDBUFFER_SIZEOF = 0x6404;
 
-export const JRRA = Buffer.from(assemble(`
+export const JRRA = MipsAssembler.assemble(`
     NOP
     JR RA
     NOP
-`))
+`);
 
 // TODO: blah blah pvp blah (doesn't belong here)
 export interface IPvpContext {
@@ -148,7 +149,7 @@ class CommandBufferBootstrap {
         JR      RA  ; abort mission, mission successful?
         ADDIU   SP SP 0x08 ; stack footer (delay slot)
         `;
-        let bootstrap = Buffer.from(assemble(bootstrapasm));
+        let bootstrap = MipsAssembler.assemble(bootstrapasm);
         this.bootstrapPointer = this.ModLoader.heap!.malloc(bootstrap.byteLength);
         this.ModLoader.emulator.rdramWriteBuffer(this.bootstrapPointer, bootstrap);
 

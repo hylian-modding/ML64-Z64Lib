@@ -113,51 +113,6 @@ export interface IActorDeathFile {
     death: ActorDeathBehavior;
 }
 
-export const actorDeathBehaviorMap: Map<number, ActorDeathBehavior> = new Map<
-    number,
-    ActorDeathBehavior
->();
-/*
-fs.readdirSync(path.join(__dirname, 'actorDeaths')).forEach((file: string) => {
-    let parse = path.parse(file);
-    if (parse.ext === '.js') {
-        let cls = require(path.resolve(path.join(__dirname, 'actorDeaths', file)))[
-            parse.name
-        ];
-        let instance: IActorDeathFile = new cls();
-        actorDeathBehaviorMap.set(instance.id, instance.death);
-    }
-});*/
-
-export function setActorBehavior(
-    emulator: IMemory,
-    actor: Z64API.IActor,
-    offset: number,
-    behavior: number
-) {
-    let id: number = actor.actorID;
-    let overlay_table: number = Z64_OVERLAY_TABLE;
-    let overlay_entry = overlay_table + id * 32;
-    let behavior_start = overlay_entry + 0x10;
-    let pointer = emulator.dereferencePointer(behavior_start);
-    let behavior_result = pointer + behavior;
-    actor.rdramWrite32(offset, behavior_result + 0x80000000);
-}
-
-export function getActorBehavior(
-    emulator: IMemory,
-    actor: Z64API.IActor,
-    offset: number
-): number {
-    let id: number = actor.actorID;
-    let overlay_table: number = Z64_OVERLAY_TABLE;
-    let overlay_entry = overlay_table + id * 32;
-    let behavior_start = overlay_entry + 0x10;
-    let pointer = emulator.dereferencePointer(behavior_start);
-    let behavior = actor.dereferencePointer(offset);
-    return behavior - pointer;
-}
-
 export class ActorBase extends JSONTemplate implements Z64API.IActor {
     actorUUID = '';
     private readonly emulator: IMemory;
@@ -266,13 +221,8 @@ export class ActorBase extends JSONTemplate implements Z64API.IActor {
     }
 
     destroy(): void {
-        if (actorDeathBehaviorMap.has(this.actorID)) {
-            let b: ActorDeathBehavior = actorDeathBehaviorMap.get(this.actorID)!;
-            setActorBehavior(this.emulator, this, b.offset, b.behavior_calc);
-        } else {
-            this.rdramWrite32(0x130, 0x0);
-            this.rdramWrite32(0x134, 0x0);
-        }
+        this.rdramWrite32(0x130, 0x0);
+        this.rdramWrite32(0x134, 0x0);
     }
 
     rdramRead8(addr: number): number {
@@ -444,4 +394,15 @@ export class ActorBase extends JSONTemplate implements Z64API.IActor {
     }
 
     memoryDebugLogger(bool: boolean): void { }
+
+    u8!: number[];
+    u16!: number[];
+    u32!: number[];
+    u64!: number[];
+    s8!: number[];
+    s16!: number[];
+    s32!: number[];
+    s64!: number[];
+    f32!: number[];
+    f64!: number[];
 }

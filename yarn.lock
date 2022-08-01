@@ -2,3 +2,11 @@
 # yarn lockfile v1
 
 
+"gulp@file:C:/Users/volta/AppData/Roaming/npm/node_modules/gulp":
+  "resolved" "file:C:/Users/volta/AppData/Roaming/npm/node_modules/gulp"
+  "version" "4.0.2"
+  dependencies:
+    "glob-watcher" "^5.0.3"
+    "gulp-cli" "^2.2.0"
+    "undertaker" "^1.2.1"
+    "vinyl-fs" "^3.0.0"

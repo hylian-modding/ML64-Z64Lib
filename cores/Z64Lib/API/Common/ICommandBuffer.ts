@@ -2,16 +2,16 @@ import Vector3 from "modloader64_api/math/Vector3";
 import { IActor } from "./IActor";
 
 export const enum Command {
-    NONE,
-    ACTORSPAWN,
-    ACTORDESTROY,
-    RELOCATE,
-    UPDATEBUTTON,
-    PLAYSOUND,
-    PLAYMUSIC,
-    WARP,
-    MOVEPLAYERTOADDRESS,
-    SFX
+  NONE,
+  ACTORSPAWN,
+  ACTORDESTROY,
+  RELOCATE,
+  UPDATEBUTTON,
+  PLAYSOUND,
+  PLAYMUSIC,
+  WARP,
+  MOVEPLAYERTOADDRESS,
+  SFX
 }
 
 export interface ICommandBuffer {
@@ -24,8 +24,8 @@ export interface ICommandBuffer {
   relocateOverlay(allocatedVRamAddress: number, overlayInfoPointer: number, vRamAddress: number): Promise<void>;
   updateButton(button: number): void;
   playSound(sfxId: number, a1: Vector3, a2: number, a3: number, a4: number, a5: number): void;
-  // #ifdef DANGEROUS_FUNCTIONS
   arbitraryFunctionCall(functionAddress: number, argsPointer: number, argsCount: number): Promise<Buffer>;
+  // #ifdef DANGEROUS_FUNCTIONS
   movePlayerActorToAddress(address: number): Promise<boolean>;
   // #endif
 }
