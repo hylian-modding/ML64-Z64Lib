@@ -51,7 +51,9 @@ export class zzplayas_to_zzconvert_OOT {
         if (buf.indexOf("!PlayAsManifest0") > -1){
             let start = buf.indexOf("!PlayAsManifest0");
             out.writeOffset = start;
+            out.readOffset = start;
             while (out.remaining() > 0){
+                out.readUInt8();
                 out.writeUInt8(0);
             }
             out.writeOffset = start;
