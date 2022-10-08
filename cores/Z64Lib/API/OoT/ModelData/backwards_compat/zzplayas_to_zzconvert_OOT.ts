@@ -9,8 +9,15 @@ export class zzplayas_to_zzconvert_OOT {
     convert_adult(buf: Buffer): Buffer {
         let out: SmartBuffer = new SmartBuffer();
         out.writeBuffer(buf);
-        if (buf.indexOf("!PlayAsManifest0") > -1){
-            return out.toBuffer();
+        if (buf.indexOf("!PlayAsManifest0") > -1) {
+            let start = buf.indexOf("!PlayAsManifest0");
+            out.writeOffset = start;
+            out.readOffset = start;
+            while (out.remaining() > 0) {
+                out.readUInt8();
+                out.writeUInt8(0);
+            }
+            out.writeOffset = start;
         }
         let template = fs.readFileSync(path.resolve(__dirname, "zobjs/zzconvert_adult_template.zobj"));
         out.writeBuffer(template);
@@ -45,14 +52,14 @@ export class zzplayas_to_zzconvert_OOT {
         return n;
     }
 
-    convert_child(buf: Buffer): Buffer{
+    convert_child(buf: Buffer): Buffer {
         let out: SmartBuffer = new SmartBuffer();
         out.writeBuffer(buf);
-        if (buf.indexOf("!PlayAsManifest0") > -1){
+        if (buf.indexOf("!PlayAsManifest0") > -1) {
             let start = buf.indexOf("!PlayAsManifest0");
             out.writeOffset = start;
             out.readOffset = start;
-            while (out.remaining() > 0){
+            while (out.remaining() > 0) {
                 out.readUInt8();
                 out.writeUInt8(0);
             }
