@@ -9,7 +9,12 @@ export class zzplayas_to_zzconvert_MM {
         let out: SmartBuffer = new SmartBuffer();
         out.writeBuffer(buf);
         if (buf.indexOf("!PlayAsManifest0") > -1){
-            return out.toBuffer();
+            let start = buf.indexOf("!PlayAsManifest0");
+            out.writeOffset = start;
+            while (out.remaining() > 0){
+                out.writeUInt8(0);
+            }
+            out.writeOffset = start;
         }
         let template = fs.readFileSync(path.resolve(__dirname, "zobjs/zzconvert_human_template.zobj"));
         out.writeBuffer(template);
