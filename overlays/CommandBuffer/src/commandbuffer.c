@@ -4,6 +4,7 @@
 #include "commandreturn.h"
 #include "Actor_SpawnWithAddress.h"
 #include "Actor_SpawnNoEvent.h"
+#include "modfuncs.h"
 
 extern void memset_fast_32(u32* dest, u32 value, u32 length);
 
@@ -31,6 +32,10 @@ void CommandBuffer_Update(GlobalContext* globalCtx, struct ActorContext* actorCt
 #else
     if (cmdBuffer == NULL || cmdBuffer == 0xBADF00D) goto LActor_UpdateAll;
 #endif
+
+    for (uint8_t i = 0; i < MAX_MOD_HOOKS; i++){
+        if (modHooks[i] > 0) modHooks[i](globalCtx);
+    }
 
     for (index = 0; index < cmdBuffer->commandCount; index++) {
         command = &cmdBuffer->commands[index];

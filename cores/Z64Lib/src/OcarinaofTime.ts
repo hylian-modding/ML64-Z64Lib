@@ -205,7 +205,7 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
     onHeapSetup(evt: any) {
         // Scan memory.
         let mb_1: Buffer = Buffer.alloc(0x100000);
-        let start: number = 0x80000000;
+        let start: number = 0x80400000;
         let scan: Buffer = Buffer.alloc(0x100000, 0xFF);
         let skipped: number = 0;
         while (!scan.equals(mb_1)) {

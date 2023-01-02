@@ -13,8 +13,8 @@ import { IZ64Core } from "@Z64Lib/API/Common/Z64API";
 import { SmartBuffer } from "smart-buffer";
 import { OOT_GAME } from "../types/OotAliases";
 import { MM_GAME } from "../types/MMAliases";
-import { assemble } from "mips-assembler";
 import MipsAssembler from "@Z64Lib/API/Utilities/MipsAssembler";
+import ModHook from './ModHook';
 
 export enum CommandBuffer_CommandType {
     NONE,
@@ -254,7 +254,12 @@ class CommandBufferBootstrap {
             /**
              * Set this for other possible hooks.
              */
-            setSpawnWithAddrPointer(this.ModLoader.emulator.rdramRead32(instance + 0x34));
+            //setSpawnWithAddrPointer(this.ModLoader.emulator.rdramRead32(instance + 0x34));
+
+            /**
+             * 
+             */
+            ModHook.MODHOOK_ADDR = instance + 0x38;
 
             this.ModLoader.emulator.invalidateCachedCode();
         }, 1);

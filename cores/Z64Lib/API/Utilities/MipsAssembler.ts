@@ -1,3 +1,4 @@
+//@ts-ignore
 import { assemble } from "mips-assembler";
 
 export default class MipsAssembler{

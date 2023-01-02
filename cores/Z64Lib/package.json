@@ -14,6 +14,5 @@
   "updateUrl": "https://repo.modloader64.com/mods/Z64Lib/update/update.json",
   "devUrl": "https://repo.modloader64.com/mods/Z64Lib/dev/update.json",
   "dependencies": {
-    "mips-assembler": "^2.0.1"
   }
 }
