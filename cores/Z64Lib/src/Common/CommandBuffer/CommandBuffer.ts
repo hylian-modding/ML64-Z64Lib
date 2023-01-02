@@ -223,7 +223,7 @@ class CommandBufferBootstrap {
             JNOP(instance, 0x08, "Actor_SpawnCave");
             JNOP(instance, 0x2C, "Actor_AddToCategory");
             JNOP(instance, 0x30, "Actor_RemoveFromCategory");
-            JAL(instance, 0x18, "Actor_UpdateCave");
+            //JAL(instance, 0x18, "Actor_UpdateCave");
             
             if (Z64_GAME === OOT_GAME) {
                 JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
