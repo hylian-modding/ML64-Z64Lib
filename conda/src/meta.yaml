@@ -4,7 +4,7 @@ package:
 
 source:
   fn: Z64Lib.zip
-  url: ../dist/Z64Lib.zip
+  url: ../../dist/Z64Lib.zip
 
 build:
   number: {{ environ.get('MYPKG_BUILD', '') }}
