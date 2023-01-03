@@ -3,7 +3,7 @@ package:
   version: {{ environ.get('MYPKG_VERSION', '') }}
 
 source:
-  fn: Z64Lib.zip
+  fn: Z64Lib_src.zip
   url: ../../dist/Z64Lib.zip
 
 build:
