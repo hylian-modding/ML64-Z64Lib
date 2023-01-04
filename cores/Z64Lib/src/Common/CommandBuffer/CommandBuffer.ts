@@ -221,14 +221,14 @@ class CommandBufferBootstrap {
              * ... to the event system.
              */
             JNOP(instance, 0x08, "Actor_SpawnCave");
-            JNOP(instance, 0x2C, "Actor_AddToCategory");
-            JNOP(instance, 0x30, "Actor_RemoveFromCategory");
+            //JNOP(instance, 0x2C, "Actor_AddToCategory");
+            //JNOP(instance, 0x30, "Actor_RemoveFromCategory");
             //JAL(instance, 0x18, "Actor_UpdateCave");
             
             if (Z64_GAME === OOT_GAME) {
-                JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
+                //JAL(instance, 0x1C, "Actor_SpawnTransitionActorCave");
                 JAL(instance, 0x0C, "Actor_DestroyCave");
-                JAL(instance, 0x10, "Actor_SpawnEntryCave");
+                //JAL(instance, 0x10, "Actor_SpawnEntryCave");
             }
             else if (Z64_GAME === MM_GAME) {
                 JNOP(instance, 0x1C, "Actor_SpawnTransitionActorCave");
