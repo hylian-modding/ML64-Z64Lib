@@ -28,3 +28,4 @@ export const MM_PAUSED = 0x801D1500;
 export const MM_DMAROM = 0x0001A500;
 
 export const MM_EQUIP_ADDR = (MM_SAVE + 0x6D);
+export const MM_GSEGMENTS = 0x801F8180;
