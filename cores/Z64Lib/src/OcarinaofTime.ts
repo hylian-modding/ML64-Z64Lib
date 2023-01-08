@@ -201,20 +201,26 @@ export class OcarinaofTime implements ICore, Z64API.OoT.IOOTCore, Z64API.Z64.IZ6
                 } */
     }
 
+    private allZeroBufferCheck(buf: Buffer){
+        for (let i = 0; i < buf.byteLength; i++){
+            if (buf[i] !== 0) return false;
+        }
+        return true;
+    }
+
     @EventHandler(EventsClient.ON_HEAP_SETUP)
     onHeapSetup(evt: any) {
         // Scan memory.
-        let mb_1: Buffer = Buffer.alloc(0x100000);
         let start: number = 0x80400000;
-        let scan: Buffer = Buffer.alloc(0x100000, 0xFF);
-        let skipped: number = 0;
-        while (!scan.equals(mb_1)) {
+        let scanSize: number = 0x1000000;
+        let totalPossibleHeap: Buffer = this.ModLoader.emulator.rdramReadBuffer(start, scanSize);
+        while (!this.allZeroBufferCheck(totalPossibleHeap)) {
             start += (0x100000);
-            skipped += (0x100000);
-            scan = this.ModLoader.emulator.rdramReadBuffer(start, 0x100000);
+            scanSize -= (0x100000);
+            totalPossibleHeap = this.ModLoader.emulator.rdramReadBuffer(start, scanSize);
         }
         let gfx_heap_start = start;
-        let gfx_heap_size = (0x1000000 - skipped);
+        let gfx_heap_size = scanSize;
         evt["gfx_heap_start"] = gfx_heap_start;
         evt["gfx_heap_size"] = gfx_heap_size;
         this.heap_start = 0x81000000;
